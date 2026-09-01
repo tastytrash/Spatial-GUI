@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.tastytrash.spatialGUI.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+  ],
+  "client": [
+    "client.AbstractRecipeBookScreenMixin",
+    "client.OptionsMixin",
+    "gui.GuiRendererMixin",
+    "gui.MouseHandlerMixin",
+    "gui.ScreenMixin",
+    "gui.SubtitleOverlayMixin",
+    "gui.WindowMixin",
+    "render.AvatarRendererMixin",
+    "render.CameraMixin",
+    "render.GameRendererMixin",
+    "render.ItemInHandRendererMixin",
+    "render.LevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
