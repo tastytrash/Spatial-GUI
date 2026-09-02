@@ -10,6 +10,21 @@ base {
     archivesName = project.archives_base_name
 }
 
+// Version-specific dependency mappings based on target_version
+def dependencyVersions = [
+    "26.2": [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"],
+    "26.3-pre-1": [minecraft: "26.3-pre-1", fabric: "0.159.1+26.3", cloth_config: "26.2.155", modmenu: "21.0.0-alpha.1"]
+]
+
+// Only apply version-specific logic to Stonecutter version subprojects
+if (project.hasProperty('stonecutter')) {
+    def currentVersions = dependencyVersions[stonecutter.current.version] ?: [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"]
+    project.ext.minecraft_version = currentVersions.minecraft
+    project.ext.fabric_version = currentVersions.fabric
+    project.ext.cloth_config_version = currentVersions.cloth_config
+    project.ext.modmenu_version = currentVersions.modmenu
+}
+
 
 repositories {
     // Add repositories to retrieve artifacts from in here.
@@ -35,10 +50,10 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Cloth Config
-    implementation "me.shedaniel.cloth:cloth-config-fabric:26.2.155"
+    implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
 
     // Mod Menu
-    implementation "com.terraformersmc:modmenu:20.0.1"
+    implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 processResources {
