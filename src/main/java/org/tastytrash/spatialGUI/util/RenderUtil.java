@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -46,9 +47,7 @@ public final class RenderUtil {
     private static float calculateFovScaleMultiplier(boolean autoScaleByFov) {
         if (!autoScaleByFov) return 1.0f;
         
-        var client = net.minecraft.client.Minecraft.getInstance();
-        
-        float currentFov = client.options.fov().get();
+        float currentFov = Minecraft.getInstance().gameRenderer.mainCamera().getFov();
         float baselineFov = (float) SpatialGUI.config.autoFovTuning.autoScaleBaselineFov;
         float power = (float) SpatialGUI.config.autoFovTuning.autoScaleScreenPower;
 

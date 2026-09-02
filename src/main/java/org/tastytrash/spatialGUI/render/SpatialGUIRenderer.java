@@ -42,6 +42,7 @@ public class SpatialGUIRenderer {
     private static boolean wasTrue;
     public boolean headLockInitialized = false;
     public static boolean isRecipeBookOpen = false;
+    private static int recipeBookCloseDelay = 0;
     private long screenOpenTime = 0;
     public static boolean hadDebug = false;
     public static boolean hadHideHUD = false;
@@ -268,7 +269,9 @@ public class SpatialGUIRenderer {
         RenderUtil.applyScreenTransform(matrices, isFirstPerson, yawRadians, pitchRadians, config, lookX, lookY, lookZ);
 
         float scale = config.scale();
-        scale = isRecipeBookOpen ? scale / (float) SpatialGUI.config.recipeBookShrinkFactor : scale;
+
+        recipeBookCloseDelay = isRecipeBookOpen ? -2 : Math.min(0, recipeBookCloseDelay + 1);
+        scale = (isRecipeBookOpen || recipeBookCloseDelay < 0) ? scale / (float) SpatialGUI.config.recipeBookShrinkFactor : scale;
 
         if (SpatialGUI.config.enableScaleAnimation) {
             long elapsed = System.currentTimeMillis() - screenOpenTime;

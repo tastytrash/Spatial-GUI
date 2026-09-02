@@ -95,10 +95,8 @@ public abstract class CameraMixin {
     @Unique
     private float calculateFovMultiplier() {
         if (!SpatialGUI.config.autoScaleByFov) return 1.0f;
-        
-        var client = Minecraft.getInstance();
-        
-        float currentFov = client.options.fov().get();
+
+        float currentFov = Minecraft.getInstance().gameRenderer.mainCamera().getFov();
         float baselineFov = (float) SpatialGUI.config.autoFovTuning.autoScaleBaselineFov;
         
         return currentFov / baselineFov;
