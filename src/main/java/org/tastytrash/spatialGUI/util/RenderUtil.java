@@ -28,6 +28,7 @@ public final class RenderUtil {
             matrices.mulPose(new Quaternionf()
                     .rotateY(-yawRadians + (float) Math.toRadians(config.yawOffset))
                     .rotateX(-pitchRadians + (float) Math.toRadians(config.pitchOffset))
+                    .get(new Matrix4f())
             );
         } else {
             matrices.translate(
@@ -38,6 +39,7 @@ public final class RenderUtil {
             matrices.mulPose(new Quaternionf()
                     .rotateY(-yawRadians + (float) Math.toRadians(config.yawOffset))
                     .rotateX((float) Math.toRadians(config.pitchOffset))
+                    .get(new Matrix4f())
             );
         }
     }

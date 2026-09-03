@@ -16,7 +16,7 @@
     "render.AvatarRendererMixin",
     "render.CameraMixin",
     "render.GameRendererMixin",
-    "render.ItemInHandRendererMixin",
+    "render.HandRendererMixin",
     "render.LevelRendererMixin"
   ],
   "injectors": {

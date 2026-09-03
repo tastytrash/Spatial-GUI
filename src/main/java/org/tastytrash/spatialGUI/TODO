@@ -3,3 +3,5 @@ First person mode parallax lets you look upside down
 Mouse tracking failing at certain angles & sizes
 
 NeoForge port, set up stonecutter, also set up multiple versions in preparation for 26.3, which will surely come out on the fifteenth 🙏
+
+gui hiding sometimes on first open
