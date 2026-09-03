@@ -1,14 +1,14 @@
 package org.tastytrash.spatialGUI.mixin.render;
 
 //? if > 26.2 {
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+/*import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-//? } else {
-//import com.mojang.blaze3d.buffers.GpuBufferSlice;
-//import net.minecraft.client.DeltaTracker;
-//import org.joml.Matrix4fc;
+*///? } else {
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import net.minecraft.client.DeltaTracker;
+import org.joml.Matrix4fc;
 //? }
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -26,7 +26,7 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 public class LevelRendererMixin {
     @Inject(method = "render", at = @At("TAIL"))
     //? if >26.2 {
-    private void diegeticInventory$renderScreen(GraphicsResourceAllocator resourceAllocator, boolean renderOutline, CameraRenderState cameraState, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, boolean consistentDepthRequired, CallbackInfo ci) {
+    /*private void diegeticInventory$renderScreen(GraphicsResourceAllocator resourceAllocator, boolean renderOutline, CameraRenderState cameraState, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, boolean consistentDepthRequired, CallbackInfo ci) {
         if (!SpatialGUI.config.enabled) {
             return;
         }
@@ -39,14 +39,14 @@ public class LevelRendererMixin {
         );
         SpatialGUIClient.renderer().renderInWorld(poseStack);
     }
-    //? } else {
-//    private void diegeticInventory$renderScreen(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci) {
-//        if (!SpatialGUI.config.enabled) {
-//            return;
-//        }
-//        PoseStack poseStack = new PoseStack();
-//        poseStack.mulPose(modelViewMatrix);
-//        SpatialGUIClient.renderer().renderInWorld(poseStack);
-//    }
+    *///? } else {
+    private void diegeticInventory$renderScreen(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci) {
+        if (!SpatialGUI.config.enabled) {
+            return;
+        }
+        PoseStack poseStack = new PoseStack();
+        poseStack.mulPose(modelViewMatrix);
+        SpatialGUIClient.renderer().renderInWorld(poseStack);
+    }
     //? }
 }

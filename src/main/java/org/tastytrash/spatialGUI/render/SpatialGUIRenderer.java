@@ -1,7 +1,7 @@
 package org.tastytrash.spatialGUI.render;
 
 //? > 26.2 {
-import com.mojang.renderpearl.api.GpuFormat;
+/*import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
@@ -9,15 +9,15 @@ import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
-//? } else {
-//import com.mojang.blaze3d.GpuFormat;
-//import com.mojang.blaze3d.PrimitiveTopology;
-//import com.mojang.blaze3d.buffers.GpuBufferSlice;
-//import com.mojang.blaze3d.pipeline.RenderPipeline;
-//import com.mojang.blaze3d.textures.AddressMode;
-//import com.mojang.blaze3d.textures.FilterMode;
-//import com.mojang.blaze3d.textures.GpuTextureView;
-//import com.mojang.blaze3d.vertex.VertexFormat;
+*///? } else {
+import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.textures.AddressMode;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.vertex.VertexFormat;
 //? }
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -194,11 +194,11 @@ public class SpatialGUIRenderer {
                     width,
                     height,
                     //? if > 26.2 {
-                    GpuFormat.RGBA8_UNORM,
+                    /*GpuFormat.RGBA8_UNORM,
                     GpuFormat.D16_UNORM
-                    //? } else {
-//                    true,
-//                    GpuFormat.RGBA8_UNORM
+                    *///? } else {
+                    true,
+                    GpuFormat.RGBA8_UNORM
                     //? }
             );
             return;
@@ -381,16 +381,16 @@ public class SpatialGUIRenderer {
                 java.util.OptionalDouble.empty()
         )) {
             //? if > 26.2 {
-            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
-            //? } else {
-            // renderPass.setPipeline(pipeline);
+            /*renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
+            *///? } else {
+             renderPass.setPipeline(pipeline);
             //? }
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
             //? if > 26.2 {
-            renderPass.setUniform
-            //? } else {
-//            renderPass.bindTexture
+            /*renderPass.setUniform
+            *///? } else {
+            renderPass.bindTexture
             //? }
                     ("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                     AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
