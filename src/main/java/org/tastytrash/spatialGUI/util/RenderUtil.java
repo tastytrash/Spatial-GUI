@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 import org.tastytrash.spatialGUI.SpatialGUI;
 
@@ -28,6 +29,7 @@ public final class RenderUtil {
             matrices.mulPose(new Quaternionf()
                     .rotateY(-yawRadians + (float) Math.toRadians(config.yawOffset))
                     .rotateX(-pitchRadians + (float) Math.toRadians(config.pitchOffset))
+                    .get(new Matrix4f())
             );
         } else {
             matrices.translate(
@@ -38,6 +40,7 @@ public final class RenderUtil {
             matrices.mulPose(new Quaternionf()
                     .rotateY(-yawRadians + (float) Math.toRadians(config.yawOffset))
                     .rotateX((float) Math.toRadians(config.pitchOffset))
+                    .get(new Matrix4f())
             );
         }
     }

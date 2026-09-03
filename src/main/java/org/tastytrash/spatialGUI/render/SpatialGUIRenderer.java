@@ -1,18 +1,18 @@
 package org.tastytrash.spatialGUI.render;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -181,8 +181,8 @@ public class SpatialGUIRenderer {
                     "Spatial GUI Inventory",
                     width,
                     height,
-                    true,
-                    GpuFormat.RGBA8_UNORM
+                    GpuFormat.RGBA8_UNORM,
+                    GpuFormat.D16_UNORM
             );
             return;
         }
@@ -344,9 +344,9 @@ public class SpatialGUIRenderer {
             return;
         }
 
-        float fadeAlpha = SpatialGUI.config.enableFadeAnimation 
-            ? Math.min(1.0F, (System.currentTimeMillis() - screenOpenTime) / (float) SpatialGUI.config.fadeDurationMs)
-            : 1.0F;
+        float fadeAlpha = SpatialGUI.config.enableFadeAnimation
+                ? Math.min(1.0F, (System.currentTimeMillis() - screenOpenTime) / (float) SpatialGUI.config.fadeDurationMs)
+                : 1.0F;
         GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(
                 RenderSystem.getModelViewMatrixCopy(),
                 new Vector4f(fadeAlpha, fadeAlpha, fadeAlpha, fadeAlpha),
@@ -363,10 +363,10 @@ public class SpatialGUIRenderer {
                 null,
                 java.util.OptionalDouble.empty()
         )) {
-            renderPass.setPipeline(pipeline);
+            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-            renderPass.bindTexture("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
+            renderPass.setUniform("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                     AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
                     filterMode, filterMode, SpatialGUI.config.useAnisotropicFiltering
             ));
