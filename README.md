@@ -30,5 +30,4 @@ This mod is purely visual and tries not provide any gameplay advantages. It only
 
 ## Other Notes
 *   This was inspired by the Dead Space inventory GUI.
-*   I will eventually port this to neoforge. I will not backport this mod (probably).
 *   This mod may not have great compatibility with other mods that mess with the player GUI/HUD, *be warned*.

@@ -1,236 +1,117 @@
 plugins {
-    id 'dev.isxander.modstitch.base' version '0.8.5'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
     id 'maven-publish'
 }
 
-// Set modstitch.platform based on project name
-if (project.name.contains('-fabric')) {
-    project.setProperty('modstitch.platform', 'fabric-loom')
-} else if (project.name.contains('-neoforge')) {
-    project.setProperty('modstitch.platform', 'moddevgradle')
-}
-
-def rootDir = rootProject.layout.projectDirectory
-
-// Extract Minecraft version from project name (e.g., "26.2-fabric" -> "26.2")
-def projectMinecraftVersion = project.name.replaceAll('-fabric', '').replaceAll('-neoforge', '')
-
-// Version-specific dependency versions
-def versionSpecificDeps = [
-    '26.2': [
-        fabricApi: '0.158.0+26.2',
-        modmenu: '20.0.1',
-        clothConfig: '26.2.155'
-    ],
-    '26.3-pre-1': [
-        fabricApi: '0.159.1+26.3',
-        modmenu: '21.0.0-alpha.1',
-        clothConfig: '26.2.155'
-    ]
-]
-
-def currentDeps = versionSpecificDeps.get(projectMinecraftVersion, versionSpecificDeps['26.2'])
-
-ext.buildConfig = [
-        modId: property('mod_id').toString(),
-        modName: property('mod_name').toString(),
-        modVersion: property('mod_version').toString(),
-        modGroup: property('mod_group').toString(),
-        modDescription: property('mod_description').toString(),
-        modLicense: property('mod_license').toString(),
-        modAuthor: property('mod_author').toString(),
-        minecraftVersion: projectMinecraftVersion,
-        supportedMinecraftVersions: property('supported_minecraft_versions').toString(),
-        minecraftVersionRange: property('minecraft_version_range').toString(),
-        javaVersion: property('java_version').toString().toInteger(),
-        fabricLoaderVersion: property('deps.fabric_loader').toString(),
-        fabricApiVersion: currentDeps.fabricApi,
-        clothConfigVersion: currentDeps.clothConfig,
-        modMenuVersion: currentDeps.modmenu,
-        neoForgeVersion: findProperty('deps.neoforge')?.toString(),
-        neoForgeVersionRange: findProperty('neoforge_version_range')?.toString(),
-]
-
-ext.platformName = property('modstitch.platform').toString()
-ext.activeLoader = platformName.startsWith('fabric-loom') ? 'fabric' : platformName == 'moddevgradle' ? 'neoforge' : platformName
-ext.activeVersionString = "${buildConfig.modVersion}+mc${buildConfig.minecraftVersion}-${activeLoader}"
-ext.binDir = rootDir.dir('bin')
-
-def cfg = buildConfig
-
-repositories {
-    maven {
-        name = 'Terraformers'
-        url = 'https://maven.terraformersmc.com/'
-    }
-    maven {
-        name = 'Cloth Config'
-        url = 'https://maven.shedaniel.me/'
-    }
-}
-
-group = cfg.modGroup
-version = activeVersionString
+version = project.mod_version
+group = project.maven_group
 
 base {
-    archivesName = "${cfg.modName}-${activeLoader}"
+    archivesName = project.archives_base_name
 }
 
-java {
-    withSourcesJar()
+// Version-specific dependency mappings based on target_version
+def dependencyVersions = [
+        "26.2": [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"],
+        "26.3-pre-1": [minecraft: "26.3-pre-1", fabric: "0.159.1+26.3", cloth_config: "26.2.155", modmenu: "21.0.0-alpha.1"]
+]
+
+// Only apply version-specific logic to Stonecutter version subprojects
+if (project.hasProperty('stonecutter')) {
+    def currentVersions = dependencyVersions[stonecutter.current.version] ?: [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"]
+    project.ext.minecraft_version = currentVersions.minecraft
+    project.ext.fabric_version = currentVersions.fabric
+    project.ext.cloth_config_version = currentVersions.cloth_config
+    project.ext.modmenu_version = currentVersions.modmenu
 }
 
-modstitch {
-    minecraftVersion.set(cfg.minecraftVersion)
-    javaVersion.set(cfg.javaVersion)
 
-    metadata {
-        modId.set(cfg.modId)
-        modName.set(cfg.modName)
-        modVersion.set(activeVersionString)
-        modGroup.set(cfg.modGroup)
-        modDescription.set(cfg.modDescription)
-        modLicense.set(cfg.modLicense)
-        modAuthor.set(cfg.modAuthor)
-        replacementProperties.put('fabric_loader_version', cfg.fabricLoaderVersion)
-        replacementProperties.put('supported_minecraft_versions', cfg.supportedMinecraftVersions)
-        replacementProperties.put('minecraft_version_range', cfg.minecraftVersionRange)
-        replacementProperties.put('java_version', cfg.javaVersion.toString())
-        replacementProperties.put('neoforge_version', cfg.neoForgeVersion ?: '')
-        replacementProperties.put('neoforge_version_range', cfg.neoForgeVersionRange ?: (cfg.neoForgeVersion ? "[${cfg.neoForgeVersion},)" : ''))
+repositories {
+    // Add repositories to retrieve artifacts from in here.
+    // You should only use this when depending on other mods because
+    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+    // for more information about repositories.
+    maven {
+        name = "Cloth Config"
+        url = "https://maven.shedaniel.me/"
     }
-
-    loom {
-        fabricLoaderVersion.set(cfg.fabricLoaderVersion)
-    }
-
-    moddevgradle {
-        if (cfg.neoForgeVersion != null) {
-            neoForgeVersion.set(cfg.neoForgeVersion)
-        }
-    }
-}
-
-sourceSets {
-    main {
-        java.setSrcDirs([])
-        resources.setSrcDirs([])
-
-        java.srcDir rootDir.dir('src/main/java')
-        resources.srcDir rootDir.dir('src/main/resources')
-
-        if (activeLoader == 'fabric') {
-            resources.exclude 'META-INF/neoforge.mods.toml'
-        } else if (activeLoader == 'neoforge') {
-            resources.exclude 'fabric.mod.json'
-        }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
     }
 }
 
 dependencies {
-    if (activeLoader == 'fabric') {
-        modstitchModImplementation "net.fabricmc.fabric-api:fabric-api:${cfg.fabricApiVersion}"
-        modstitchModImplementation "me.shedaniel.cloth:cloth-config-fabric:${cfg.clothConfigVersion}"
-        modstitchModCompileOnly "com.terraformersmc:modmenu:${cfg.modMenuVersion}"
-        modstitchModLocalRuntime "com.terraformersmc:modmenu:${cfg.modMenuVersion}"
-    } else if (activeLoader == 'neoforge') {
-        modstitchModImplementation "me.shedaniel.cloth:cloth-config-neoforge:${cfg.clothConfigVersion}"
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Cloth Config
+    implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+
+    // Mod Menu
+    implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
     }
 }
 
+def targetJavaVersion = 25
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.release = cfg.javaVersion
-}
-
-tasks.named('processResources') {
-    inputs.property 'fabric_loader_version', cfg.fabricLoaderVersion
-    inputs.property 'java_version', cfg.javaVersion
-    inputs.property 'minecraft_version_range', cfg.minecraftVersionRange
-    inputs.property 'mod_author', cfg.modAuthor
-    inputs.property 'mod_description', cfg.modDescription
-    inputs.property 'mod_group', cfg.modGroup
-    inputs.property 'mod_id', cfg.modId
-    inputs.property 'mod_license', cfg.modLicense
-    inputs.property 'mod_name', cfg.modName
-    inputs.property 'mod_version', activeVersionString
-    inputs.property 'neoforge_version', cfg.neoForgeVersion ?: ''
-    inputs.property 'neoforge_version_range', cfg.neoForgeVersionRange ?: (cfg.neoForgeVersion ? "[${cfg.neoForgeVersion},)" : '')
-    inputs.property 'supported_minecraft_versions', cfg.supportedMinecraftVersions
-
-    filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml']) {
-        expand(
-                fabric_loader_version: cfg.fabricLoaderVersion,
-                java_version: cfg.javaVersion.toString(),
-                minecraft_version_range: cfg.minecraftVersionRange,
-                mod_author: cfg.modAuthor,
-                mod_description: cfg.modDescription,
-                mod_group: cfg.modGroup,
-                mod_id: cfg.modId,
-                mod_license: cfg.modLicense,
-                mod_name: cfg.modName,
-                mod_version: activeVersionString,
-                neoforge_version: cfg.neoForgeVersion ?: '',
-                neoforge_version_range: cfg.neoForgeVersionRange ?: (cfg.neoForgeVersion ? "[${cfg.neoForgeVersion},)" : ''),
-                supported_minecraft_versions: cfg.supportedMinecraftVersions,
-        )
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
     }
 }
 
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
 }
 
-tasks.withType(Jar).configureEach {
-    archiveBaseName = "${cfg.modName}-${activeLoader}"
-    archiveVersion = "${cfg.modVersion}-${activeLoader}-${cfg.minecraftVersion}"
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
 }
 
-tasks.register('copyToBin', Copy) {
-    group = 'build'
-    description = "Copies the ${activeLoader} aggregate JARs to the bin folder"
-
-    dependsOn modstitch.finalJarTask
-    dependsOn tasks.named('sourcesJar')
-
-    from modstitch.finalJarTask
-    from tasks.named('sourcesJar')
-
-    into binDir
-}
-
-tasks.register('cleanBin', Delete) {
-    group = 'build'
-    description = 'Cleans the bin folder'
-    delete binDir
-}
-
-tasks.named('clean') {
-    dependsOn 'cleanBin'
-}
-
-tasks.register('buildAll') {
-    group = 'build'
-    description = "Builds the active ${activeLoader} aggregate JAR and copies it to the bin folder"
-    dependsOn 'build', 'copyToBin'
-}
-
+// configure the maven publication
 publishing {
     publications {
-        create(activeLoader, MavenPublication) {
-            groupId = cfg.modGroup
-            artifactId = "${cfg.modName}-${activeLoader}"
-            version = activeVersionString
-
-            artifact modstitch.finalJarTask
-            artifact tasks.named('sourcesJar')
-
-            pom {
-                name = "${cfg.modName} ${activeLoader.capitalize()}"
-                description = "${cfg.modDescription} (${activeLoader})"
-            }
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
         }
     }
-}
 
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+    }
+}
