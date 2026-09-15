@@ -2,4 +2,4 @@ First person mode parallax lets you look upside down
 
 Mouse tracking failing at certain angles & sizes
 
-gui hiding sometimes on first open
+gui not unhiding when force closing, causing it to be hidden on open
