@@ -13,12 +13,12 @@ base {
 // Version-specific dependency mappings based on target_version
 def dependencyVersions = [
         "26.2": [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"],
-        "26.3-pre-2": [minecraft: "26.3", fabric: "0.160.5+26.3", cloth_config: "26.3.158", modmenu: "20.0.2"]
+        "26.3": [minecraft: "26.3", fabric: "0.160.5+26.3", cloth_config: "26.3.158", modmenu: "21.0.0-beta.1"]
 ]
 
 // Only apply version-specific logic to Stonecutter version subprojects
 if (project.hasProperty('stonecutter')) {
-    def currentVersions = dependencyVersions[stonecutter.current.version] ?: [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"]
+    def currentVersions = dependencyVersions[stonecutter.current.version]
     project.ext.minecraft_version = currentVersions.minecraft
     project.ext.fabric_version = currentVersions.fabric
     project.ext.cloth_config_version = currentVersions.cloth_config
