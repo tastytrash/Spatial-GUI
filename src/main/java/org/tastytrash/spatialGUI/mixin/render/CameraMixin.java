@@ -33,6 +33,8 @@ public abstract class CameraMixin {
     @Unique private static boolean wasCapturing, isTransitioning;
     @Unique private static final float MAX_YAW_OFFSET = 90f, MAX_PITCH_OFFSET = 180f;
     @Unique private static float smoothedCameraYaw, smoothedCameraPitch;
+    @Unique private static double initialMouseX, initialMouseY;
+    @Unique private static boolean hasMouseMovedSinceScreenOpen = false;
 
     @Inject(method = "alignWithEntity", at = @At("TAIL"))
     private void diegeticInventory$modifyCamera(float partialTicks, CallbackInfo ci) {
@@ -41,8 +43,15 @@ public abstract class CameraMixin {
 
         if (isCapturing && this.entity != null && SpatialGUI.config.enabled) {
             TRANSITION_DURATION_MS = SpatialGUI.config.transitionDurationMs;
-            boolean isFirstPerson = SpatialGUI.config.firstPersonMode || SpatialGUIClient.getSwitchedToFirstPersonDueToBlock();
+            boolean isFirstPerson = (SpatialGUIRenderer.isInventoryScreen() ? SpatialGUI.config.firstPersonModeInventory : SpatialGUI.config.firstPersonModeContainers)
+                    || SpatialGUIClient.getSwitchedToFirstPersonDueToBlock();
             SpatialGUIClient.setEffectiveFirstPersonMode(isFirstPerson);
+
+            if (!wasCapturing) {
+                initialMouseX = Minecraft.getInstance().mouseHandler.xpos();
+                initialMouseY = Minecraft.getInstance().mouseHandler.ypos();
+                hasMouseMovedSinceScreenOpen = false;
+            }
 
             if (!isFirstPerson && !SpatialGUIClient.getSwitchedToFirstPersonDueToBlock()) {
                 this.checkBlockCollision();
@@ -107,21 +116,28 @@ public abstract class CameraMixin {
         float fovMultiplier = calculateFovMultiplier();
         float sideOffsetMultiplier = (float) SpatialGUI.config.autoFovTuning.autoScaleSideOffsetMultiplier;
         float distanceMultiplier = (float) SpatialGUI.config.autoFovTuning.autoScaleDistanceMultiplier;
-        
+
         float fovAdjustment = (1.0f / fovMultiplier) - 1.0f;
         float distanceFovAdjustment = fovAdjustment * distanceMultiplier;
         float sideOffsetFovAdjustment = fovAdjustment * sideOffsetMultiplier;
         
         float distance = isFirstPerson ? 0.0f : Math.clamp((float) SpatialGUI.config.cameraDistance * (1.0f + distanceFovAdjustment), -4, 4);
         float sideOffset = isFirstPerson ? 0.0f : Math.clamp((float) SpatialGUI.config.cameraSideOffset * (1.0f + sideOffsetFovAdjustment), -4, 4);
-        float heightOffset = isFirstPerson ? 1.62f : Math.clamp((float) SpatialGUI.config.cameraHeightOffset, -4, 4);
+        float heightOffset = isFirstPerson ? entity.getEyeHeight() : Math.clamp((float) SpatialGUI.config.cameraHeightOffset, -4, 4);
 
         float yaw, pitch;
         float positionYaw;
 
         Minecraft client = Minecraft.getInstance();
-        float nx = (float) (client.mouseHandler.xpos() / client.getWindow().getScreenWidth()) * 2f - 1f;
-        float ny = (float) (client.mouseHandler.ypos() / client.getWindow().getScreenHeight()) * 2f - 1f;
+        
+        if (!hasMouseMovedSinceScreenOpen) {
+            double mouseDeltaX = Math.abs(client.mouseHandler.xpos() - initialMouseX);
+            double mouseDeltaY = Math.abs(client.mouseHandler.ypos() - initialMouseY);
+            hasMouseMovedSinceScreenOpen = mouseDeltaX > 1.0 || mouseDeltaY > 1.0;
+        }
+        
+        float nx = hasMouseMovedSinceScreenOpen ? (float) (client.mouseHandler.xpos() / client.getWindow().getScreenWidth()) * 2f - 1f : 0f;
+        float ny = hasMouseMovedSinceScreenOpen ? (float) (client.mouseHandler.ypos() / client.getWindow().getScreenHeight()) * 2f - 1f : 0f;
 
         if (isFirstPerson) {
 

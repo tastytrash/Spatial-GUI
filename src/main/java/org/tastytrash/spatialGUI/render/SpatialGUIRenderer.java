@@ -1,7 +1,7 @@
 package org.tastytrash.spatialGUI.render;
 
 //? > 26.2 {
-import com.mojang.renderpearl.api.GpuFormat;
+/*import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
@@ -9,8 +9,8 @@ import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
-//? } else {
-/*import com.mojang.blaze3d.GpuFormat;
+*///? } else {
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -18,7 +18,7 @@ import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
-*///? }
+//? }
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,6 +28,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.StagedVertexBuffer;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -48,6 +49,7 @@ public class SpatialGUIRenderer {
 
     private static TextureTarget inventoryTarget;
     private Screen hookedScreen;
+    private static boolean isInventoryScreen;
     private Vec3 cameraStartPos;
     private float cameraStartYRot;
     private static boolean wasTrue;
@@ -84,6 +86,7 @@ public class SpatialGUIRenderer {
         }
 
         hookedScreen = screen;
+        isInventoryScreen = screen instanceof InventoryScreen || screen.getClass().getName().contains("InventoryScreen");
         screenOpenTime = System.currentTimeMillis();
 
         var client = Minecraft.getInstance();
@@ -125,7 +128,7 @@ public class SpatialGUIRenderer {
             }
         }
 
-        boolean isFirstPerson = SpatialGUI.config.firstPersonMode
+        boolean isFirstPerson = (hookedScreen instanceof InventoryScreen ? SpatialGUI.config.firstPersonModeInventory : SpatialGUI.config.firstPersonModeContainers)
                 || SpatialGUIClient.getSwitchedToFirstPersonDueToBlock();
         SpatialGUIClient.setEffectiveFirstPersonMode(isFirstPerson);
 
@@ -135,9 +138,27 @@ public class SpatialGUIRenderer {
                 removedScreen -> {
                     if (hookedScreen == removedScreen) {
                         hookedScreen = null;
+                        isInventoryScreen = false;
                         cameraStartPos = null;
                         headLockInitialized = false;
                         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
+
+                        if (SpatialGUIClient.getEffectiveFirstPersonMode() && SpatialGUI.config.keepFirstPersonCameraAngle) {
+                            float cameraYaw = Minecraft.getInstance().gameRenderer.mainCamera().yRot();
+                            float cameraPitch = Minecraft.getInstance().gameRenderer.mainCamera().xRot();
+                            if (player != null) {
+                                player.setYRot(cameraYaw);
+                                player.setXRot(cameraPitch);
+                                player.yRotO = cameraYaw;
+                                player.xRotO = cameraPitch;
+
+                                player.yBob = cameraYaw;
+                                player.xBob = cameraPitch;
+                                player.yBobO = cameraYaw;
+                                player.xBobO = cameraPitch;
+                            }
+                        }
+
                         if (hadHideHUD != client.gui.hud.isHidden()) {
                             client.gui.hud.toggle();
                         }
@@ -194,12 +215,12 @@ public class SpatialGUIRenderer {
                     width,
                     height,
                     //? if > 26.2 {
-                    GpuFormat.RGBA8_UNORM,
+                    /*GpuFormat.RGBA8_UNORM,
                     GpuFormat.D16_UNORM
-                    //? } else {
-                    /*true,
+                    *///? } else {
+                    true,
                     GpuFormat.RGBA8_UNORM
-                    *///? }
+                    //? }
             );
             return;
         }
@@ -242,6 +263,10 @@ public class SpatialGUIRenderer {
 
     public float getCameraStartYRot() {
         return cameraStartYRot;
+    }
+
+    public static boolean isInventoryScreen() {
+        return isInventoryScreen;
     }
 
     public void renderInWorld(PoseStack matrices) {
@@ -381,17 +406,17 @@ public class SpatialGUIRenderer {
                 java.util.OptionalDouble.empty()
         )) {
             //? if > 26.2 {
-            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
-            //? } else {
-             /*renderPass.setPipeline(pipeline);
-            *///? }
+            /*renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
+            *///? } else {
+             renderPass.setPipeline(pipeline);
+            //? }
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
             //? if > 26.2 {
-            renderPass.setUniform
-            //? } else {
-            /*renderPass.bindTexture
-            *///? }
+            /*renderPass.setUniform
+            *///? } else {
+            renderPass.bindTexture
+            //? }
                     ("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                     AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
                     filterMode, filterMode, SpatialGUI.config.useAnisotropicFiltering

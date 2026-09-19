@@ -13,7 +13,11 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
-    public boolean firstPersonMode = false;
+    public boolean firstPersonModeInventory = false;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean firstPersonModeContainers = false;
 
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
@@ -197,6 +201,10 @@ public class SpatialGUIConfig implements ConfigData {
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
     public boolean disableFirstPersonParallax = false;
+
+    @ConfigEntry.Category("firstPersonCamera")
+    @ConfigEntry.Gui.Tooltip
+    public boolean keepFirstPersonCameraAngle = false;
 
     // animations
     @ConfigEntry.Category("animations")

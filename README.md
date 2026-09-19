@@ -21,6 +21,7 @@ Fabric API, Cloth Config, Mod Menu
 ## Configuration
 
 Access config via Mod Menu or edit the config file.
+It is recommended to turn 'Show Vignette' off in the Minecraft video settings, as opening the gui will hide it
 
 ## Fairness
 
@@ -31,3 +32,4 @@ This mod is purely visual and tries not provide any gameplay advantages. It only
 ## Other Notes
 *   This was inspired by the Dead Space inventory GUI.
 *   This mod may not have great compatibility with other mods that mess with the player GUI/HUD, *be warned*.
+*   Feel free to suggest features or report bugs on the github

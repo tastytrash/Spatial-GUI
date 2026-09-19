@@ -5,8 +5,8 @@
   
   "text.autoconfig.spatial-gui.category.general": "General",
   "text.autoconfig.spatial-gui.category.rendering": "Rendering",
-  "text.autoconfig.spatial-gui.category.thirdPersonScreen": "Third Person Screen",
-  "text.autoconfig.spatial-gui.category.firstPersonScreen": "First Person Screen",
+  "text.autoconfig.spatial-gui.category.thirdPersonScreen": "TP Screen",
+  "text.autoconfig.spatial-gui.category.firstPersonScreen": "FP Screen",
   "text.autoconfig.spatial-gui.category.thirdPersonCamera": "TP Camera",
   "text.autoconfig.spatial-gui.category.firstPersonCamera": "FP Camera",
   "text.autoconfig.spatial-gui.category.animations": "Animations",
@@ -14,8 +14,11 @@
   "text.autoconfig.spatial-gui.option.enabled": "Enabled",
   "text.autoconfig.spatial-gui.option.enabled.@Tooltip": "Enable or disable the mod",
 
-  "text.autoconfig.spatial-gui.option.firstPersonMode": "First Person Mode",
-  "text.autoconfig.spatial-gui.option.firstPersonMode.@Tooltip": "Use first person camera mode only",
+  "text.autoconfig.spatial-gui.option.firstPersonModeInventory": "First Person Mode (Inventory)",
+  "text.autoconfig.spatial-gui.option.firstPersonModeInventory.@Tooltip": "Use first person camera mode for the inventory screen",
+
+  "text.autoconfig.spatial-gui.option.firstPersonModeContainers": "First Person Mode (Other)",
+  "text.autoconfig.spatial-gui.option.firstPersonModeContainers.@Tooltip": "Use first person camera mode for non-inventory screens",
 
   "text.autoconfig.spatial-gui.option.autoCalculateGuiScale": "Auto Calculate GUI Scale",
   "text.autoconfig.spatial-gui.option.autoCalculateGuiScale.@Tooltip": "Auto-calculate GUI scale based on window height",
@@ -139,6 +142,9 @@
 
   "text.autoconfig.spatial-gui.option.disableFirstPersonParallax": "Disable Parallax",
   "text.autoconfig.spatial-gui.option.disableFirstPersonParallax.@Tooltip": "Disable parallax effect",
+
+  "text.autoconfig.spatial-gui.option.keepFirstPersonCameraAngle": "Keep First Person Camera Angle",
+  "text.autoconfig.spatial-gui.option.keepFirstPersonCameraAngle.@Tooltip": "Keep the camera angle when closing the GUI. \nWARNING: This affects your server-side rotation \nand may be disallowed by servers.",
 
   "text.autoconfig.spatial-gui.option.enableFadeAnimation": "Enable Fade Animation",
   "text.autoconfig.spatial-gui.option.enableFadeAnimation.@Tooltip": "Enable fade animation when opening inventory screens",

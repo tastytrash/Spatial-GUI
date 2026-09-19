@@ -2,4 +2,8 @@ First person mode parallax lets you look upside down
 
 Mouse tracking failing at certain angles & sizes
 
-gui not unhiding when force closing, causing it to be hidden on open
+GUI not unhiding when changing window size and then closing
+
+Vignette not rendering
+
+Minecraft's water effects not applying properly when in the menu with velocity underwater
