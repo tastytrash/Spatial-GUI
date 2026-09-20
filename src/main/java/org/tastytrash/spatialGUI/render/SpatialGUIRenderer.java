@@ -39,6 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.compat.BetterF1Compat;
 import org.tastytrash.spatialGUI.util.MathUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
@@ -94,12 +95,16 @@ public class SpatialGUIRenderer {
         hadHideHUD = hud.isHidden();
         hadDebug = client.debugEntries.isOverlayVisible();
 
+        if (BetterF1Compat.isLoaded()) {
+            BetterF1Compat.saveState();
+        }
+
         var player = client.player;
         if (player != null && Minecraft.getInstance().level != null) {
             float thirdPersonDistance = (float) SpatialGUI.config.cameraDistance;
             float thirdPersonSideOffset = (float) SpatialGUI.config.cameraSideOffset;
             float thirdPersonHeightOffset = (float) SpatialGUI.config.cameraHeightOffset;
-    float thirdPersonYaw = player .getYRot();
+            float thirdPersonYaw = player .getYRot();
             float thirdPersonYawRadians = (float) Math.toRadians(thirdPersonYaw);
 
             double thirdPersonCamX = player.getX() + Math.sin(thirdPersonYawRadians) * thirdPersonDistance + Math.cos(thirdPersonYawRadians) * thirdPersonSideOffset;
@@ -159,8 +164,12 @@ public class SpatialGUIRenderer {
                             }
                         }
 
-                        if (hadHideHUD != client.gui.hud.isHidden()) {
-                            client.gui.hud.toggle();
+                        if (!BetterF1Compat.isLoaded()) {
+                            if (hadHideHUD != client.gui.hud.isHidden()) {
+                                client.gui.hud.toggle();
+                            }
+                        } else {
+                            BetterF1Compat.restoreState();
                         }
                         if (hadDebug != client.debugEntries.isOverlayVisible()) {
                             client.debugEntries.toggleDebugOverlay();
@@ -250,7 +259,11 @@ public class SpatialGUIRenderer {
             cameraStartPos = Minecraft.getInstance().gameRenderer.mainCamera().position();
             cameraStartYRot = Minecraft.getInstance().gameRenderer.mainCamera().yRot();
             wasTrue = true;
-            if (!hud.isHidden()) hud.toggle();
+            if (!BetterF1Compat.isLoaded()) {
+                if (!hud.isHidden()) hud.toggle();
+            } else {
+                BetterF1Compat.hide();
+            }
             if (client.debugEntries.isOverlayVisible()) client.debugEntries.toggleDebugOverlay();
         }
 
