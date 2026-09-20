@@ -47,7 +47,11 @@ public class WindowMixin {
 
     @Unique
     private static boolean shouldOverride() {
-        Screen screen = Minecraft.getInstance().gui.screen();
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.gui == null) {
+            return false;
+        }
+        Screen screen = mc.gui.screen();
         return screen instanceof AbstractContainerScreen<?>
                 && SpatialGUI.config.enabled;
     }
