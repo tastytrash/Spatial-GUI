@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(Window.class)
 public class WindowMixin {
@@ -48,11 +49,9 @@ public class WindowMixin {
     @Unique
     private static boolean shouldOverride() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.gui == null) {
-            return false;
-        }
+        if (mc.gui == null) return false;
+        if (SpatialGUIRenderer.suppressWindowOverride) return false;
         Screen screen = mc.gui.screen();
-        return screen instanceof AbstractContainerScreen<?>
-                && SpatialGUI.config.enabled;
+        return screen instanceof AbstractContainerScreen<?> && SpatialGUI.config.enabled;
     }
 }

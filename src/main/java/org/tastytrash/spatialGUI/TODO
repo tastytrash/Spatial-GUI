@@ -1,16 +1,16 @@
 -------- HIGH PRIORITY ---------------
 
-Only intercept the actual container screen in the framebuffer
+GUI scale being overwritten, try and only change the gui of the container/inventory
 
 Add a mirror camera & screen config option
 
-Add a config option to stop the hiding of the GUI
+Add a config option to hide the GUI
+
+Config to use the game cursor instead of mouse
 
 -------- MID PRIORITY ---------------
 
-GUI not unhiding when changing window size and then closing
-
-Vignette not rendering
+GUI not unhiding when changing window size and then closing (maybe not anymore?)
 
 -------- LOW PRIORITY ---------------
 
@@ -18,8 +18,7 @@ Mouse tracking failing at certain angles & sizes
 
 First person mode parallax lets you look upside down
 
-Minecraft's water effects not applying properly when in the menu with velocity underwater
-
+Minecraft's water effects not applying properly when in the menu with velocity underwater (is this solveable?)
 
 
 

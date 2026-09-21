@@ -9,6 +9,7 @@ import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(MouseHandler.class)
@@ -39,7 +40,10 @@ public class MouseHandlerMixin {
             return original;
         }
 
-        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        double guiScale = SpatialGUI.config.autoCalculateGuiScale
+                ? SpatialGUI.config.calculateAutoGuiScale(Minecraft.getInstance().getWindow().getHeight())
+                : SpatialGUI.config.guiScale;
+
         Vector2d mouse = SpatialGUIRenderer.getInventoryMousePosition(
                 Minecraft.getInstance().mouseHandler.xpos(),
                 Minecraft.getInstance().mouseHandler.ypos()

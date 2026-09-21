@@ -4,12 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.player.AbstractClientPlayer;
 //? if > 26.2 {
-/*import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
-*///? } else {
- import net.minecraft.client.renderer.ItemInHandRenderer;
-//? }
+//? } else {
+ /*import net.minecraft.client.renderer.ItemInHandRenderer;
+*///? }
 
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
@@ -24,7 +24,7 @@ import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 
 //? if > 26.2 {
-/*@Mixin(FirstPersonHandsAndItemsRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class HandRendererMixin {
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$hideShield(PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState state, float partialTicks, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
@@ -35,12 +35,9 @@ public class HandRendererMixin {
             }
         }
     }
-
-
-
 }
-*///? } else {
-@Mixin(ItemInHandRenderer.class)
+//? } else {
+/*@Mixin(ItemInHandRenderer.class)
 public class HandRendererMixin {
 
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
@@ -53,4 +50,4 @@ public class HandRendererMixin {
         }
     }
 }
-//? }
+*///? }

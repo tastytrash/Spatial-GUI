@@ -8,6 +8,7 @@
   "client": [
     "client.AbstractRecipeBookScreenMixin",
     "client.OptionsMixin",
+    "gui.GuiMixin",
     "gui.GuiRendererMixin",
     "gui.MouseHandlerMixin",
     "gui.ScreenMixin",

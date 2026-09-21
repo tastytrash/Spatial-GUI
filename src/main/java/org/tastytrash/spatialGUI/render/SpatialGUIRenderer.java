@@ -1,7 +1,7 @@
 package org.tastytrash.spatialGUI.render;
 
 //? > 26.2 {
-/*import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
@@ -9,8 +9,8 @@ import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
-*///? } else {
-import com.mojang.blaze3d.GpuFormat;
+//? } else {
+/*import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -18,7 +18,7 @@ import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
-//? }
+*///? }
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -26,6 +26,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.render.pip.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -43,10 +44,19 @@ import org.tastytrash.spatialGUI.compat.BetterF1Compat;
 import org.tastytrash.spatialGUI.util.MathUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import java.util.List;
 
 import java.lang.Math;
 
 public class SpatialGUIRenderer {
+
+    private GuiRenderState screenRenderState;
+    private GuiRenderer screenGuiRenderer;
+    public static boolean isExtractingIsolatedScreen = false;
+    public static boolean suppressWindowOverride = false;
 
     private static TextureTarget inventoryTarget;
     private Screen hookedScreen;
@@ -91,13 +101,13 @@ public class SpatialGUIRenderer {
         screenOpenTime = System.currentTimeMillis();
 
         var client = Minecraft.getInstance();
-        var hud = client.gui.hud;
-        hadHideHUD = hud.isHidden();
-        hadDebug = client.debugEntries.isOverlayVisible();
-
-        if (BetterF1Compat.isLoaded()) {
-            BetterF1Compat.saveState();
-        }
+//        var hud = client.gui.hud;
+//        hadHideHUD = hud.isHidden();
+//        hadDebug = client.debugEntries.isOverlayVisible();
+//
+//        if (BetterF1Compat.isLoaded()) {
+//            BetterF1Compat.saveState();
+//        }
 
         var player = client.player;
         if (player != null && Minecraft.getInstance().level != null) {
@@ -164,16 +174,16 @@ public class SpatialGUIRenderer {
                             }
                         }
 
-                        if (!BetterF1Compat.isLoaded()) {
-                            if (hadHideHUD != client.gui.hud.isHidden()) {
-                                client.gui.hud.toggle();
-                            }
-                        } else {
-                            BetterF1Compat.restoreState();
-                        }
-                        if (hadDebug != client.debugEntries.isOverlayVisible()) {
-                            client.debugEntries.toggleDebugOverlay();
-                        }
+//                        if (!BetterF1Compat.isLoaded()) {
+//                            if (hadHideHUD != client.gui.hud.isHidden()) {
+//                                client.gui.hud.toggle();
+//                            }
+//                        } else {
+//                            BetterF1Compat.restoreState();
+//                        }
+//                        if (hadDebug != client.debugEntries.isOverlayVisible()) {
+//                            client.debugEntries.toggleDebugOverlay();
+//                        }
                     }
                 }
         );
@@ -224,12 +234,12 @@ public class SpatialGUIRenderer {
                     width,
                     height,
                     //? if > 26.2 {
-                    /*GpuFormat.RGBA8_UNORM,
+                    GpuFormat.RGBA8_UNORM,
                     GpuFormat.D16_UNORM
-                    *///? } else {
-                    true,
+                    //? } else {
+                    /*true,
                     GpuFormat.RGBA8_UNORM
-                    //? }
+                    *///? }
             );
             return;
         }
@@ -259,12 +269,12 @@ public class SpatialGUIRenderer {
             cameraStartPos = Minecraft.getInstance().gameRenderer.mainCamera().position();
             cameraStartYRot = Minecraft.getInstance().gameRenderer.mainCamera().yRot();
             wasTrue = true;
-            if (!BetterF1Compat.isLoaded()) {
-                if (!hud.isHidden()) hud.toggle();
-            } else {
-                BetterF1Compat.hide();
-            }
-            if (client.debugEntries.isOverlayVisible()) client.debugEntries.toggleDebugOverlay();
+//            if (!BetterF1Compat.isLoaded()) {
+//                if (!hud.isHidden()) hud.toggle();
+//            } else {
+//                BetterF1Compat.hide();
+//            }
+//            if (client.debugEntries.isOverlayVisible()) client.debugEntries.toggleDebugOverlay();
         }
 
         return true;
@@ -419,17 +429,17 @@ public class SpatialGUIRenderer {
                 java.util.OptionalDouble.empty()
         )) {
             //? if > 26.2 {
-            /*renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
-            *///? } else {
-             renderPass.setPipeline(pipeline);
-            //? }
+            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
+            //? } else {
+             /*renderPass.setPipeline(pipeline);
+            *///? }
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
             //? if > 26.2 {
-            /*renderPass.setUniform
-            *///? } else {
-            renderPass.bindTexture
-            //? }
+            renderPass.setUniform
+            //? } else {
+            /*renderPass.bindTexture
+            *///? }
                     ("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                     AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
                     filterMode, filterMode, SpatialGUI.config.useAnisotropicFiltering
@@ -500,5 +510,53 @@ public class SpatialGUIRenderer {
                 u * inventoryTarget.width,
                 (1.0 - v) * inventoryTarget.height
         );
+    }
+
+    private void ensureScreenGuiRenderer() {
+        if (screenGuiRenderer == null) {
+            Minecraft mc = Minecraft.getInstance();
+            screenRenderState = new GuiRenderState();
+            screenGuiRenderer = new GuiRenderer(
+                    screenRenderState,
+                    mc.gameRenderer.featureRenderDispatcher(),
+                    List.of(
+                            new GuiEntityRenderer(mc.getEntityRenderDispatcher()),
+                            new GuiSkinRenderer(),
+                            new GuiBookModelRenderer(),
+                            new GuiBannerResultRenderer(mc.getAtlasManager()),
+                            new GuiProfilerChartRenderer()
+                    )
+            );
+        }
+    }
+
+    public GuiRenderer getScreenGuiRenderer() {
+        ensureScreenGuiRenderer();
+        return screenGuiRenderer;
+    }
+
+    public void extractIsolatedScreen(Screen screen, float partialTick) {
+        ensureScreenGuiRenderer();
+        Minecraft mc = Minecraft.getInstance();
+
+        Vector2d mapped = getInventoryMousePosition(mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
+        int mouseX, mouseY;
+        if (mapped != null) {
+            double guiScale = mc.getWindow().getGuiScale();
+            mouseX = (int) (mapped.x / guiScale);
+            mouseY = (int) (mapped.y / guiScale);
+        } else {
+            mouseX = -1;
+            mouseY = -1;
+        }
+
+        isExtractingIsolatedScreen = true;
+        GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
+        screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
+        isExtractingIsolatedScreen = false;
+    }
+
+    public Screen getHookedScreen() {
+        return hookedScreen;
     }
 }
