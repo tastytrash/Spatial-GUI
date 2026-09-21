@@ -1,24 +1,30 @@
 -------- HIGH PRIORITY ---------------
 
-GUI scale being overwritten, try and only change the gui of the container/inventory
+Code refactoring and simplifying
 
-Add a mirror camera & screen config option
+Check the default config values
 
-Add a config option to hide the GUI
+Mouse position when going off screen should stay at the last known position (it used to be, what changed?)
 
-Config to use the game cursor instead of mouse
+Add a mirror third person camera & screen config option
 
 -------- MID PRIORITY ---------------
 
-GUI not unhiding when changing window size and then closing (maybe not anymore?)
+Mouse tracking failing at certain angles/sizes/FOVs
+    - potentially impossible? the current way the mouse is calculated is through the 3d points position in screenspace,
+      but past 180 fov, I don't believe these are calculatable, therefore the only solution may be to reduce the screen size
+      in first person
+
+Make the screen position unaffected by the bob (possibly too difficult?)
 
 -------- LOW PRIORITY ---------------
 
-Mouse tracking failing at certain angles & sizes
+Replace accessor with accesswidener
 
-First person mode parallax lets you look upside down
+Minecraft's water effects not applying properly when in the menu with velocity underwater (is this solvable?)
 
-Minecraft's water effects not applying properly when in the menu with velocity underwater (is this solveable?)
+----- POSSIBLY SOLVED/NOT NEEDED ------
 
+GUI not unhiding when changing window size and then closing
 
-
+Add a config option to hide the GUI

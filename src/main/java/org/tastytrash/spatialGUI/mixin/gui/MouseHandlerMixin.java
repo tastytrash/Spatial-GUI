@@ -9,6 +9,8 @@ import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
@@ -44,10 +46,17 @@ public class MouseHandlerMixin {
                 ? SpatialGUI.config.calculateAutoGuiScale(Minecraft.getInstance().getWindow().getHeight())
                 : SpatialGUI.config.guiScale;
 
-        Vector2d mouse = SpatialGUIRenderer.getInventoryMousePosition(
-                Minecraft.getInstance().mouseHandler.xpos(),
-                Minecraft.getInstance().mouseHandler.ypos()
-        );
+        double srcX, srcY;
+        if (SpatialGUIRenderer.isCrosshairModeActive()) {
+            Minecraft mc = Minecraft.getInstance();
+            srcX = mc.getWindow().getScreenWidth() / 2.0;
+            srcY = mc.getWindow().getScreenHeight() / 2.0;
+        } else {
+            srcX = Minecraft.getInstance().mouseHandler.xpos();
+            srcY = Minecraft.getInstance().mouseHandler.ypos();
+        }
+
+        Vector2d mouse = SpatialGUIRenderer.getInventoryMousePosition(srcX, srcY);
 
         if (mouse == null) {
             return isX ? lastPosX : lastPosY;
@@ -56,6 +65,13 @@ public class MouseHandlerMixin {
         lastPosX = mouse.x / guiScale;
         lastPosY = mouse.y / guiScale;
 
-        return isX ? mouse.x / guiScale + 0.01 : mouse.y / guiScale;
+        return isX ? mouse.x / guiScale + 1.0 : mouse.y / guiScale;
+    }
+
+    @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
+    private void spatialGUI$suppressPlayerTurnWhileCrosshair(double mousea, CallbackInfo ci) {
+        if (SpatialGUIRenderer.isCrosshairModeActive()) {
+            ci.cancel();
+        }
     }
 }

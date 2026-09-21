@@ -19,6 +19,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 *///? }
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -41,6 +42,7 @@ import org.joml.*;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.BetterF1Compat;
+import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.util.MathUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
@@ -57,6 +59,7 @@ public class SpatialGUIRenderer {
     private GuiRenderer screenGuiRenderer;
     public static boolean isExtractingIsolatedScreen = false;
     public static boolean suppressWindowOverride = false;
+    private static boolean weGrabbedMouse = false;
 
     private static TextureTarget inventoryTarget;
     private Screen hookedScreen;
@@ -152,6 +155,7 @@ public class SpatialGUIRenderer {
         ScreenEvents.remove(screen).register(
                 removedScreen -> {
                     if (hookedScreen == removedScreen) {
+                        releaseMouseFromFirstPerson();
                         hookedScreen = null;
                         isInventoryScreen = false;
                         cameraStartPos = null;
@@ -322,6 +326,7 @@ public class SpatialGUIRenderer {
         boolean isFirstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         float yaw = player.getYRot();
         float pitch = isFirstPerson ? player.getXRot() : 0;
+        pitch = Math.clamp(pitch, (float) -SpatialGUI.config.firstPersonPitchClamp, (float) SpatialGUI.config.firstPersonPitchClamp);
         float yawRadians = (float) Math.toRadians(yaw);
         float pitchRadians = (float) Math.toRadians(pitch);
 
@@ -539,7 +544,16 @@ public class SpatialGUIRenderer {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
 
-        Vector2d mapped = getInventoryMousePosition(mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
+        double srcX, srcY;
+        if (isCrosshairModeActive()) {
+            srcX = mc.getWindow().getScreenWidth() / 2.0;
+            srcY = mc.getWindow().getScreenHeight() / 2.0;
+        } else {
+            srcX = mc.mouseHandler.xpos();
+            srcY = mc.mouseHandler.ypos();
+        }
+
+        Vector2d mapped = getInventoryMousePosition(srcX, srcY);
         int mouseX, mouseY;
         if (mapped != null) {
             double guiScale = mc.getWindow().getGuiScale();
@@ -555,8 +569,56 @@ public class SpatialGUIRenderer {
         screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
         isExtractingIsolatedScreen = false;
     }
-
     public Screen getHookedScreen() {
         return hookedScreen;
+    }
+
+    public static boolean isCrosshairModeActive() {
+        return SpatialGUI.config.useCrosshairForFirstPerson
+                && SpatialGUIClient.getEffectiveFirstPersonMode()
+                && SpatialGUIClient.renderer() != null
+                && SpatialGUIClient.renderer().getHookedScreen() != null;
+    }
+
+    private void grabMouseForFirstPerson() {
+        Minecraft mc = Minecraft.getInstance();
+        MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
+        if (!accessor.getMouseGrabbed()) {
+            accessor.setMouseGrabbed(true);
+            double centerX = mc.getWindow().getScreenWidth() / 2.0;
+            double centerY = mc.getWindow().getScreenHeight() / 2.0;
+            //? if > 26.2 {
+            InputConstants.grabMouse(mc.getWindow(), centerX, centerY);
+            //? } else {
+            // InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_DISABLED, centerX, centerY);
+            //? }
+            mc.mouseHandler.setIgnoreFirstMove();
+        }
+        weGrabbedMouse = true;
+    }
+
+    private void releaseMouseFromFirstPerson() {
+        if (!weGrabbedMouse) return;
+        Minecraft mc = Minecraft.getInstance();
+        MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
+        if (accessor.getMouseGrabbed()) {
+            accessor.setMouseGrabbed(false);
+            double centerX = mc.getWindow().getScreenWidth() / 2.0;
+            double centerY = mc.getWindow().getScreenHeight() / 2.0;
+            //? if > 26.2 {
+            InputConstants.releaseMouse(mc.getWindow(), centerX, centerY);
+            //? } else {
+            // InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, centerX, centerY);
+            //? }
+        }
+        weGrabbedMouse = false;
+    }
+
+    public void updateMouseGrabForFirstPerson(boolean isFirstPerson) {
+        if (!SpatialGUI.config.useCrosshairForFirstPerson || !isFirstPerson) {
+            releaseMouseFromFirstPerson();
+        } else {
+            grabMouseForFirstPerson();
+        }
     }
 }

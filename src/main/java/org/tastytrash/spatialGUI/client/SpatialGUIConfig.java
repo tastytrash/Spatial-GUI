@@ -140,7 +140,7 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("firstPersonScreen")
     @ConfigEntry.Gui.Tooltip
-    public double firstPersonScreenScale = 2.3;
+    public double firstPersonScreenScale = 1.8;
 
     // thirdPersonCamera
     @ConfigEntry.Category("thirdPersonCamera")
@@ -193,6 +193,11 @@ public class SpatialGUIConfig implements ConfigData {
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
     public boolean useCrosshairForFirstPerson = false;
+
+    @ConfigEntry.Category("firstPersonCamera")
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 90)
+    public int firstPersonPitchClamp = 40;
 
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip

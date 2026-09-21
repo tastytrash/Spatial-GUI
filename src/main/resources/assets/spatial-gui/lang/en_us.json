@@ -81,7 +81,7 @@
   "text.autoconfig.spatial-gui.option.screenPitchOffset.@Tooltip": "Vertical screen rotation angle",
 
   "text.autoconfig.spatial-gui.option.screenScale": "Screen Scale",
-  "text.autoconfig.spatial-gui.option.screenScale.@Tooltip": "Scale multiplier for the screen",
+  "text.autoconfig.spatial-gui.option.screenScale.@Tooltip": "Scale multiplier for the screen\nWARNING: Values too large may cause mouse tracking to fail",
 
   "text.autoconfig.spatial-gui.option.cameraDistance": "Distance",
   "text.autoconfig.spatial-gui.option.cameraDistance.@Tooltip": "Distance from the player (-4 to 4)",
@@ -132,7 +132,7 @@
   "text.autoconfig.spatial-gui.option.firstPersonScreenPitchOffset.@Tooltip": "Vertical screen rotation angle",
 
   "text.autoconfig.spatial-gui.option.firstPersonScreenScale": "Screen Scale",
-  "text.autoconfig.spatial-gui.option.firstPersonScreenScale.@Tooltip": "The scale factor of the screen",
+  "text.autoconfig.spatial-gui.option.firstPersonScreenScale.@Tooltip": "Scale multiplier for the screen\nWARNING: Values too large may cause mouse tracking to fail",
 
   "text.autoconfig.spatial-gui.option.firstPersonMouseSensitivityYaw": "Mouse Sensitivity Yaw",
   "text.autoconfig.spatial-gui.option.firstPersonMouseSensitivityYaw.@Tooltip": "Horizontal mouse sensitivity",
@@ -144,7 +144,13 @@
   "text.autoconfig.spatial-gui.option.disableFirstPersonParallax.@Tooltip": "Disable parallax effect",
 
   "text.autoconfig.spatial-gui.option.keepFirstPersonCameraAngle": "Keep First Person Camera Angle",
-  "text.autoconfig.spatial-gui.option.keepFirstPersonCameraAngle.@Tooltip": "Keep the camera angle when closing the GUI. \nWARNING: This affects your server-side rotation \nand may be disallowed by servers.",
+  "text.autoconfig.spatial-gui.option.keepFirstPersonCameraAngle.@Tooltip": "Keep the camera angle when closing the GUI\nWARNING: This affects your server-side rotation \nand may be disallowed by servers",
+
+  "text.autoconfig.spatial-gui.option.useCrosshairForFirstPerson": "Use Crosshair for First Person",
+  "text.autoconfig.spatial-gui.option.useCrosshairForFirstPerson.@Tooltip": "Use the in-game crosshair position for mouse interaction instead of the actual mouse cursor",
+
+  "text.autoconfig.spatial-gui.option.firstPersonPitchClamp": "First Person Pitch Clamp",
+  "text.autoconfig.spatial-gui.option.firstPersonPitchClamp.@Tooltip": "Maximum pitch angle for first person screen spawning",
 
   "text.autoconfig.spatial-gui.option.enableFadeAnimation": "Enable Fade Animation",
   "text.autoconfig.spatial-gui.option.enableFadeAnimation.@Tooltip": "Enable fade animation when opening inventory screens",
