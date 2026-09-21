@@ -31,7 +31,7 @@ public class GuiRendererMixin {
         }
 
         if ((Object) this == renderer.getScreenGuiRenderer()) {
-            return renderer.getTarget();
+            return renderer.getTargetManager().getTarget();
         }
 
         return original;

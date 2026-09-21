@@ -46,7 +46,7 @@ public class GameRendererMixin {
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$overrideHideHand(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer.shouldCapture() && SpatialGUI.config.enabled && !SpatialGUIRenderer.hadHideHUD) {
+        if (renderer.shouldCapture() && SpatialGUI.config.enabled) {
             this.gameRenderState.guiRenderState.isHudHidden = false;
 
             if (SpatialGUIClient.getEffectiveFirstPersonMode() && SpatialGUI.config.hideHandsInFirstPerson) {

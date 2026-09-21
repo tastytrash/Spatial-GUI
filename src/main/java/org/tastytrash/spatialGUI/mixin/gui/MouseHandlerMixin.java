@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
+import org.tastytrash.spatialGUI.util.RenderUtil;
 
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin {
@@ -56,11 +58,18 @@ public class MouseHandlerMixin {
             srcY = Minecraft.getInstance().mouseHandler.ypos();
         }
 
-        Vector2d mouse = SpatialGUIRenderer.getInventoryMousePosition(srcX, srcY);
+        var renderer = SpatialGUIClient.renderer();
+        if (renderer == null) return original;
+        
+        Vector2d mouse = RenderUtil.getInventoryMousePosition(srcX, srcY, renderer.getScreenCorners(), renderer.getTargetManager().getInventoryTarget());
 
         if (mouse == null) {
+            System.out.println("NULL: " + lastPosX + "-" + lastPosY);
             return isX ? lastPosX : lastPosY;
+        } else {
+            System.out.println(lastPosX + "-" + lastPosY);
         }
+
 
         lastPosX = mouse.x / guiScale;
         lastPosY = mouse.y / guiScale;
