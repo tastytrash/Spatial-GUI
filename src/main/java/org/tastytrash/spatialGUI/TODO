@@ -24,3 +24,10 @@ Minecraft's water effects not applying properly when in the menu with velocity u
 ---- LONG TERM IDEAS -----
 
 If the mod is installed on server and client, let other people see each others inventories? maybe just a silhouette
+
+
+
+  Classes with fabric imports:
+SpatialGUI
+SpatialGUIClient
+SpatialGUIRenderer
