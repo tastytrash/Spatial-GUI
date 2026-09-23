@@ -192,7 +192,7 @@ public class SpatialGUIConfig implements ConfigData {
     // firstPersonCamera
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
-    public boolean useCrosshairForFirstPerson = false;
+    public boolean useCrosshairForFirstPerson = true;
 
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
@@ -213,7 +213,7 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
-    public boolean keepFirstPersonCameraAngle = false;
+    public boolean keepFirstPersonCameraAngle = true;
 
     // animations
     @ConfigEntry.Category("animations")

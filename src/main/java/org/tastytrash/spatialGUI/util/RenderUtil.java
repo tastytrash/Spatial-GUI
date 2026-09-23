@@ -95,88 +95,72 @@ public final class RenderUtil {
         addQuadVertex(buffer, pose, -halfWidth, halfHeight, 0.0F, 0.0F, 1.0F);
     }
 
-    public static Vector3f[] createScreenCorners(float aspect) {
-        float halfWidth = aspect * 0.5F;
-        float halfHeight = 0.5F;
-        return new Vector3f[] {
-                new Vector3f(-halfWidth, -halfHeight, 0.0F),
-                new Vector3f(halfWidth, -halfHeight, 0.0F),
-                new Vector3f(halfWidth, halfHeight, 0.0F),
-                new Vector3f(-halfWidth, halfHeight, 0.0F)
-        };
+    public record QuadBasis(Vector3f centerOffset, Vector3f right, Vector3f up, Vector3f normal, float halfWidth, float halfHeight) {}
+
+    public static QuadBasis computeQuadBasis(Matrix4f worldPose, float aspect, float scale) {
+        Vector3f centerOffset = worldPose.transformPosition(new Vector3f(0f, 0f, 0f), new Vector3f());
+        Vector3f right = worldPose.transformDirection(new Vector3f(1f, 0f, 0f), new Vector3f()).normalize();
+        Vector3f up = worldPose.transformDirection(new Vector3f(0f, 1f, 0f), new Vector3f()).normalize();
+        Vector3f normal = new Vector3f(right).cross(up).normalize();
+        float halfWidth = aspect * 0.5f * scale;
+        float halfHeight = 0.5f * scale;
+        return new QuadBasis(centerOffset, right, up, normal, halfWidth, halfHeight);
     }
+    public static Vector2d getInventoryMousePositionRay(double screenX, double screenY, QuadBasis basis, TextureTarget inventoryTarget) {
+        Minecraft mc = Minecraft.getInstance();
+        int width = mc.getWindow().getWidth();
+        int height = mc.getWindow().getHeight();
 
-    public static void projectCornersToScreen(Vector3f[] corners, Matrix4f worldPose, Vec3 cameraPos, int width, int height, Vector2d[] screenCorners) {
-        for (int i = 0; i < corners.length; i++) {
-            Vector3f transformed = worldPose.transformPosition(corners[i], new Vector3f());
-            Vec3 world = new Vec3(transformed.x(), transformed.y(), transformed.z()).add(cameraPos);
-            Vec3 screen = Minecraft.getInstance().gameRenderer.projectPointToScreen(world);
-            screenCorners[i].set(
-                    (screen.x + 1.0) * 0.5 * width,
-                    (1.0 - screen.y) * 0.5 * height
-            );
-        }
-    }
+        double ndcX = (screenX / width) * 2.0 - 1.0;
+        double ndcY = 1.0 - (screenY / height) * 2.0;
 
-    public static Vector2d getInventoryMousePosition(double mouseX, double mouseY, Vector2d[] screenCorners, TextureTarget inventoryTarget) {
-        double x0 = screenCorners[0].x, y0 = screenCorners[0].y;
-        double x1 = screenCorners[1].x, y1 = screenCorners[1].y;
-        double x2 = screenCorners[2].x, y2 = screenCorners[2].y;
-        double x3 = screenCorners[3].x, y3 = screenCorners[3].y;
+        var camera = mc.gameRenderer.mainCamera();
+        float yawRadians = (float) Math.toRadians(camera.yRot());
+        float pitchRadians = (float) Math.toRadians(camera.xRot());
 
-        double minX = Math.min(Math.min(x0, x1), Math.min(x2, x3));
-        double maxX = Math.max(Math.max(x0, x1), Math.max(x2, x3));
-        double minY = Math.min(Math.min(y0, y1), Math.min(y2, y3));
-        double maxY = Math.max(Math.max(y0, y1), Math.max(y2, y3));
+        Vector3f forward = new Vector3f(
+                (float) (-Math.sin(yawRadians) * Math.cos(pitchRadians)),
+                (float) (-Math.sin(pitchRadians)),
+                (float) (Math.cos(yawRadians) * Math.cos(pitchRadians))
+        ).normalize();
 
-        if (mouseX < minX || mouseX > maxX || mouseY < minY || mouseY > maxY) {
+        Vector3f worldUp = new Vector3f(0f, 1f, 0f);
+        Vector3f right = new Vector3f(forward).cross(worldUp).normalize();
+        Vector3f up = new Vector3f(right).cross(forward).normalize();
+
+        float fovDegrees = camera.getFov();
+        float aspect = (float) width / (float) height;
+        float tanHalfFovY = (float) Math.tan(Math.toRadians(fovDegrees / 2.0));
+        float tanHalfFovX = tanHalfFovY * aspect;
+
+        Vector3f direction = new Vector3f(forward)
+                .add(new Vector3f(right).mul((float) ndcX * tanHalfFovX))
+                .add(new Vector3f(up).mul((float) ndcY * tanHalfFovY))
+                .normalize();
+
+        float denom = direction.dot(basis.normal());
+        if (Math.abs(denom) < 1e-6f) {
             return null;
         }
 
-        double dx1 = x1 - x2, dx2 = x3 - x2;
-        double dx3 = x0 - x1 + x2 - x3;
-        double dy1 = y1 - y2, dy2 = y3 - y2;
-        double dy3 = y0 - y1 + y2 - y3;
-
-        double g, h;
-
-        if (Math.abs(dx3) < 1e-9 && Math.abs(dy3) < 1e-9) {
-            g = 0.0;
-            h = 0.0;
-        } else {
-            double denom = dx1 * dy2 - dx2 * dy1;
-            if (Math.abs(denom) < 1e-9) {
-                return null;
-            }
-            g = (dx3 * dy2 - dx2 * dy3) / denom;
-            h = (dx1 * dy3 - dx3 * dy1) / denom;
-        }
-
-        double a = x1 - x0 + g * x1;
-        double b = x3 - x0 + h * x3;
-        double c = x0;
-        double d = y1 - y0 + g * y1;
-        double e = y3 - y0 + h * y3;
-        double f = y0;
-
-        double A11 = a - mouseX * g, A12 = b - mouseX * h, B1 = mouseX - c;
-        double A21 = d - mouseY * g, A22 = e - mouseY * h, B2 = mouseY - f;
-
-        double det = A11 * A22 - A12 * A21;
-        if (Math.abs(det) < 1e-9) {
+        float t = basis.centerOffset().dot(basis.normal()) / denom;
+        if (t <= 0f) {
             return null;
         }
 
-        double u = (B1 * A22 - A12 * B2) / det;
-        double v = (A11 * B2 - B1 * A21) / det;
+        Vector3f hitOffset = new Vector3f(direction).mul(t);
+        Vector3f localOffset = new Vector3f(hitOffset).sub(basis.centerOffset());
 
-        if (u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0) {
+        float localX = localOffset.dot(basis.right());
+        float localY = localOffset.dot(basis.up());
+
+        float u = (localX / basis.halfWidth() + 1f) / 2f;
+        float v = (localY / basis.halfHeight() + 1f) / 2f;
+
+        if (u < 0f || u > 1f || v < 0f || v > 1f) {
             return null;
         }
 
-        return new Vector2d(
-                u * inventoryTarget.width,
-                (1.0 - v) * inventoryTarget.height
-        );
+        return new Vector2d(u * inventoryTarget.width, (1.0 - v) * inventoryTarget.height);
     }
 }

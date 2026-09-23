@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
+import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
+import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin {
@@ -60,27 +62,36 @@ public class MouseHandlerMixin {
 
         var renderer = SpatialGUIClient.renderer();
         if (renderer == null) return original;
-        
-        Vector2d mouse = RenderUtil.getInventoryMousePosition(srcX, srcY, renderer.getScreenCorners(), renderer.getTargetManager().getInventoryTarget());
+
+        QuadBasis quadBasis = renderer.getInventoryRenderer().getQuadBasis();
+        if (quadBasis == null) return original;
+
+        Vector2d mouse = RenderUtil.getInventoryMousePositionRay(srcX, srcY, quadBasis, renderer.getTargetManager().getInventoryTarget());
 
         if (mouse == null) {
-            System.out.println("NULL: " + lastPosX + "-" + lastPosY);
             return isX ? lastPosX : lastPosY;
-        } else {
-            System.out.println(lastPosX + "-" + lastPosY);
         }
 
 
         lastPosX = mouse.x / guiScale;
         lastPosY = mouse.y / guiScale;
 
-        return isX ? mouse.x / guiScale + 1.0 : mouse.y / guiScale;
+        return isX ? mouse.x / guiScale : mouse.y / guiScale;
     }
 
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
-    private void spatialGUI$suppressPlayerTurnWhileCrosshair(double mousea, CallbackInfo ci) {
+    private void spatialGUI$cancelPlayerRotation(double mousea, CallbackInfo ci) {
         if (SpatialGUIRenderer.isCrosshairModeActive()) {
             ci.cancel();
         }
     }
+
+    //? if >26.2 {
+    @Inject(method = "onMove(JDDDD)V", at = @At("HEAD"))
+    private void spatialGUI$captureMouseMotion(long handle, double xpos, double ypos, double xrel, double yrel, CallbackInfo ci) {
+        if (SpatialGUIRenderer.isCrosshairModeActive()) {
+            MouseHandlerUtil.addFreeLookDelta(xrel, yrel);
+        }
+    }
+    //?}
 }

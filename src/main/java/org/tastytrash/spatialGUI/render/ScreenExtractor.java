@@ -8,6 +8,7 @@ import net.minecraft.client.gui.render.pip.*;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.util.RenderUtil;
+import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class ScreenExtractor {
         return screenGuiRenderer;
     }
 
-    public void extractIsolatedScreen(Screen screen, float partialTick, Vector2d[] screenCorners, TextureTargetManager targetManager) {
+    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, TextureTargetManager targetManager) {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
 
@@ -53,7 +54,10 @@ public class ScreenExtractor {
             srcY = mc.mouseHandler.ypos();
         }
 
-        Vector2d mapped = RenderUtil.getInventoryMousePosition(srcX, srcY, screenCorners, targetManager.getInventoryTarget());
+        Vector2d mapped = null;
+        if (quadBasis != null) {
+            mapped = RenderUtil.getInventoryMousePositionRay(srcX, srcY, quadBasis, targetManager.getInventoryTarget());
+        }
         int mouseX, mouseY;
         if (mapped != null) {
             double guiScale = mc.getWindow().getGuiScale();

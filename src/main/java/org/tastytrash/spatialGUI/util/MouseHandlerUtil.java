@@ -8,6 +8,21 @@ import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 public class MouseHandlerUtil {
     private static boolean weGrabbedMouse = false;
 
+    private static double freeLookDeltaX = 0;
+    private static double freeLookDeltaY = 0;
+
+    public static void addFreeLookDelta(double xrel, double yrel) {
+        freeLookDeltaX += xrel;
+        freeLookDeltaY += yrel;
+    }
+
+    public static double[] resetFreeLookDelta() {
+        double[] result = {freeLookDeltaX, freeLookDeltaY};
+        freeLookDeltaX = 0;
+        freeLookDeltaY = 0;
+        return result;
+    }
+
     public static void grabMouseForFirstPerson() {
         Minecraft mc = Minecraft.getInstance();
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
@@ -18,8 +33,8 @@ public class MouseHandlerUtil {
             //? if >26.2 {
             InputConstants.grabMouse(mc.getWindow(), centerX, centerY);
             //?} else {
-            // InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_DISABLED, centerX, centerY);
-            //?}
+             /*InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_DISABLED, centerX, centerY);
+            *///?}
             mc.mouseHandler.setIgnoreFirstMove();
         }
         weGrabbedMouse = true;
@@ -36,8 +51,8 @@ public class MouseHandlerUtil {
             //? if >26.2 {
             InputConstants.releaseMouse(mc.getWindow(), centerX, centerY);
             //?} else {
-            // InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, centerX, centerY);
-            //?}
+             /*InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, centerX, centerY);
+            *///?}
         }
         weGrabbedMouse = false;
     }

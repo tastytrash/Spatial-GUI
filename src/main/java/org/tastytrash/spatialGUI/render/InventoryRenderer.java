@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.StagedVertexBuffer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 //? > 26.2 {
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
@@ -19,8 +20,7 @@ import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
 //? } else {
-/*import com.mojang.blaze3d.GpuBufferSlice;
-import com.mojang.blaze3d.PrimitiveTopology;
+/*import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.textures.AddressMode;
@@ -43,14 +43,17 @@ public class InventoryRenderer {
     );
 
     private final TextureTargetManager targetManager;
-    private final Vector2d[] screenCorners;
+    private QuadBasis quadBasis;
     private long screenOpenTime = 0;
     private static boolean isRecipeBookOpen = false;
     private static int recipeBookCloseDelay = 0;
 
-    public InventoryRenderer(TextureTargetManager targetManager, Vector2d[] screenCorners) {
+    public InventoryRenderer(TextureTargetManager targetManager) {
         this.targetManager = targetManager;
-        this.screenCorners = screenCorners;
+    }
+
+    public QuadBasis getQuadBasis() {
+        return quadBasis;
     }
 
     public void setScreenOpenTime(long time) {
@@ -113,19 +116,12 @@ public class InventoryRenderer {
         float aspect = (float) targetManager.getInventoryTarget().width / (float) targetManager.getInventoryTarget().height;
         RenderUtil.addScreenQuad(buffer, pose, aspect);
 
-        Vector3f[] corners = RenderUtil.createScreenCorners(aspect);
-
-        int width = client.getWindow().getWidth();
-        int height = client.getWindow().getHeight();
-
-        var cameraPos = client.gameRenderer.mainCamera().position();
-
         PoseStack worldMatrices = new PoseStack();
         RenderUtil.applyScreenTransform(worldMatrices, isFirstPerson, yawRadians, pitchRadians, config, lookX, lookY, lookZ);
         worldMatrices.scale(scale, scale, scale);
         Matrix4f worldPose = worldMatrices.last().pose();
 
-        RenderUtil.projectCornersToScreen(corners, worldPose, cameraPos, width, height, screenCorners);
+        quadBasis = RenderUtil.computeQuadBasis(worldPose, aspect, scale);
 
         matrices.popPose();
 

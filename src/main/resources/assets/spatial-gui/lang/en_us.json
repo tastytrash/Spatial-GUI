@@ -36,7 +36,7 @@
   "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleBaselineFov.@Tooltip": "FOV value that results in no scaling adjustment",
 
   "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleScreenPower": "Auto Scale Screen Power",
-  "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleScreenPower.@Tooltip": "Power curve for screen scaling (1.0 = linear, 2.0 = squared)",
+  "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleScreenPower.@Tooltip": "Exponent for screen scaling",
 
   "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleSideOffsetMultiplier": "Auto Scale Side Offset Multiplier",
   "text.autoconfig.spatial-gui.option.autoFovTuning.autoScaleSideOffsetMultiplier.@Tooltip": "Reduces the effect of FOV scaling on side offset",
@@ -168,5 +168,5 @@
   "text.autoconfig.spatial-gui.option.animationEasing.@Tooltip": "Easing function for the animation",
 
   "text.autoconfig.spatial-gui.option.animationStartScalePercent": "Start Scale (%)",
-  "text.autoconfig.spatial-gui.option.animationStartScalePercent.@Tooltip": "Starting scale as percentage of final scale (1-100)"
+  "text.autoconfig.spatial-gui.option.animationStartScalePercent.@Tooltip": "Starting scale as percentage of final scale"
 }

@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
@@ -19,7 +18,6 @@ public class SpatialGUIRenderer {
     private final TextureTargetManager targetManager;
     private final ScreenExtractor screenExtractor;
     private final InventoryRenderer inventoryRenderer;
-    private final Vector2d[] screenCorners;
 
     private Screen hookedScreen;
     private static boolean isInventoryScreen;
@@ -29,15 +27,9 @@ public class SpatialGUIRenderer {
     public boolean headLockInitialized = false;
 
     public SpatialGUIRenderer() {
-        this.screenCorners = new Vector2d[]{
-                new Vector2d(),
-                new Vector2d(),
-                new Vector2d(),
-                new Vector2d()
-        };
         this.targetManager = new TextureTargetManager();
         this.screenExtractor = new ScreenExtractor();
-        this.inventoryRenderer = new InventoryRenderer(targetManager, screenCorners);
+        this.inventoryRenderer = new InventoryRenderer(targetManager);
     }
 
     public void hookScreen(Screen screen) {
@@ -137,10 +129,6 @@ public class SpatialGUIRenderer {
         return hookedScreen;
     }
 
-    public Vector2d[] getScreenCorners() {
-        return screenCorners;
-    }
-
     public TextureTargetManager getTargetManager() {
         return targetManager;
     }
@@ -165,7 +153,7 @@ public class SpatialGUIRenderer {
     }
 
     public void extractIsolatedScreen(Screen screen, float partialTick) {
-        screenExtractor.extractIsolatedScreen(screen, partialTick, screenCorners, targetManager);
+        screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), targetManager);
     }
 
 }

@@ -1,25 +1,24 @@
 -------- HIGH PRIORITY ---------------
 
-Change the mouse calculation to raycasting instead of screenspace projection
-
-Code refactoring and simplifying
-
-Check the default config values
-
 Add a mirror third person camera & screen config option
 
 -------- MID PRIORITY ---------------
 
 Make the screen position unaffected by the bob (possibly too difficult?)
 
+Check method names (in mixins mainly)
+
 -------- LOW PRIORITY ---------------
+
+Parallax magnitude config
+
+More images on curseforge/modrinth gallery
 
 Replace accessor with accesswidener
 
 Minecraft's water effects not applying properly when in the menu with velocity underwater (is this solvable?)
 
 ----- POSSIBLY SOLVED/NOT NEEDED ------
-
 
 
 ---- LONG TERM IDEAS -----
