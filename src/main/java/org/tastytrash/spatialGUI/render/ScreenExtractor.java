@@ -10,6 +10,11 @@ import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 
+//? if neoforge {
+import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
+import net.minecraft.client.renderer.state.gui.pip.*;
+//? }
+
 import java.util.List;
 
 public class ScreenExtractor {
@@ -25,13 +30,23 @@ public class ScreenExtractor {
             screenGuiRenderer = new GuiRenderer(
                     screenRenderState,
                     mc.gameRenderer.featureRenderDispatcher(),
+                    //? if fabric {
+//                    List.of(
+//                            new GuiEntityRenderer(mc.getEntityRenderDispatcher()),
+//                            new GuiSkinRenderer(),
+//                            new GuiBookModelRenderer(),
+//                            new GuiBannerResultRenderer(mc.getAtlasManager()),
+//                            new GuiProfilerChartRenderer()
+//                    )
+                    //? } else if neoforge {
                     List.of(
-                            new GuiEntityRenderer(mc.getEntityRenderDispatcher()),
-                            new GuiSkinRenderer(),
-                            new GuiBookModelRenderer(),
-                            new GuiBannerResultRenderer(mc.getAtlasManager()),
-                            new GuiProfilerChartRenderer()
+                            new PictureInPictureRendererRegistration<>(GuiEntityRenderState.class, () -> new GuiEntityRenderer(mc.getEntityRenderDispatcher())),
+                            new PictureInPictureRendererRegistration<>(GuiSkinRenderState.class, GuiSkinRenderer::new),
+                            new PictureInPictureRendererRegistration<>(GuiBookModelRenderState.class, GuiBookModelRenderer::new),
+                            new PictureInPictureRendererRegistration<>(GuiBannerResultRenderState.class, () -> new GuiBannerResultRenderer(mc.getAtlasManager())),
+                            new PictureInPictureRendererRegistration<>(GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
                     )
+                    //? }
             );
         }
     }
@@ -66,8 +81,12 @@ public class ScreenExtractor {
             lastMouseX = mouseX;
             lastMouseY = mouseY;
         } else {
-            mouseX = lastMouseX;
-            mouseY = lastMouseY;
+            mouseX = (int) mc.mouseHandler.getScaledXPos(mc.getWindow());
+            mouseY = (int) mc.mouseHandler.getScaledYPos(mc.getWindow());
+            if (lastMouseX == -1) {
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+            }
         }
 
         SpatialGUIRenderer.isExtractingIsolatedScreen = true;

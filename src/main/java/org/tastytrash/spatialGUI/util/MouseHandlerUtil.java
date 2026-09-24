@@ -31,10 +31,10 @@ public class MouseHandlerUtil {
             double centerX = mc.getWindow().getScreenWidth() / 2.0;
             double centerY = mc.getWindow().getScreenHeight() / 2.0;
             //? if >26.2 {
-            InputConstants.grabMouse(mc.getWindow(), centerX, centerY);
-            //?} else {
-             /*InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_DISABLED, centerX, centerY);
-            *///?}
+            /*InputConstants.grabMouse(mc.getWindow(), centerX, centerY);
+            *///?} else {
+             InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_DISABLED, centerX, centerY);
+            //?}
             mc.mouseHandler.setIgnoreFirstMove();
         }
         weGrabbedMouse = true;
@@ -49,10 +49,10 @@ public class MouseHandlerUtil {
             double centerX = mc.getWindow().getScreenWidth() / 2.0;
             double centerY = mc.getWindow().getScreenHeight() / 2.0;
             //? if >26.2 {
-            InputConstants.releaseMouse(mc.getWindow(), centerX, centerY);
-            //?} else {
-             /*InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, centerX, centerY);
-            *///?}
+            /*InputConstants.releaseMouse(mc.getWindow(), centerX, centerY);
+            *///?} else {
+             InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, centerX, centerY);
+            //?}
         }
         weGrabbedMouse = false;
     }

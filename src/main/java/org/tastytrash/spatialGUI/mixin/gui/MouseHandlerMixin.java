@@ -87,11 +87,11 @@ public class MouseHandlerMixin {
     }
 
     //? if >26.2 {
-    @Inject(method = "onMove(JDDDD)V", at = @At("HEAD"))
+    /*@Inject(method = "onMove(JDDDD)V", at = @At("HEAD"))
     private void spatialGUI$captureMouseMotion(long handle, double xpos, double ypos, double xrel, double yrel, CallbackInfo ci) {
         if (SpatialGUIRenderer.isCrosshairModeActive()) {
             MouseHandlerUtil.addFreeLookDelta(xrel, yrel);
         }
     }
-    //?}
+    *///?}
 }

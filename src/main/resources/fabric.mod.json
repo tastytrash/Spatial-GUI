@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "spatial-gui",
-  "version": "${version}",
+  "version": "1.3",
   "name": "Spatial GUI",
   "description": "A client-side mod that renders inventory & container screens as a 3D plane.",
   "authors": [],

@@ -4,6 +4,8 @@ Add a mirror third person camera & screen config option
 
 -------- MID PRIORITY ---------------
 
+NeoForge version building with fabric.mod.json in it, but excluding it messes up the icon
+
 Make the screen position unaffected by the bob (possibly too difficult?)
 
 Check method names (in mixins mainly)

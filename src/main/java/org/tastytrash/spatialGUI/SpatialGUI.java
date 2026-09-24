@@ -1,20 +1,52 @@
 package org.tastytrash.spatialGUI;
 
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.AutoConfigClient;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.api.ModInitializer;
+
+import org.tastytrash.spatialGUI.client.SpatialGUIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tastytrash.spatialGUI.client.SpatialGUIConfig;
 
-public class SpatialGUI implements ModInitializer {
-    public static final String MOD_ID = "spatial-gui";
+//? if fabric {
+// import net.fabricmc.api.ModInitializer;
+//? } else if neoforge {
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+//? }
+
+//? if fabric {
+// public class SpatialGUI implements ModInitializer {
+//? } else if neoforge {
+@Mod(SpatialGUI.MOD_ID)
+public class SpatialGUI {
+    //?}
+    //? if fabric {
+    // public static final String MOD_ID = "spatial-gui";
+    //? } else if neoforge {
+    public static final String MOD_ID = "spatial_gui";
+    //? }
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static SpatialGUIConfig config;
 
-    @Override
-    public void onInitialize() {
+    //? if fabric {
+//     @Override
+//     public void onInitialize() {
+//         initCommon();
+//     }
+    //?} else if neoforge {
+    public SpatialGUI(ModContainer container) {
+        initCommon();
+        container.registerExtensionPoint(
+                IConfigScreenFactory.class,
+                (modContainer, parentScreen) -> AutoConfigClient.getConfigScreen(SpatialGUIConfig.class, parentScreen).get()
+        );
+    }
+    //?}
+
+    private static void initCommon() {
         LOGGER.info("Initializing Spatial GUI");
         AutoConfig.register(SpatialGUIConfig.class, GsonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(SpatialGUIConfig.class).getConfig();

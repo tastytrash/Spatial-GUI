@@ -1,0 +1,35 @@
+license="MIT"
+
+[[mods]]
+modId="spatial_gui"
+version="${version}"
+displayName="Spatial GUI"
+iconFile = "/assets/spatial-gui/icon.png"
+bannerFile = "/assets/spatial-gui/icon.png"
+description='''
+A client-side mod that renders inventory & container screens as a 3D plane.
+'''
+
+[[mixins]]
+config="spatial-gui.mixins.json"
+
+[[dependencies.spatial_gui]]
+modId="neoforge"
+type="required"
+versionRange="[${neoforge_version},)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.spatial_gui]]
+modId="minecraft"
+type="required"
+versionRange="[${minecraft_version},)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.spatial_gui]]
+modId="cloth_config"
+type="required"
+versionRange="[26.0.0,)"
+ordering="NONE"
+side="CLIENT"

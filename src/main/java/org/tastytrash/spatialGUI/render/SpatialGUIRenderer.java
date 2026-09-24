@@ -1,6 +1,5 @@
 package org.tastytrash.spatialGUI.render;
 
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,6 +9,13 @@ import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
+
+//? if fabric {
+// import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+//? } else if neoforge {
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
+//? }
 
 public class SpatialGUIRenderer {
     public static boolean isExtractingIsolatedScreen = false;
@@ -56,37 +62,67 @@ public class SpatialGUIRenderer {
                 || SpatialGUIClient.getSwitchedToFirstPersonDueToBlock();
         SpatialGUIClient.setEffectiveFirstPersonMode(isFirstPerson);
 
-        ScreenEvents.afterExtract(screen).register((_, _, _, _, _) -> prepareTarget());
+        //? if fabric {
+//        ScreenEvents.afterExtract(screen).register((_, _, _, _, _) -> prepareTarget());
+//
+//        ScreenEvents.remove(screen).register(
+//                removedScreen -> {
+//                    if (hookedScreen == removedScreen) {
+//                        onScreenRemoved();
+//                    }
+//                }
+//        );
+        //? } else if neoforge {
+        NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
+        NeoForge.EVENT_BUS.addListener(this::onScreenClosing);
 
-        ScreenEvents.remove(screen).register(
-                removedScreen -> {
-                    if (hookedScreen == removedScreen) {
-                        MouseHandlerUtil.releaseMouseFromFirstPerson();
-                        hookedScreen = null;
-                        isInventoryScreen = false;
-                        cameraStartPos = null;
-                        headLockInitialized = false;
-                        SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
-
-                        if (SpatialGUIClient.getEffectiveFirstPersonMode() && SpatialGUI.config.keepFirstPersonCameraAngle) {
-                            float cameraYaw = Minecraft.getInstance().gameRenderer.mainCamera().yRot();
-                            float cameraPitch = Minecraft.getInstance().gameRenderer.mainCamera().xRot();
-                            if (player != null) {
-                                player.setYRot(cameraYaw);
-                                player.setXRot(cameraPitch);
-                                player.yRotO = cameraYaw;
-                                player.xRotO = cameraPitch;
-
-                                player.yBob = cameraYaw;
-                                player.xBob = cameraPitch;
-                                player.yBobO = cameraYaw;
-                                player.xBobO = cameraPitch;
-                            }
-                        }
-                    }
-                }
-        );
+        //? }
     }
+
+    //? if neoforge {
+    private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
+        if (event.getScreen() == hookedScreen) {
+            event.setCanceled(true);
+            SpatialGUIRenderer.suppressWindowOverride = false;
+            screenExtractor.extractIsolatedScreen(hookedScreen, event.getPartialTick(), null, targetManager);
+            SpatialGUIRenderer.suppressWindowOverride = true;
+        }
+    }
+
+    private void onScreenClosing(ScreenEvent.Closing event) {
+        if (event.getScreen() == hookedScreen) {
+            onScreenRemoved();
+            NeoForge.EVENT_BUS.unregister(this);
+        }
+    }
+    //? }
+
+    private void onScreenRemoved() {
+        var player = Minecraft.getInstance().player;
+        MouseHandlerUtil.releaseMouseFromFirstPerson();
+        hookedScreen = null;
+        isInventoryScreen = false;
+        cameraStartPos = null;
+        headLockInitialized = false;
+        SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
+
+        if (SpatialGUIClient.getEffectiveFirstPersonMode() && SpatialGUI.config.keepFirstPersonCameraAngle) {
+            float cameraYaw = Minecraft.getInstance().gameRenderer.mainCamera().yRot();
+            float cameraPitch = Minecraft.getInstance().gameRenderer.mainCamera().xRot();
+            if (player != null) {
+                player.setYRot(cameraYaw);
+                player.setXRot(cameraPitch);
+                player.yRotO = cameraYaw;
+                player.xRotO = cameraPitch;
+
+                player.yBob = cameraYaw;
+                player.xBob = cameraPitch;
+                player.yBobO = cameraYaw;
+                player.xBobO = cameraPitch;
+            }
+        }
+    }
+
 
     public void clearTarget() {
         targetManager.clearTarget();

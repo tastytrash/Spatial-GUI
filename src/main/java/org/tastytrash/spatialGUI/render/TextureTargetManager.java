@@ -5,10 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import org.joml.Vector4f;
 //? > 26.2 {
-import com.mojang.renderpearl.api.GpuFormat;
-//? } else {
-/*import com.mojang.blaze3d.GpuFormat;
-*///? }
+/*import com.mojang.renderpearl.api.GpuFormat;
+*///? } else {
+import com.mojang.blaze3d.GpuFormat;
+//? }
 
 public class TextureTargetManager {
     private TextureTarget inventoryTarget;
@@ -48,12 +48,12 @@ public class TextureTargetManager {
                     width,
                     height,
                     //? if >26.2 {
-                    GpuFormat.RGBA8_UNORM,
+                    /*GpuFormat.RGBA8_UNORM,
                     GpuFormat.D16_UNORM
-                    //?} else {
-                    /*true,
+                    *///?} else {
+                    true,
                     GpuFormat.RGBA8_UNORM
-                    *///?}
+                    //?}
             );
             return;
         }

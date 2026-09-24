@@ -127,17 +127,17 @@ public abstract class CameraMixin {
                 double deltaX, deltaY;
                 Minecraft mc2 = Minecraft.getInstance();
                 //? if >26.2 {
-                double[] rel = MouseHandlerUtil.resetFreeLookDelta();
+                /*double[] rel = MouseHandlerUtil.resetFreeLookDelta();
                 deltaX = rel[0];
                 deltaY = rel[1];
-                //?} else {
-                /*double curX = mc2.mouseHandler.xpos();
+                *///?} else {
+                double curX = mc2.mouseHandler.xpos();
                 double curY = mc2.mouseHandler.ypos();
                 deltaX = curX - lastGrabMouseX;
                 deltaY = curY - lastGrabMouseY;
                 lastGrabMouseX = curX;
                 lastGrabMouseY = curY;
-                *///?}
+                //?}
 
                 double ss = mc2.options.sensitivity().get() * 0.6 + 0.2;
                 double sens = (ss * ss * ss);

@@ -1,75 +1,107 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' apply false
+    id 'net.neoforged.moddev' version '2.0.147' apply false
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
 
-// Version-specific dependency mappings based on target_version
+def nodeName = stonecutter.current.project
+def loader = nodeName.substring(nodeName.lastIndexOf('-') + 1)
+def isFabric = loader == 'fabric'
+def isNeoForge = loader == 'neoforge'
+
+if (isFabric) {
+    apply plugin: 'net.fabricmc.fabric-loom'
+} else if (isNeoForge) {
+    apply plugin: 'net.neoforged.moddev'
+}
+
+
 def dependencyVersions = [
-        "26.2": [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"],
-        "26.3": [minecraft: "26.3", fabric: "0.160.5+26.3", cloth_config: "26.3.158", modmenu: "21.0.0-beta.1"]
+        "26.2-fabric"  : [minecraft: "26.2", fabric: "0.158.0+26.2", cloth_config: "26.2.155", modmenu: "20.0.1"],
+        "26.3-fabric"  : [minecraft: "26.3", fabric: "0.160.5+26.3", cloth_config: "26.3.158", modmenu: "21.0.0-beta.1"],
+        "26.2-neoforge": [minecraft: "26.2", neoforge: "26.2.0.88", cloth_config: "26.2.155"],
+        "26.3-neoforge": [minecraft: "26.3", neoforge: "26.3.0.16-beta", cloth_config: "26.3.158"],
 ]
 
-// Only apply version-specific logic to Stonecutter version subprojects
 if (project.hasProperty('stonecutter')) {
-    def currentVersions = dependencyVersions[stonecutter.current.version]
+    def currentVersions = dependencyVersions[nodeName]
     project.ext.minecraft_version = currentVersions.minecraft
-    project.ext.fabric_version = currentVersions.fabric
     project.ext.cloth_config_version = currentVersions.cloth_config
-    project.ext.modmenu_version = currentVersions.modmenu
+    if (isFabric) {
+        project.ext.fabric_version = currentVersions.fabric
+        project.ext.modmenu_version = currentVersions.modmenu
+    } else if (isNeoForge) {
+        project.ext.neoforge_version = currentVersions.neoforge
+    }
 }
 
 base {
-    archivesName = "${project.archives_base_name}-${project.version}+${project.minecraft_version}"
+    archivesName = "${project.archives_base_name}-${project.version}+${project.minecraft_version}-${loader}"
 }
 
 jar {
     archiveVersion = ""
 }
 
-
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
-    maven {
-        name = "Cloth Config"
-        url = "https://maven.shedaniel.me/"
+    maven { name = "Cloth Config"; url = "https://maven.shedaniel.me/" }
+    if (isFabric) {
+        maven { name = "Terraformers"; url = "https://maven.terraformersmc.com/" }
     }
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
+    if (isNeoForge) {
+        maven { name = "Mojang"; url = "https://libraries.minecraft.net" }
+    }
+}
+dependencies {
+    if (isFabric) {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+        implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+        implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    } else if (isNeoForge) {
+        implementation "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}"
     }
 }
 
-dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    // Cloth Config
-    implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
-
-    // Mod Menu
-    implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+if (isNeoForge) {
+    neoForge {
+        version = project.neoforge_version
+        validateAccessTransformers = true
+        runs {
+            client { client() }
+            server { server() }
+        }
+        mods {
+            "spatial_gui" {
+                sourceSet sourceSets.main
+            }
+        }
+    }
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
-    inputs.property "loader_version", project.loader_version
     filteringCharset "UTF-8"
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version,
-                "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+    if (isFabric) {
+        inputs.property "loader_version", project.loader_version
+        filesMatching("fabric.mod.json") {
+            expand "version": project.version,
+                    "minecraft_version": project.minecraft_version,
+                    "loader_version": project.loader_version
+        }
+    } else if (isNeoForge) {
+        inputs.property "neoforge_version", project.neoforge_version
+        filesMatching("META-INF/neoforge.mods.toml") {
+            expand "version": project.version,
+                    "minecraft_version": project.minecraft_version,
+                    "neoforge_version": project.neoforge_version
+        }
     }
 }
 
