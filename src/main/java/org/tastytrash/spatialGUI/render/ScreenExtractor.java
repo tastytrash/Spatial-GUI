@@ -11,9 +11,9 @@ import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 
 //? if neoforge {
-import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
+/*import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.minecraft.client.renderer.state.gui.pip.*;
-//? }
+*///? }
 
 import java.util.List;
 
@@ -31,22 +31,22 @@ public class ScreenExtractor {
                     screenRenderState,
                     mc.gameRenderer.featureRenderDispatcher(),
                     //? if fabric {
-//                    List.of(
-//                            new GuiEntityRenderer(mc.getEntityRenderDispatcher()),
-//                            new GuiSkinRenderer(),
-//                            new GuiBookModelRenderer(),
-//                            new GuiBannerResultRenderer(mc.getAtlasManager()),
-//                            new GuiProfilerChartRenderer()
-//                    )
-                    //? } else if neoforge {
                     List.of(
+                            new GuiEntityRenderer(mc.getEntityRenderDispatcher()),
+                            new GuiSkinRenderer(),
+                            new GuiBookModelRenderer(),
+                            new GuiBannerResultRenderer(mc.getAtlasManager()),
+                            new GuiProfilerChartRenderer()
+                    )
+                    //? } else if neoforge {
+                    /*List.of(
                             new PictureInPictureRendererRegistration<>(GuiEntityRenderState.class, () -> new GuiEntityRenderer(mc.getEntityRenderDispatcher())),
                             new PictureInPictureRendererRegistration<>(GuiSkinRenderState.class, GuiSkinRenderer::new),
                             new PictureInPictureRendererRegistration<>(GuiBookModelRenderState.class, GuiBookModelRenderer::new),
                             new PictureInPictureRendererRegistration<>(GuiBannerResultRenderState.class, () -> new GuiBannerResultRenderer(mc.getAtlasManager())),
                             new PictureInPictureRendererRegistration<>(GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
                     )
-                    //? }
+                    *///? }
             );
         }
     }

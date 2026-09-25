@@ -11,11 +11,11 @@ import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
 
 //? if fabric {
-// import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 //? } else if neoforge {
-import net.neoforged.neoforge.client.event.ScreenEvent;
+/*import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-//? }
+*///? }
 
 public class SpatialGUIRenderer {
     public static boolean isExtractingIsolatedScreen = false;
@@ -63,24 +63,24 @@ public class SpatialGUIRenderer {
         SpatialGUIClient.setEffectiveFirstPersonMode(isFirstPerson);
 
         //? if fabric {
-//        ScreenEvents.afterExtract(screen).register((_, _, _, _, _) -> prepareTarget());
-//
-//        ScreenEvents.remove(screen).register(
-//                removedScreen -> {
-//                    if (hookedScreen == removedScreen) {
-//                        onScreenRemoved();
-//                    }
-//                }
-//        );
+        ScreenEvents.afterExtract(screen).register((_, _, _, _, _) -> prepareTarget());
+
+        ScreenEvents.remove(screen).register(
+                removedScreen -> {
+                    if (hookedScreen == removedScreen) {
+                        onScreenRemoved();
+                    }
+                }
+        );
         //? } else if neoforge {
-        NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
+        /*NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
         NeoForge.EVENT_BUS.addListener(this::onScreenClosing);
 
-        //? }
+        *///? }
     }
 
     //? if neoforge {
-    private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
+    /*private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
         if (event.getScreen() == hookedScreen) {
             event.setCanceled(true);
             SpatialGUIRenderer.suppressWindowOverride = false;
@@ -95,7 +95,7 @@ public class SpatialGUIRenderer {
             NeoForge.EVENT_BUS.unregister(this);
         }
     }
-    //? }
+    *///? }
 
     private void onScreenRemoved() {
         var player = Minecraft.getInstance().player;
