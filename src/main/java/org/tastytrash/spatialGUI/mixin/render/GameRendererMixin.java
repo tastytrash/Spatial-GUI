@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Redirect;import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
@@ -527,7 +528,7 @@ public abstract class GameRendererMixin {
     }
 }
 *///?} else {
-/*@Mixin(GameRenderer.class)
+/*@Mixin(value = GameRenderer.class, priority = 1100)
 public class GameRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void spatialGUI$prepareTargetEarly(CallbackInfo ci) {
@@ -573,19 +574,19 @@ public class GameRendererMixin {
     }
 
     //? if fabric {
-    @Redirect(method = "render", at = @At(
+    @WrapOperation(method = "render", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
     ))
-    private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void spatialGUI$wrapScreenRender(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick, Operation<Void> operation) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(screen) && screen == renderer.getHookedScreen()) {
             SpatialGUIRenderer.skipWindowOverride = false;
-            renderer.extractIsolatedScreen(screen, partialTick);
+            renderer.extractIsolatedScreen(screen, partialTick, operation);
             SpatialGUIRenderer.skipWindowOverride = true;
             renderer.renderInWorldPost();
         } else {
-            screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
+            operation.call(screen, graphics, mouseX, mouseY, partialTick);
         }
     }
     //?} else {

@@ -118,6 +118,10 @@ public class ScreenExtractor {
     *///?}
 
     public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, TextureTargetManager targetManager) {
+        extractIsolatedScreen(screen, partialTick, quadBasis, cylinderBasis, targetManager, null);
+    }
+
+    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, TextureTargetManager targetManager, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> renderOperation) {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
 
@@ -176,7 +180,11 @@ public class ScreenExtractor {
                 RenderSystem.applyModelViewMatrix();
 
                 GuiGraphics graphics = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
-                screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
+                if (renderOperation != null) {
+                    renderOperation.call(screen, graphics, mouseX, mouseY, partialTick);
+                } else {
+                    screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
+                }
                 graphics.flush();
             } finally {
                 modelView.popMatrix();

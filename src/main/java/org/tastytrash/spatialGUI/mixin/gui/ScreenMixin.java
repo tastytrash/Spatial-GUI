@@ -57,6 +57,13 @@ public class ScreenMixin {
             ci.cancel();
         }
     }
+
+    @Inject(method = "renderBlurredBackground", at = @At("HEAD"), cancellable = true)
+    private void spatialGUI$removeBlurredBackground(CallbackInfo ci) {
+        if (SpatialGUIClient.renderer() != null && SpatialGUIClient.renderer().shouldCapture() && SpatialGUIClient.isEnabled()) {
+            ci.cancel();
+        }
+    }
     *///?} else {
     /*@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;)V", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$removeBackgroundOverlay(CallbackInfo ci) {

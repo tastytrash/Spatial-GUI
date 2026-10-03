@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
@@ -184,4 +185,92 @@ public class MouseHandlerMixin {
         }
     }
     //?}
+
+    @Unique
+    private double spatialGUI$preReleaseX;
+
+    @Unique
+    private double spatialGUI$preReleaseY;
+
+    @Inject(method = "releaseMouse", at = @At("HEAD"))
+    private void spatialGUI$capturePreRelease(CallbackInfo ci) {
+        var spatialGUI$acc = (MouseHandlerAccessor) (Object) this;
+        spatialGUI$preReleaseX = spatialGUI$acc.getRawXpos();
+        spatialGUI$preReleaseY = spatialGUI$acc.getRawYpos();
+    }
+
+    @Unique
+    private static boolean spatialGUI$crosshairIncoming() {
+        return SpatialGUI.config.useCrosshairForFirstPerson && SpatialGUIClient.getEffectiveFirstPersonMode();
+    }
+
+    @Unique
+    private static Screen spatialGUI$currentScreen(Minecraft spatialGUI$mc) {
+        //? if >=26.2 {
+        /*return spatialGUI$mc.gui.screen();
+         *///?} else {
+        return spatialGUI$mc.screen;
+        //?}
+    }
+
+    @Unique
+    private double spatialGUI$warpArgX(double original) {
+        Minecraft spatialGUI$mc = Minecraft.getInstance();
+        Screen spatialGUI$screen = spatialGUI$currentScreen(spatialGUI$mc);
+        if (spatialGUI$crosshairIncoming() || spatialGUI$screen == null || !SpatialGUIClient.shouldHookScreen(spatialGUI$screen)) return original;
+        return spatialGUI$preReleaseX;
+    }
+
+    @Unique
+    private double spatialGUI$warpArgY(double original) {
+        Minecraft spatialGUI$mc = Minecraft.getInstance();
+        Screen spatialGUI$screen = spatialGUI$currentScreen(spatialGUI$mc);
+        if (spatialGUI$crosshairIncoming() || spatialGUI$screen == null || !SpatialGUIClient.shouldHookScreen(spatialGUI$screen)) return original;
+        return spatialGUI$preReleaseY;
+    }
+
+    //? if <=1.21.1 {
+    @ModifyArg(method = "releaseMouse", at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"
+    ), index = 2)
+    private double spatialGUI$warpX1(double original) {
+        return spatialGUI$warpArgX(original);
+    }
+
+    @ModifyArg(method = "releaseMouse", at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"
+    ), index = 3)
+    private double spatialGUI$warpY1(double original) {
+        return spatialGUI$warpArgY(original);
+    }
+    //?} else if <=1.21.11 {
+    /*@ModifyArg(method = "releaseMouse", at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(Lcom/mojang/blaze3d/platform/Window;IDD)V"
+    ), index = 2)
+    private double spatialGUI$warpX2(double original) {
+        return spatialGUI$warpArgX(original);
+    }
+
+    @ModifyArg(method = "releaseMouse", at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(Lcom/mojang/blaze3d/platform/Window;IDD)V"
+    ), index = 3)
+    private double spatialGUI$warpY2(double original) {
+        return spatialGUI$warpArgY(original);
+    }
+    *///?}
+
+    @Inject(method = "releaseMouse", at = @At("TAIL"))
+    private void spatialGUI$restoreCursorFields(CallbackInfo ci) {
+        Minecraft spatialGUI$mc = Minecraft.getInstance();
+        Screen spatialGUI$screen = spatialGUI$currentScreen(spatialGUI$mc);
+        if (spatialGUI$crosshairIncoming() || spatialGUI$screen == null || !SpatialGUIClient.shouldHookScreen(spatialGUI$screen)) return;
+        var spatialGUI$acc = (MouseHandlerAccessor) (Object) this;
+        spatialGUI$acc.setRawXpos(spatialGUI$preReleaseX);
+        spatialGUI$acc.setRawYpos(spatialGUI$preReleaseY);
+    }
+
 }

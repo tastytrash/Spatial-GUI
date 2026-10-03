@@ -61,14 +61,19 @@ public class SpatialGUIRenderer {
             return;
         }
 
+        var client = Minecraft.getInstance();
+        //? if >=26.2 {
+        /*if (screen != client.gui.screen()) return;
+         *///?} else {
+        if (screen != client.screen) return;
+        //?}
+
         pendingCameraSnap = false;
 
         skipWindowOverride = false;
         hookedScreen = screen;
         isInventoryScreen = screen instanceof InventoryScreen || screen.getClass().getName().contains("InventoryScreen");
         inventoryRenderer.setScreenOpenTime(System.currentTimeMillis());
-
-        var client = Minecraft.getInstance();
 
         var player = client.player;
         if (player != null && Minecraft.getInstance().level != null) {
@@ -119,7 +124,6 @@ public class SpatialGUIRenderer {
         MouseHandlerUtil.releaseMouseFromFirstPerson();
         inventoryRenderer.resetRecipeBookState();
         inventoryRenderer.resetPerspectiveState();
-        MouseHandlerUtil.resetMouseCache();
         hookedScreen = null;
         isInventoryScreen = false;
         headLockInitialized = false;
@@ -292,6 +296,10 @@ public class SpatialGUIRenderer {
 
     public void extractIsolatedScreen(Screen screen, float partialTick) {
         screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager);
+    }
+
+    public void extractIsolatedScreen(Screen screen, float partialTick, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> operation) {
+        screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager, operation);
     }
 
 }

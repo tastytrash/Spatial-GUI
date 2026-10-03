@@ -135,6 +135,8 @@
   "text.autoconfig.spatial-gui.option.inheritScreenOriginOnSwap.@Tooltip": "When a screen opens another screen, the new screen keeps the previous screen position instead of following your in-screen look direction",
   "text.autoconfig.spatial-gui.option.useCrosshairForFirstPerson": "Use Crosshair for First Person",
   "text.autoconfig.spatial-gui.option.useCrosshairForFirstPerson.@Tooltip": "Use the in-game crosshair position for mouse interaction instead of the actual mouse cursor",
+  "text.autoconfig.spatial-gui.option.lockFirstPersonYaw": "Lock First Person Yaw",
+  "text.autoconfig.spatial-gui.option.lockFirstPersonYaw.@Tooltip": "Limit how far the first person camera can turn side to side to 180 degrees",
   "text.autoconfig.spatial-gui.option.firstPersonPitchClamp": "First Person Pitch Clamp",
   "text.autoconfig.spatial-gui.option.firstPersonPitchClamp.@Tooltip": "Maximum pitch angle for first person screen spawning",
   "text.autoconfig.spatial-gui.option.enableFadeAnimation": "Enable Fade Animation",

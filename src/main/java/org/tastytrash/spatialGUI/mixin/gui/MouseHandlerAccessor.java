@@ -17,4 +17,10 @@ public interface MouseHandlerAccessor {
 
     @Accessor("ypos")
     double getRawYpos();
+
+    @Accessor("xpos")
+    void setRawXpos(double value);
+
+    @Accessor("ypos")
+    void setRawYpos(double value);
 }

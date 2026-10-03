@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 
@@ -14,20 +15,7 @@ public class MouseHandlerUtil {
     private static double lastPosY = Double.NaN;
     private static double cachedSrcX = Double.NaN;
     private static double cachedSrcY = Double.NaN;
-    private static QuadBasis cachedQuadBasis = null;
-    private static CylinderBasis cachedCylinderBasis = null;
     private static Vector2d cachedMouse = null;
-    private static double cachedGuiScale = Double.NaN;
-
-    public static void resetMouseCache() {
-        lastPosX = Double.NaN;
-        lastPosY = Double.NaN;
-        cachedSrcX = Double.NaN;
-        cachedSrcY = Double.NaN;
-        cachedQuadBasis = null;
-        cachedMouse = null;
-        cachedGuiScale = Double.NaN;
-    }
 
     public static double getFallback(boolean isX) {
         Minecraft mc = Minecraft.getInstance();
@@ -38,22 +26,20 @@ public class MouseHandlerUtil {
     }
 
     public static Vector2d getOrComputeMousePosition(double srcX, double srcY, QuadBasis quadBasis, CylinderBasis cylinderBasis, double guiScale, com.mojang.blaze3d.pipeline.TextureTarget target) {
-        if (srcX == cachedSrcX && srcY == cachedSrcY && quadBasis == cachedQuadBasis && cylinderBasis == cachedCylinderBasis && guiScale == cachedGuiScale) {
+        if (!SpatialGUIRenderer.isCrosshairModeActive() && cachedMouse != null && srcX == cachedSrcX && srcY == cachedSrcY) {
             return cachedMouse;
         }
         Vector2d mouse = cylinderBasis != null
                 ? RenderUtil.getInventoryMousePositionRayCurved(srcX, srcY, cylinderBasis)
                 : RenderUtil.getInventoryMousePositionRay(srcX, srcY, quadBasis, target);
+        if (mouse == null) {
+            return null;
+        }
         cachedSrcX = srcX;
         cachedSrcY = srcY;
-        cachedQuadBasis = quadBasis;
-        cachedCylinderBasis = cylinderBasis;
-        cachedGuiScale = guiScale;
         cachedMouse = mouse;
-        if (mouse != null) {
-            lastPosX = mouse.x / guiScale;
-            lastPosY = mouse.y / guiScale;
-        }
+        lastPosX = mouse.x / guiScale;
+        lastPosY = mouse.y / guiScale;
         return mouse;
     }
 

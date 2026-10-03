@@ -9,6 +9,7 @@
     "client.AbstractRecipeBookScreenMixin",
     "client.MinecraftMixin",
     "client.OptionsMixin",
+    "compat.DynamicCrosshairMixin",
     "compat.EMIScreenManagerMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",
@@ -30,7 +31,9 @@
     "render.GameRendererInvoker",
     "render.GameRendererMixin",
     "render.HandRendererMixin",
-    "render.LevelRendererMixin"
+    "render.LevelRendererMixin",
+    "render.OwoBlurMixin",
+    "render.RenderTargetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

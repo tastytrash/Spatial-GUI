@@ -133,12 +133,12 @@ public abstract class CameraMixin {
             float entityXRot = entity.getXRot();
 
             if (SpatialGUIRenderer.isCrosshairModeActive()) {
-                double deltaX, deltaY;
-                //? if >26.2 {
+                //? if >26.2 || <=1.21.1 {
                 /*double[] rel = MouseHandlerUtil.resetFreeLookDelta();
-                deltaX = rel[0];
-                deltaY = rel[1];
+                double deltaX = rel[0];
+                double deltaY = rel[1];
                 *///?} else {
+                double deltaX, deltaY;
                 double curX = ((MouseHandlerAccessor) client.mouseHandler).getRawXpos();
                 double curY = ((MouseHandlerAccessor) client.mouseHandler).getRawYpos();
                 deltaX = curX - lastMouseX;
@@ -155,7 +155,10 @@ public abstract class CameraMixin {
                 *///?}
                 double yOffset = deltaY * sens * (client.options.invertMouseY().get() ? -1 : 1);
 
-                freeLookYaw = Math.max(-MAX_YAW_OFFSET, Math.min(MAX_YAW_OFFSET, freeLookYaw + (float) xOffset));
+                freeLookYaw += (float) xOffset;
+                if (SpatialGUI.config.lockFirstPersonYaw) {
+                    freeLookYaw = Math.max(-MAX_YAW_OFFSET, Math.min(MAX_YAW_OFFSET, freeLookYaw));
+                }
                 freeLookPitch = Math.max(-maxPitch - entityXRot, Math.min(maxPitch - entityXRot, freeLookPitch + (float) yOffset));
 
                 smoothedCameraYaw = freeLookYaw;

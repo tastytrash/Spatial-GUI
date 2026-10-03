@@ -331,6 +331,10 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
+    public boolean lockFirstPersonYaw = false;
+
+    @ConfigEntry.Category("firstPersonCamera")
+    @ConfigEntry.Gui.Tooltip
     public double firstPersonMouseSensitivityYaw = 0.4;
 
     @ConfigEntry.Category("firstPersonCamera")

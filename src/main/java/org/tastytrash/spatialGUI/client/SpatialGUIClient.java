@@ -71,6 +71,8 @@ public class SpatialGUIClient {
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
 
+
+
         String id = screen.getClass().getName();
         if (id.contains("TitleScreen")) return false;
         if (id.contains("ReceivingLevelScreen")) return false;
