@@ -4,12 +4,18 @@
 ___
 ## Features
 
+### General
+
+* Per-screen enable and disable lists for mod compatibility
+* Optional world blur behind the screen
+* Configurable HUD and hotbar visibility
+* Adjustable GUI scale, render scale, screen opacity, and FOV-aware scaling
+
 ### First-person Mode
 ![First-person menu crafting GIF](https://cdn.modrinth.com/data/cached_images/961b53d75867806bf45fb6f7df0e5e34b242b322.gif)
 
 *   Crosshair and mouse modes
 *   Screen position, distance, scale, and rotation are all configurable
-*   Parallax effect in mouse mode
 *   Configurable screen opening animation
 *   Curved screen option, especially good with mods that add large GUI extensions, such as JEI
 
@@ -17,20 +23,21 @@ ___
 ![third-person screenshot](https://cdn.modrinth.com/data/cached_images/74d080ca00474431a2d1fed3da972c82ef43b7c1.png)
 
 *   Camera and screen position, distance, scale, and rotation are all configurable
-*   Parallax effect
+*   Configurable avatar body rotation
 *   Smooth camera transition and configurable screen opening animation
+*   Optional fallback to first person when the camera is blocked
 
 ## Dependencies
 
-| Loader | Mod
+| Loader | Mod |
 | --- | --- |
 | All | Cloth Config |
 | Fabric | Fabric API & Mod Menu |
 
 ## Configuration
 
-Access config via the keybind (default unbound), Mod Menu, or edit the config file.
-It is highly recommended to check the config to tailor the mod to your liking, and there are tons of options.
+Open the config through the keybind (unbound by default), Mod Menu, or the config file.
+Spatial GUI has many options, so it is worth looking through them to tailor the mod to your preferences.
 
 ## Compatibility
 
@@ -45,18 +52,18 @@ If you find a reproducible incompatibility with another mod, please report it on
 | --- | --- |
 | **Does Spatial GUI work in multiplayer?** | Yes. Other players and the server do not need to have Spatial GUI installed. |
 | **Does Spatial GUI give a gameplay advantage?** | Spatial GUI is primarily visual and does not add or automate gameplay mechanics. Some settings can change how the camera behaves, so whether it is allowed on a particular server is ultimately up to that server's rules. |
-| **Why can't I enable third-person mode?** | This is likely caused by Punchy, go to *Punchy's config -> Compatibility*, and turn off *Spatial GUI Support*. |
 | **Is Spatial GUI compatible with _____?** | Probably! However, compatibility isn't guaranteed, especially with mods that modify GUIs, cameras, or rendering. If you encounter an issue with a specific mod, feel free to report it on GitHub. |
-| **Why is my GUI behaving strangely?** | If other mods are installed, it may be a compatibility issue. It's usually GUI related but not always, try and locate the mod causing this and open an issue on GitHub if your issue isn't already reported. |
+| **Why is my GUI behaving strangely?** | Another installed mod may be incompatible. Try to identify the mod involved, then check existing GitHub issues or open a new issue with steps to reproduce the problem. |
 | **Can I use Spatial GUI in a modpack?** | Yes. Spatial GUI is welcome in modpacks and no additional permission is required. Compatibility with other mods is not guaranteed. |
 | **Is Spatial GUI purely visual?** | Almost entirely. Spatial GUI changes how existing screens and the camera are presented. One setting intentionally allows your rotation to persist after closing a GUI, which can turn your character's view. |
 
 ## Notes
-*   Feel free to suggest features or report bugs on the GitHub
-*   This mod is absolutely welcome to be used in modpacks, just be careful about it's compatilbility with certain mods
+*   Feel free to suggest features or report bugs on the GitHub.
+*   Spatial GUI is welcome in modpacks, no additional permission required. Be aware that compatibility with some mods may vary.
+*   Forge 1.20.1 coming soon (hopefully)
 
 ### Special thanks to:
-vibing for all of their pull requests  
+vibing for all of their GitHub contributions  
 Dizabanik for tons of code fixes and improvements  
 BUILDLCS for the Brazilian Portuguese translation  
 suheckii for the Russian translation  
