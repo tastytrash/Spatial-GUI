@@ -80,12 +80,14 @@ public abstract class GameRendererMixin {
         );
         var encoder = com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder();
         encoder.clearDepthTexture(((GameRenderer) (Object) this).mainRenderTarget().getDepthTexture(), 0.0);
+        com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD));
         ((GameRenderer) (Object) this).lighting().setupFor(com.mojang.blaze3d.platform.Lighting.Entry.LEVEL);
         *///?} else {
         com.mojang.blaze3d.systems.RenderSystem.setProjectionMatrix(
                 this.hud3dProjectionMatrixBuffer.getBuffer(this.hudProjection),
                 com.mojang.blaze3d.ProjectionType.PERSPECTIVE
         );
+        com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD));
         var encoder = com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder();
         encoder.clearDepthTexture(mc.getMainRenderTarget().getDepthTexture(), 1.0);
         ((GameRenderer) (Object) this).getLighting().setupFor(com.mojang.blaze3d.platform.Lighting.Entry.LEVEL);
@@ -100,9 +102,10 @@ public abstract class GameRendererMixin {
             this.renderItemInHand(cameraRenderState, partialTick, cameraRenderState.viewRotationMatrix);
             spatialGUI$renderFeaturesToMainTarget("Item in hand in front of SpatialGUI");
         } finally {
-
             this.useUiLightmap = spatialGUI$prevUiLightmap;
-
+            //? if >=26.2 {
+            /*com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+             *///?}
             spatialGUI$isRedrawingHand = false;
         }
         //?} else {
@@ -127,7 +130,7 @@ public abstract class GameRendererMixin {
             var encoder = com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder();
             encoder.clearDepthTexture(((GameRenderer) (Object) this).mainRenderTarget().getDepthTexture(), 0.0);
 
-            com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+            com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD));
             ((GameRenderer) (Object) this).lighting().setupFor(com.mojang.blaze3d.platform.Lighting.Entry.LEVEL);
 
             var poseStack = new com.mojang.blaze3d.vertex.PoseStack();
@@ -154,6 +157,7 @@ public abstract class GameRendererMixin {
             poseStack.popPose();
         } finally {
             this.useUiLightmap = spatialGUI$prevUiLightmap;
+            com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
             spatialGUI$isRedrawingHand = false;
         }
         *///?}
@@ -425,6 +429,7 @@ public abstract class GameRendererMixin {
         var encoder = com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder();
         encoder.clearDepthTexture(mc.getMainRenderTarget().getDepthTexture(), 1.0);
         this.lighting.setupFor(LEVEL);
+        com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD));
 
         org.joml.Matrix4f rotationMatrix = new org.joml.Matrix4f().rotation(
                 this.mainCamera.rotation().conjugate(new org.joml.Quaternionf())
@@ -436,6 +441,7 @@ public abstract class GameRendererMixin {
             this.featureRenderDispatcher.renderAllFeatures();
             this.renderBuffers.bufferSource().endBatch();
         } finally {
+            com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
             this.spatialGUI$isRedrawingHand = false;
         }
     }

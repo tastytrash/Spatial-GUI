@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.mixin.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -88,15 +89,21 @@ public class HudMixin {
     private boolean spatialGUI$hideHud(boolean original) {
         return original || SpatialGUIClient.shouldHideHud();
     }
-    *///?} else {
-    /*@Inject(method = {"renderScoreboardSidebar", "renderOverlayMessage", "renderTitle", "renderChat", "renderTabList"},
-            at = @At("HEAD"), cancellable = true)
+     */
+    //?} else if 1.21.1 {
+    /*@Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$hideHud(CallbackInfo ci) {
         if (SpatialGUIClient.shouldHideHud()) {
+            org.tastytrash.spatialGUI.render.SpatialGUIRenderer.skipWindowOverride = false;
             ci.cancel();
         }
     }
-    *///?}
+    *///?} else {
+//    @ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;hideGui:Z"))
+//    private boolean spatialGUI$hideHud(boolean original) {
+//        return original || SpatialGUIClient.shouldHideHud();
+//    }
+    //?}
 
     //? if >=26.1.2 {
     @Inject(method = {"extractDebugOverlay", "extractDeferredSubtitles"}, at = @At("HEAD"), cancellable = true)
