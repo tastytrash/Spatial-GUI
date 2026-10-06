@@ -89,11 +89,13 @@ public abstract class LocalPlayerMixin {
         this.yBob = spatialGUI$yBobBefore + Mth.wrapDegrees(camYaw - spatialGUI$yBobBefore) * 0.5F;
     }
 
+    //? if <26.3 {
     @ModifyReturnValue(method = "getViewXRot", at = @At("RETURN"))
     private float spatialGUI$cameraViewXRot(float original, float a) {
         if (!spatialGUI$swayActive()) return original;
         return spatialGUI$cameraPitch();
     }
+    //?}
 
     @ModifyReturnValue(method = "getViewYRot", at = @At("RETURN"))
     private float spatialGUI$cameraViewYRot(float original, float a) {
