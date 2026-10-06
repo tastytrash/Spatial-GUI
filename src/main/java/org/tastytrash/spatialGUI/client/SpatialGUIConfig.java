@@ -30,6 +30,10 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
+    public boolean useCrosshairForFirstPerson = true;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
     public boolean autoDetectCameraMode = false;
 
     @ConfigEntry.Category("general")
@@ -347,10 +351,6 @@ public class SpatialGUIConfig implements ConfigData {
     public int transitionSkipPercentage = 15;
 
     // firstPersonCamera
-    @ConfigEntry.Category("firstPersonCamera")
-    @ConfigEntry.Gui.Tooltip
-    public boolean useCrosshairForFirstPerson = true;
-
     @ConfigEntry.Category("firstPersonCamera")
     @ConfigEntry.Gui.Tooltip
     public boolean keepFirstPersonCameraAngle = true;
