@@ -1,3 +1,11 @@
+# Welcome to the Spatial GUI GitHub!
+
+Have a question, idea, or general feedback? Go to [GitHub Discussions](https://github.com/tastytrash/Spatial-GUI/discussions)!
+
+For reproducible bugs and crashes, please open a [GitHub Issue](https://github.com/tastytrash/Spatial-GUI/issues).
+___
+<br><br>
+
 # Spatial GUI
 
 **A client-side Minecraft mod that turns screens into immersive 3D displays, with fully configurable first-person and third-person modes.**
