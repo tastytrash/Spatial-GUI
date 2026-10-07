@@ -41,3 +41,4 @@ Fixed a black flash when opening screens such as REI recipe views on 26.x
 Fixed a VulkanMod compatibility issue where the screen rendered flipped
 Dynamic Crosshair compatibility, the crosshair is always shown in first person in the spatial GUI
 Tons of GUI scaling & mouse related bug fixes
+Huge thanks to vibing/nullsoepic on GitHub!

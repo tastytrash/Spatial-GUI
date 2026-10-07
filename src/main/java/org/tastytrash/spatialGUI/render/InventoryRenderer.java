@@ -241,10 +241,10 @@ public class InventoryRenderer {
     }
 
     public void setRecipeBookOpen(boolean open) {
-        isRecipeBookOpen = open;
-        if (!open) {
-            recipeBookCloseDelay = 0;
+        if (isRecipeBookOpen && !open) {
+            recipeBookCloseDelay = -2;
         }
+        isRecipeBookOpen = open;
     }
 
     public void resetRecipeBookState() {

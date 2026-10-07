@@ -103,9 +103,7 @@ public abstract class GameRendererMixin {
             spatialGUI$renderFeaturesToMainTarget("Item in hand in front of SpatialGUI");
         } finally {
             this.useUiLightmap = spatialGUI$prevUiLightmap;
-            //? if >=26.2 {
-            /*com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
-             *///?}
+            com.mojang.blaze3d.systems.RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
             spatialGUI$isRedrawingHand = false;
         }
         //?} else {
