@@ -4,9 +4,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 //? if neoforge && >1.21.1 {
 /*//? if <26.2 {
-/^import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-^///?}
+//?}
 //? if <26.1.2 {
 /^import net.minecraft.client.gui.render.state.GuiRenderState;
 ^///?} else {

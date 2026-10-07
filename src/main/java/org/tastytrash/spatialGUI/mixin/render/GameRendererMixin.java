@@ -31,6 +31,11 @@ import static com.mojang.blaze3d.platform.Lighting.Entry.LEVEL;
 /*import net.minecraft.client.gui.GuiGraphics;
 *///?}
 
+//? if neoforge {
+
+/*import net.neoforged.neoforge.client.ClientHooks;
+*///?}
+
 //? if >=26.1.2 {
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.GameRenderState;
@@ -656,12 +661,16 @@ public class GameRendererMixin {
     private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(screen) && screen == renderer.getHookedScreen()) {
+            Operation<Void> operation = args -> {
+                ClientHooks.drawScreen((Screen) args[0], (GuiGraphics) args[1], (int) args[2], (int) args[3], (float) args[4]);
+                return null;
+            };
             SpatialGUIRenderer.skipWindowOverride = false;
-            renderer.extractIsolatedScreen(screen, partialTick);
+            renderer.extractIsolatedScreen(screen, partialTick, operation);
             SpatialGUIRenderer.skipWindowOverride = true;
             renderer.renderInWorldPost();
         } else {
-            net.neoforged.neoforge.client.ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+            ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
         }
     }
     ^///?}

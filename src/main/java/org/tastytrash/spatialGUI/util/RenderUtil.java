@@ -125,10 +125,10 @@ public final class RenderUtil {
         float halfWidth = aspect * 0.5F;
         float halfHeight = 0.5F;
         if (VulkanModCompat.isVulkanModLoaded()) {
-            addQuadVertex(buffer, pose, -halfWidth, halfHeight, 0.0F, 0.0F, 0.0F);
-            addQuadVertex(buffer, pose, halfWidth, halfHeight, 0.0F, 1.0F, 0.0F);
-            addQuadVertex(buffer, pose, halfWidth, -halfHeight, 0.0F, 1.0F, 1.0F);
             addQuadVertex(buffer, pose, -halfWidth, -halfHeight, 0.0F, 0.0F, 1.0F);
+            addQuadVertex(buffer, pose, halfWidth, -halfHeight, 0.0F, 1.0F, 1.0F);
+            addQuadVertex(buffer, pose, halfWidth, halfHeight, 0.0F, 1.0F, 0.0F);
+            addQuadVertex(buffer, pose, -halfWidth, halfHeight, 0.0F, 0.0F, 0.0F);
         } else {
             addQuadVertex(buffer, pose, -halfWidth, -halfHeight, 0.0F, 0.0F, 0.0F);
             addQuadVertex(buffer, pose, halfWidth, -halfHeight, 0.0F, 1.0F, 0.0F);
@@ -294,10 +294,10 @@ public final class RenderUtil {
             float u = i / (float) segments;
 
             if (VulkanModCompat.isVulkanModLoaded()) {
-                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 0.0F);
-                addQuadVertex(buffer, pose, x, 0.5F, z, u, 0.0F);
-                addQuadVertex(buffer, pose, x, -0.5F, z, u, 1.0F);
                 addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 1.0F);
+                addQuadVertex(buffer, pose, x, -0.5F, z, u, 1.0F);
+                addQuadVertex(buffer, pose, x, 0.5F, z, u, 0.0F);
+                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 0.0F);
             } else {
                 addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 0.0F);
                 addQuadVertex(buffer, pose, x, -0.5F, z, u, 0.0F);

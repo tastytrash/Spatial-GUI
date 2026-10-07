@@ -89,8 +89,8 @@ public class HudMixin {
     private boolean spatialGUI$hideHud(boolean original) {
         return original || SpatialGUIClient.shouldHideHud();
     }
-     */
-    //?} else if 1.21.1 {
+     
+    *///?} else if 1.21.1 {
     /*@Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$hideHud(CallbackInfo ci) {
         if (SpatialGUIClient.shouldHideHud()) {
@@ -99,11 +99,11 @@ public class HudMixin {
         }
     }
     *///?} else {
-//    @ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;hideGui:Z"))
-//    private boolean spatialGUI$hideHud(boolean original) {
-//        return original || SpatialGUIClient.shouldHideHud();
-//    }
-    //?}
+    /*@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;hideGui:Z"))
+    private boolean spatialGUI$hideHud(boolean original) {
+        return original || SpatialGUIClient.shouldHideHud();
+    }
+    *///?}
 
     //? if >=26.1.2 {
     @Inject(method = {"extractDebugOverlay", "extractDeferredSubtitles"}, at = @At("HEAD"), cancellable = true)

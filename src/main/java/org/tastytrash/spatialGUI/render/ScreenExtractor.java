@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.mixin.gui.GuiRendererAccessor;
+import org.tastytrash.spatialGUI.mixin.render.GameRendererAccessor;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
@@ -36,7 +38,10 @@ import net.minecraft.client.renderer.state.gui.pip.*;
 import net.minecraft.client.gui.render.state.pip.*;
 *///?}
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScreenExtractor {
     //? if >1.21.1 {
@@ -44,8 +49,8 @@ public class ScreenExtractor {
     private GuiRenderer screenGuiRenderer;
     //? if fabric {
     private static List<PictureInPictureRenderer<?>> vanillaPipRenderers(Minecraft mc) {
-        GuiRenderer main = ((org.tastytrash.spatialGUI.mixin.render.GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
-        return List.copyOf(((org.tastytrash.spatialGUI.mixin.gui.GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers().values());
+        GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
+        return new ArrayList<>(((GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers().values());
     }
     //?}
     //? if neoforge {
@@ -77,8 +82,15 @@ public class ScreenExtractor {
                     mc.renderBuffers().bufferSource(),
                     mc.gameRenderer.getSubmitNodeStorage(),
                     mc.gameRenderer.getFeatureRenderDispatcher(),
-                    vanillaPipRenderers(mc)
+                    List.of()
             );
+
+            GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
+
+            ((GuiRendererAccessor) screenGuiRenderer)
+                    .spatialGUI$setPictureInPictureRenderers(((GuiRendererAccessor) main)
+                    .spatialGUI$getPictureInPictureRenderers());
+
             //?} else if neoforge {
             /*screenGuiRenderer = new GuiRenderer(
                     screenRenderState,

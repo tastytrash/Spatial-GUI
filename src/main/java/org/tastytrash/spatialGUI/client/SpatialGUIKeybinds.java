@@ -75,8 +75,8 @@ public class SpatialGUIKeybinds {
         if (registered) return;
         registered = true;
         //? if >1.21.1 {
-        event.registerCategory(SPATIAL_GUI_CATEGORY);
-        //?}
+        /^event.registerCategory(SPATIAL_GUI_CATEGORY);
+        ^///?}
         openConfig = createKey();
         event.register(openConfig);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> tick(Minecraft.getInstance()));
