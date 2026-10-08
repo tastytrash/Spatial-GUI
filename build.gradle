@@ -2,6 +2,7 @@ plugins {
     id 'dev.kikugie.loom-back-compat' apply false
     id 'net.neoforged.moddev' version '2.0.147' apply false
     id 'maven-publish'
+    id "me.modmuss50.mod-publish-plugin" version "2.2.1"
 }
 
 version = project.mod_version
@@ -175,5 +176,60 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
+    }
+}
+
+if (project.hasProperty('stonecutter')) {
+    publishMods {
+        file = jar.archiveFile
+        changelog = rootProject.file("CHANGELOG.md").text
+        type = STABLE
+        modLoaders.add(loader)
+
+        def loaderName = isFabric ? "Fabric" : "NeoForge"
+        def displayMc = project.minecraft_version == "26.1.2" ? "26.1.x" : project.minecraft_version
+        displayName = "[${loaderName} ${displayMc}] v${project.version}"
+
+        curseforge {
+            projectId = "1676741"
+            accessToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+            minecraftVersions.add(project.minecraft_version)
+            if (project.minecraft_version == "26.1.2") {
+                minecraftVersions.add("26.1.1")
+                minecraftVersions.add("26.1")
+            }
+            client = true
+            server = false
+            if (isFabric) {
+                requires("fabric-api")
+                requires("cloth-config")
+                requires("modmenu")
+            } else if (isNeoForge) {
+                requires("cloth-config")
+            }
+        }
+
+        modrinth {
+            projectId = "zLBn2IE4"
+            accessToken = providers.gradleProperty("MODRINTH_TOKEN")
+            minecraftVersions.add(project.minecraft_version)
+            if (project.minecraft_version == "26.1.2") {
+                minecraftVersions.add("26.1.1")
+                minecraftVersions.add("26.1")
+            }
+            def loaderVersionName = isFabric ? "fabric" : "neoforge"
+            def versionMc = project.minecraft_version == "26.1.2" ? "26.1.x" : project.minecraft_version
+            version = "${project.version}-${loaderVersionName}+${versionMc}"
+            displayName = "Spatial GUI ${project.version} (${loaderName} ${versionMc})"
+            if (isFabric) {
+                requires("fabric-api")
+                requires("cloth-config")
+                requires("modmenu")
+            } else if (isNeoForge) {
+                requires("cloth-config")
+            }
+        }
+
+        dryRun = false
     }
 }

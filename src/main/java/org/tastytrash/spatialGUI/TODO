@@ -28,17 +28,3 @@ Add forge 1.20.1
 Parallax magnitude config
 
 Special transition case for third person front
-
------ CHANGELOG ------
-
-Mouse handling reworked, now modifies the raw position, should be generally more compatible with mods
-Added a world blur config for 26.x versions
-Added FOV override config, helps improve visibility on high FOVs
-Added 'Auto Detect Camera Mode', changes the camera mode depending on your perspective (default off)
-Reworked the screens config to use an inclusion/exclusion list, providing more customizability, especially w/ mods
-Fixed REI tooltips and late-rendered widgets rendering flat on the screen instead of on the spatial GUI (fabric)
-Fixed a black flash when opening screens such as REI recipe views on 26.x
-Fixed a VulkanMod compatibility issue where the screen rendered flipped
-Dynamic Crosshair compatibility, the crosshair is always shown in first person in the spatial GUI
-Tons of GUI scaling & mouse related bug fixes
-Huge thanks to vibing/nullsoepic on GitHub!

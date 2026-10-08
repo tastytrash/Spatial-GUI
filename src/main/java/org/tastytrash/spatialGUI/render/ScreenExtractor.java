@@ -50,7 +50,11 @@ public class ScreenExtractor {
     //? if fabric {
     private static List<PictureInPictureRenderer<?>> vanillaPipRenderers(Minecraft mc) {
         GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
-        return new ArrayList<>(((GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers().values());
+        List<PictureInPictureRenderer<?>> out = new ArrayList<>();
+        for (PictureInPictureRenderer<?> r : ((GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers().values()) {
+            if (r.getClass().getName().startsWith("net.minecraft.")) out.add(r);
+        }
+        return out;
     }
     //?}
     //? if neoforge {

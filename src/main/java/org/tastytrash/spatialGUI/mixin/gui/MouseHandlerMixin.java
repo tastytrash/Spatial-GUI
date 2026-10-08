@@ -2,6 +2,8 @@ package org.tastytrash.spatialGUI.mixin.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
@@ -76,65 +78,51 @@ public class MouseHandlerMixin {
     }
     *///?}
 
-    @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
+    @WrapMethod(method = "onMove")
     //? if >=26.3 {
-    /*private void spatialGUI$onMove(long handle, double x, double y, double xrel, double yrel, CallbackInfo ci) {
-    *///?} else {
-    private void spatialGUI$onMove(long handle, double x, double y, CallbackInfo ci) {
+    /*private void spatialGUI$onMove(long handle, double x, double y, double xrel, double yrel, Operation<Void> original) {
+     *///?} else {
+    private void spatialGUI$onMove(long handle, double x, double y, Operation<Void> original) {
     //?}
         Minecraft mc = Minecraft.getInstance();
         //? if >1.21.1 {
-        if (handle != mc.getWindow().handle()) {
+        if (handle != mc.getWindow().handle()) return;
         //?} else {
-        /*if (handle != mc.getWindow().getWindow()) {
-        *///?}
-            ci.cancel();
-            return;
-        }
+        /*if (handle != mc.getWindow().getWindow()) return;
+         *///?}
 
-        double[] delta = MouseHandlerUtil.captureMove(x, y, ((MouseHandlerAccessor) this).getMouseGrabbed());
+        MouseHandlerAccessor acc = (MouseHandlerAccessor) this;
+        double[] delta = MouseHandlerUtil.captureMove(x, y, acc.getMouseGrabbed());
         //? if >=26.3 {
         /*delta[0] = xrel;
         delta[1] = yrel;
         *///?}
 
-        if (!shouldApplyMouseOverride()) return;
+        double outX = x;
+        double outY = y;
 
         var renderer = SpatialGUIClient.renderer();
-        if (renderer == null) return;
+        if (renderer != null && shouldApplyMouseOverride()) {
+            if (SpatialGUIRenderer.isCrosshairModeActive() && !acc.getIgnoreFirstMove()) {
+                MouseHandlerUtil.addFreeLookDelta(delta[0], delta[1]);
+            }
 
-        MouseHandlerAccessor mouseHandler = (MouseHandlerAccessor) this;
-
-        boolean ignoreFirstMove = mouseHandler.getIgnoreFirstMove();
-        if (ignoreFirstMove) {
-            mouseHandler.setIgnoreFirstMove(false);
-            delta[0] = 0;
-            delta[1] = 0;
-        }
-
-        // free-look must track input even when the ray misses the quad, or
-        // turning past the screen edge deadlocks the camera
-        if (SpatialGUIRenderer.isCrosshairModeActive() && !ignoreFirstMove) {
-            MouseHandlerUtil.addFreeLookDelta(delta[0], delta[1]);
-        }
-
-        Vector2d mouse = renderer.updateMousePosition(
-                MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY());
-
-        if (mouse != null) {
-            double oldX = mouseHandler.getRawXpos();
-            double oldY = mouseHandler.getRawYpos();
-
-            mouseHandler.setRawXpos(mouse.x);
-            mouseHandler.setRawYpos(mouse.y);
-
-            if (!ignoreFirstMove) {
-                mouseHandler.setAccumulatedDX(mouseHandler.getAccumulatedDX() + mouse.x - oldX);
-                mouseHandler.setAccumulatedDY(mouseHandler.getAccumulatedDY() + mouse.y - oldY);
+            Vector2d mouse = renderer.updateMousePosition(
+                    MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY());
+            if (mouse != null) {
+                outX = mouse.x;
+                outY = mouse.y;
+            } else {
+                outX = acc.getRawXpos();
+                outY = acc.getRawYpos();
             }
         }
 
-        ci.cancel();
+        //? if >=26.3 {
+        /*original.call(handle, outX, outY, xrel, yrel);
+         *///?} else {
+        original.call(handle, outX, outY);
+        //?}
     }
 
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
