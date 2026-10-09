@@ -15,7 +15,7 @@ public final class VulkanModCompat {
         return isVulkanModLoaded;
     }
 }
-//?} else if neoforge {
+//?} else {
 /*package org.tastytrash.spatialGUI.compat;
 
 public final class VulkanModCompat {

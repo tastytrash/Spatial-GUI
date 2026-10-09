@@ -18,14 +18,28 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
+*///? } else if forge {
+/*import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 *///? }
 
 //? if fabric {
  public class SpatialGUIClient implements ClientModInitializer {
-//? } else if neoforge {
+//? } else if neoforge{
 /*@Mod(value = SpatialGUI.MOD_ID, dist = Dist.CLIENT)
 public class SpatialGUIClient {
-*///? }
+*///?} else if forge {
+/*@Mod(value = SpatialGUI.MOD_ID)
+public class SpatialGUIClient {
+*///?}
 
     private static SpatialGUIRenderer renderer;
     private static boolean effectiveFirstPersonMode = false;
@@ -60,12 +74,32 @@ public class SpatialGUIClient {
             renderer.hookScreen(screen);
         }
     }
+    *///?} else if forge {
+    /*public SpatialGUIClient() {
+        if (FMLEnvironment.dist != Dist.CLIENT) return;
+        SpatialGUI.initCommon();
+        renderer = new SpatialGUIRenderer();
+
+        ModLoadingContext.get().registerExtensionPoint(
+                ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory(
+                        (mc, parent) -> me.shedaniel.autoconfig.AutoConfigClient.getConfigScreen(SpatialGUIConfig.class, parent).get())
+        );
+
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(SpatialGUIKeybinds::register);
+        MinecraftForge.EVENT_BUS.addListener(this::onScreenInit);
+    }
+
+    private void onScreenInit(ScreenEvent.Init.Pre event) {
+        var screen = event.getScreen();
+        if (shouldHookScreen(screen)) renderer.hookScreen(screen);
+    }
     *///?}
 
     public static boolean isEnabled() {
-        if (VisorCompat.isActive()) {
-            return false;
-        }
+        if (SpatialGUI.config == null) return false;
+        if (VisorCompat.isActive()) return false;
         return SpatialGUI.config.enabled;
     }
 
@@ -87,8 +121,7 @@ public class SpatialGUIClient {
 
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
-
-
+        if (SpatialGUI.config == null) return false;
 
         String id = screen.getClass().getName();
         if (id.contains("TitleScreen")) return false;

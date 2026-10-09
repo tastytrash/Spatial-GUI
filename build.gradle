@@ -1,6 +1,7 @@
 plugins {
     id 'dev.kikugie.loom-back-compat' apply false
     id 'net.neoforged.moddev' version '2.0.147' apply false
+    id 'net.neoforged.moddev.legacyforge' version '2.0.147' apply false
     id 'maven-publish'
     id "me.modmuss50.mod-publish-plugin" version "2.2.1"
 }
@@ -9,6 +10,7 @@ version = project.mod_version
 group = project.maven_group
 
 def dependencyVersions = [
+        "1.20.1-forge":    [minecraft: "1.20.1", minecraft_dependency: "1.20.1", forge: "1.20.1-47.2.20", cloth_config: "11.1.118", obfuscated: true, java: 17],
         "1.20.1-fabric":   [minecraft: "1.20.1", minecraft_dependency: "1.20.1", fabric: "0.92.2+1.20.1", loader: "0.19.3", cloth_config: "11.1.106", modmenu: "7.2.2", obfuscated: true, java: 17],
         "1.21.1-neoforge": [minecraft: "1.21.1", minecraft_dependency: "1.21.1", neoforge: "21.1.240", cloth_config: "15.0.140", obfuscated: true, java: 21],
         "1.21.1-fabric":   [minecraft: "1.21.1", minecraft_dependency: "1.21.1", fabric: "0.116.0+1.21.1", loader: "0.19.3", cloth_config: "15.0.140", modmenu: "11.0.4", obfuscated: true, java: 21],
@@ -26,12 +28,15 @@ def nodeName = stonecutter.current.project
 def loader = nodeName.substring(nodeName.lastIndexOf('-') + 1)
 def isFabric = loader == 'fabric'
 def isNeoForge = loader == 'neoforge'
+def isForge = loader == 'forge'
 def isObfuscated = (dependencyVersions[nodeName]?.obfuscated) ?: false
 
 if (isFabric) {
     apply plugin: 'dev.kikugie.loom-back-compat'
 } else if (isNeoForge) {
     apply plugin: 'net.neoforged.moddev'
+} else if (isForge) {
+    apply plugin: 'net.neoforged.moddev.legacyforge'
 }
 
 if (project.hasProperty('stonecutter')) {
@@ -48,6 +53,8 @@ if (project.hasProperty('stonecutter')) {
         }
     } else if (isNeoForge) {
         project.ext.neoforge_version = currentVersions.neoforge
+    } else if (isForge) {
+        project.ext.forge_version = currentVersions.forge
     }
 }
 
@@ -68,6 +75,9 @@ repositories {
     if (isNeoForge) {
         maven { name = "Mojang"; url = "https://libraries.minecraft.net" }
     }
+    if (isForge) {
+        maven { name = "MinecraftForge"; url = "https://maven.minecraftforge.net/" }
+    }
 }
 dependencies {
     if (isFabric) {
@@ -83,6 +93,26 @@ dependencies {
         modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
     } else if (isNeoForge) {
         implementation "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}"
+    } else if (isForge) {
+        modImplementation "me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}"
+        compileOnly 'org.spongepowered:mixin:0.8.5'
+        annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+        compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+        implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
+        jarJar("io.github.llamalad7:mixinextras-forge:0.4.1") {
+            version { strictly '[0.4.1,)'; prefer '0.4.1' }
+        }
+    }
+}
+
+if (isForge) {
+    mixin {
+        add sourceSets.main, "spatial-gui.refmap.json"
+        config "spatial-gui.mixins.json"
+    }
+    jar {
+        manifest.attributes 'MixinConfigs': 'spatial-gui.mixins.json'
     }
 }
 
@@ -99,6 +129,14 @@ if (isNeoForge) {
                 sourceSet sourceSets.main
             }
         }
+    }
+}
+
+if (isForge) {
+    legacyForge {
+        version = project.forge_version
+        runs { client { client() } }
+        mods { "spatial_gui" { sourceSet sourceSets.main } }
     }
 }
 
@@ -127,6 +165,17 @@ processResources {
             expand "version": project.version,
                     "minecraft_version": project.minecraft_version,
                     "neoforge_version": project.neoforge_version,
+                    "minecraft_dependency": project.minecraft_dependency
+        }
+    } else if (isForge) {
+        exclude "fabric.mod.json"
+        exclude "META-INF/neoforge.mods.toml"
+        inputs.property "forge_version", project.forge_version
+        inputs.property "minecraft_dependency", project.minecraft_dependency
+        filesMatching("META-INF/mods.toml") {
+            expand "version": project.version,
+                    "minecraft_version": project.minecraft_version,
+                    "forge_version": project.forge_version,
                     "minecraft_dependency": project.minecraft_dependency
         }
     }

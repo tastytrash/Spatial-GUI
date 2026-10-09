@@ -61,16 +61,26 @@ public class MouseHandlerMixin {
                 : scaled * w.getScreenHeight() / (double) w.getGuiScaledHeight();
     }
 
-    @ModifyExpressionValue(method = {"onPress", "onScroll", "handleAccumulatedMovement"},
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;xpos:D"))
+    @ModifyExpressionValue(
+        //? if >1.20.1 {
+        method = {"onPress", "onScroll", "handleAccumulatedMovement"},
+        //?} else {
+        /^method = {"onPress", "onScroll"},
+        ^///?}
+        at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;xpos:D"))
     private double spatialGUI$overrideX(double original) {
         return shouldApplyMouseOverride()
                 ? spatialGUI$toRaw(true, MouseHandlerUtil.getLastPos(true, original))
                 : original;
     }
 
-    @ModifyExpressionValue(method = {"onPress", "onScroll", "handleAccumulatedMovement"},
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;ypos:D"))
+    @ModifyExpressionValue(
+        //? if >1.20.1 {
+        method = {"onPress", "onScroll", "handleAccumulatedMovement"},
+        //?} else {
+        /^method = {"onPress", "onScroll"},
+        ^///?}
+        at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;ypos:D"))
     private double spatialGUI$overrideY(double original) {
         return shouldApplyMouseOverride()
                 ? spatialGUI$toRaw(false, MouseHandlerUtil.getLastPos(false, original))
@@ -158,7 +168,7 @@ public class MouseHandlerMixin {
 
     @Unique
     private static boolean spatialGUI$crosshairIncoming() {
-        return SpatialGUI.config.useCrosshairForFirstPerson && SpatialGUIClient.getEffectiveFirstPersonMode();
+        return SpatialGUI.config != null && SpatialGUI.config.useCrosshairForFirstPerson && SpatialGUIClient.getEffectiveFirstPersonMode();
     }
 
     @Unique

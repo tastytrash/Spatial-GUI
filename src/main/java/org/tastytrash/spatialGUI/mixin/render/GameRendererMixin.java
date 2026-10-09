@@ -32,8 +32,9 @@ import static com.mojang.blaze3d.platform.Lighting.Entry.LEVEL;
 *///?}
 
 //? if neoforge {
-
 /*import net.neoforged.neoforge.client.ClientHooks;
+*///?} else if forge {
+/*import net.minecraftforge.client.ForgeHooksClient;
 *///?}
 
 //? if >=26.1.2 {
@@ -660,13 +661,18 @@ public class GameRendererMixin {
     //?} else {
     /^@Redirect(method = "render", at = @At(
             value = "INVOKE",
-            target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            //? if neoforge {
+            /^¹target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            ¹^///?} else if forge {
+            /^¹target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+            remap = false
+            ¹^///?}
     ))
     private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(screen) && screen == renderer.getHookedScreen()) {
             Operation<Void> operation = args -> {
-                ClientHooks.drawScreen((Screen) args[0], (GuiGraphics) args[1], (int) args[2], (int) args[3], (float) args[4]);
+                spatialGUI$drawScreen((Screen) args[0], (GuiGraphics) args[1], (int) args[2], (int) args[3], (float) args[4]);
                 return null;
             };
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -674,8 +680,17 @@ public class GameRendererMixin {
             SpatialGUIRenderer.skipWindowOverride = true;
             renderer.renderInWorldPost();
         } else {
-            ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+            spatialGUI$drawScreen(screen, graphics, mouseX, mouseY, partialTick);
         }
+    }
+
+    @Unique
+    private static void spatialGUI$drawScreen(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        //? if neoforge {
+        /^¹ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+         ¹^///?} else if forge {
+        /^¹ForgeHooksClient.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+        ¹^///?}
     }
     ^///?}
 

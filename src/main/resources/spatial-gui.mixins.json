@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.tastytrash.spatialGUI.mixin",
+  "refmap": "spatial-gui.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],

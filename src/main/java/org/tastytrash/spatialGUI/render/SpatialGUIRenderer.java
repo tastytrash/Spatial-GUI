@@ -17,7 +17,10 @@ import org.tastytrash.spatialGUI.util.RenderUtil;
 //? } else if neoforge {
 /*import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-*///? }
+*///? } else if forge {
+/*import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+*///?}
 //? if >26.2 {
 /*import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 *///?} else if >1.21.1 {
@@ -60,7 +63,10 @@ public class SpatialGUIRenderer {
         //? if neoforge {
         /*NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
         NeoForge.EVENT_BUS.addListener(this::onScreenClosing);
-        *///? }
+        *///? } else if forge {
+        /*MinecraftForge.EVENT_BUS.addListener(this::onScreenRenderPre);
+        MinecraftForge.EVENT_BUS.addListener(this::onScreenClosing);
+        *///?}
     }
 
     public void hookScreen(Screen screen) {
@@ -113,7 +119,7 @@ public class SpatialGUIRenderer {
         //?}
     }
 
-    //? if neoforge {
+    //? if neoforge || forge {
     /*private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
         if (event.getScreen() == hookedScreen) {
             event.setCanceled(true);
@@ -308,7 +314,8 @@ public class SpatialGUIRenderer {
     }
 
     public static boolean isCrosshairModeActive() {
-        return SpatialGUI.config.useCrosshairForFirstPerson
+        return SpatialGUI.config != null
+                && SpatialGUI.config.useCrosshairForFirstPerson
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
                 && SpatialGUIClient.renderer() != null
                 && SpatialGUIClient.renderer().getHookedScreen() != null;
