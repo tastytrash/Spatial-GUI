@@ -13,6 +13,7 @@
     "client.OptionsMixin",
     "compat.DynamicCrosshairMixin",
     "gui.DebugScreenOverlayMixin",
+    "gui.GuiGraphicsCursorMixin",
     "gui.GuiMixin",
     "gui.GuiRendererAccessor",
     "gui.GuiRendererMixin",

@@ -334,6 +334,7 @@ public abstract class GameRendererMixin {
         if (renderer != null && SpatialGUIClient.isEnabled() && renderer.shouldCapture()) {
             SpatialGUIRenderer.skipWindowOverride = false;
             SpatialGUIRenderer.isExtractingScreen = true;
+            SpatialGUIRenderer.cursorTarget = graphics;
             return renderer.createIsolatedGraphics();
         }
         return graphics;
@@ -350,6 +351,7 @@ public abstract class GameRendererMixin {
             SpatialGUIRenderer.isExtractingScreen = false;
             SpatialGUIRenderer.skipWindowOverride = true;
         }
+        SpatialGUIRenderer.cursorTarget = null;
     }
     //?}
 
@@ -500,6 +502,7 @@ public abstract class GameRendererMixin {
         if (renderer != null && SpatialGUIClient.isEnabled() && renderer.shouldCapture()) {
             SpatialGUIRenderer.skipWindowOverride = false;
             SpatialGUIRenderer.isExtractingScreen = true;
+            SpatialGUIRenderer.cursorTarget = graphics;
             return renderer.createIsolatedGraphics();
         }
         return graphics;
@@ -516,6 +519,7 @@ public abstract class GameRendererMixin {
             SpatialGUIRenderer.isExtractingScreen = false;
             SpatialGUIRenderer.skipWindowOverride = true;
         }
+        SpatialGUIRenderer.cursorTarget = null;
     }
     //?} else {
     /^@Redirect(method = "render", at = @At(

@@ -181,7 +181,7 @@ publishing {
 
 if (project.hasProperty('stonecutter')) {
     publishMods {
-        file = jar.archiveFile
+        file = (isFabric && isObfuscated) ? remapJar.archiveFile : jar.archiveFile
         changelog = rootProject.file("CHANGELOG.md").text
         type = STABLE
         modLoaders.add(loader)
