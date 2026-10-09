@@ -76,7 +76,6 @@ If you find a reproducible incompatibility with another mod, please report it on
 ## Notes
 *   Feel free to suggest features or report bugs on the GitHub.
 *   Spatial GUI is welcome in modpacks, no additional permission required. Be aware that compatibility with some mods may vary.
-*   Forge 1.20.1 coming soon (hopefully)
 
 ### Special thanks to:
 vibing for all of their GitHub contributions  
