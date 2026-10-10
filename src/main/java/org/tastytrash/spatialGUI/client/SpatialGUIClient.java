@@ -46,6 +46,7 @@ public class SpatialGUIClient {
     private static boolean switchedToFirstPersonDueToBlock = false;
     private static boolean wasThirdPersonCamera = false;
     private static float cameraYawOffset = 0f;
+    private static boolean capturingPanorama = false;
 
     //? if fabric {
     @Override
@@ -101,6 +102,7 @@ public class SpatialGUIClient {
     public static boolean isEnabled() {
         if (SpatialGUI.config == null) return false;
         if (VisorCompat.isActive()) return false;
+        if (capturingPanorama) return false;
         return SpatialGUI.config.enabled;
     }
 
@@ -123,6 +125,7 @@ public class SpatialGUIClient {
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
         if (SpatialGUI.config == null) return false;
+        if (Minecraft.getInstance().level == null) return false;
 
         String id = screen.getClass().getName();
         if (id.contains("TitleScreen")) return false;
@@ -200,5 +203,9 @@ public class SpatialGUIClient {
 
     public static void setCameraYawOffset(float yaw) {
         cameraYawOffset = yaw;
+    }
+
+    public static void setCapturingPanorama(boolean value) {
+        capturingPanorama = value;
     }
 }
