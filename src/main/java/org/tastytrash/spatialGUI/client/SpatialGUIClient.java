@@ -45,6 +45,7 @@ public class SpatialGUIClient {
     private static boolean effectiveFirstPersonMode = false;
     private static boolean switchedToFirstPersonDueToBlock = false;
     private static boolean wasThirdPersonCamera = false;
+    private static float cameraYawOffset = 0f;
 
     //? if fabric {
     @Override
@@ -191,5 +192,13 @@ public class SpatialGUIClient {
             return (isInventoryScreen ? SpatialGUI.config.firstPersonModeInventory : SpatialGUI.config.firstPersonModeContainers)
                 || switchedToFirstPersonDueToBlock;
         }
+    }
+
+    public static float getCameraYawOffset() {
+        return cameraYawOffset;
+    }
+
+    public static void setCameraYawOffset(float yaw) {
+        cameraYawOffset = yaw;
     }
 }

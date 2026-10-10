@@ -105,6 +105,7 @@ public abstract class CameraMixin {
             if (!wasCapturing || !isTransitioning) {
                 this.startTransition(renderer, newTargetYRot, newTargetXRot, isFirstPerson);
             }
+            SpatialGUIClient.setCameraYawOffset(smoothedCameraYaw);
 
             this.applyCameraUpdate(newTargetPos, newTargetYRot, newTargetXRot, isFirstPerson);
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
@@ -275,6 +276,7 @@ public abstract class CameraMixin {
         lastParallaxNanos = 0;
         baseXRot = 0f;
         wasCrosshairMode = false;
+        SpatialGUIClient.setCameraYawOffset(0f);
         SpatialGUIClient.setWasThirdPersonCamera(false);
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
         SpatialGUIClient.setEffectiveFirstPersonMode(false);

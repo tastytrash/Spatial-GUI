@@ -28,6 +28,7 @@
     "gui.SubtitleOverlayMixin",
     "gui.WindowMixin",
     "input.InputConstantsMixin",
+    "input.KeyboardInputMixin",
     "render.AvatarRendererMixin",
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
