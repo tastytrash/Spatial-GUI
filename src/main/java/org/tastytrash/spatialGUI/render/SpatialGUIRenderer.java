@@ -70,9 +70,16 @@ public class SpatialGUIRenderer {
     }
 
     public void hookScreen(Screen screen) {
-        if (hookedScreen == screen) {
-            return;
-        }
+        if (hookedScreen == screen) return;
+        if (!SpatialGUIClient.isEnabled()) return;
+        //? if >=26.2 {
+        /*if (screen != Minecraft.getInstance().gui.screen()) return;
+         *///?} else {
+        if (screen != Minecraft.getInstance().screen) return;
+        //?}
+
+
+        if (hookedScreen != null) onScreenRemoved();
 
         if (!SpatialGUIClient.isEnabled()) {
             return;
@@ -137,6 +144,7 @@ public class SpatialGUIRenderer {
     *///? }
 
     private void onScreenRemoved() {
+        if (hookedScreen == null) return;
         skipWindowOverride = false;
         var player = Minecraft.getInstance().player;
         boolean wasEffectiveFirstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
@@ -148,8 +156,8 @@ public class SpatialGUIRenderer {
         headLockInitialized = false;
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
 
+        var mc = Minecraft.getInstance();
         if (wasEffectiveFirstPerson && SpatialGUI.config.keepFirstPersonCameraAngle) {
-            var mc = Minecraft.getInstance();
             //? if >=26.2 {
             /*float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
             float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
@@ -343,6 +351,18 @@ public class SpatialGUIRenderer {
         inventoryRenderer.onFrameStart();
     }
 
+    public void updateFrame() {
+        var mc = Minecraft.getInstance();
+        //? if >=26.2 {
+        /*Screen screen = mc.gui.screen();
+         *///?} else {
+        Screen screen = mc.screen;
+        //?}
+        if (hookedScreen != null && screen != hookedScreen) onScreenRemoved();
+        MouseHandlerUtil.syncCursorGrab();
+        updateFovProgress();
+    }
+
     public void updateFovProgress() {
         var mc = Minecraft.getInstance();
         if (mc.level == null) {
@@ -353,9 +373,10 @@ public class SpatialGUIRenderer {
 
         //? if >=26.2 {
         /*Screen current = mc.gui.screen();
-        *///?} else {
+         *///?} else {
         Screen current = mc.screen;
         //?}
+
         boolean active = current != null && current == hookedScreen && SpatialGUIClient.shouldHookScreen(current);
         float target = (active && SpatialGUI.config.overrideFov) ? 1f : 0f;
         float speed = SpatialGUI.config.fovLerpSpeed;

@@ -13,6 +13,7 @@ import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.EssentialCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
+import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 
 @Mixin(Window.class)
 public class WindowMixin {
@@ -41,8 +42,7 @@ public class WindowMixin {
     @Unique
     private int calculateScaledDimension(boolean isWidth) {
         Window self = (Window)(Object) this;
-        double dimension = isWidth ? self.getWidth() : self.getHeight();
-        return Mth.ceil(dimension / (double) getGuiScale());
+        return isWidth ? GuiScaleUtil.scaledWidth(self) : GuiScaleUtil.scaledHeight(self);
     }
 
     @Unique

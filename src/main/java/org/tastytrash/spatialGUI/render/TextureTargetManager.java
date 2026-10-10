@@ -81,6 +81,9 @@ public class TextureTargetManager {
                     //?}
             );
             //?}
+            //? if >=1.21.11 {
+            clearTarget();
+            //?}
             return;
         }
 
@@ -89,6 +92,7 @@ public class TextureTargetManager {
             /*inventoryTarget.resize(width, height, Minecraft.ON_OSX);
             *///?} else {
             inventoryTarget.resize(width, height);
+            clearTarget();
              //?}
         }
     }

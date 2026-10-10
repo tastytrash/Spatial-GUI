@@ -157,6 +157,44 @@ public class MouseHandlerUtil {
         return result;
     }
 
+    public static void syncCursorGrab() {
+        Minecraft mc = Minecraft.getInstance();
+        //? if >=26.2 {
+        /*if (mc.gui.screen() == null || SpatialGUIRenderer.isCrosshairModeActive()) return;
+        *///?} else {
+        if (mc.screen == null || SpatialGUIRenderer.isCrosshairModeActive()) return;
+         //?}
+        MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
+
+        //? if <26.3 {
+        //? if >1.21.1 {
+        long window = mc.getWindow().handle();
+        //?} else {
+        /*long window = mc.getWindow().getWindow();
+        *///?}
+        boolean cursorFree = GLFW.glfwGetInputMode(window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_NORMAL;
+        //?} else {
+        /*boolean cursorFree = true;
+        *///?}
+
+        if (!accessor.getMouseGrabbed() && cursorFree) return;
+
+        accessor.setMouseGrabbed(false);
+        double cx = mc.getWindow().getScreenWidth() / 2.0;
+        double cy = mc.getWindow().getScreenHeight() / 2.0;
+        //? if >26.2 {
+        /*InputConstants.releaseMouse(mc.getWindow(), cx, cy);
+        *///?} else if >1.21.1 {
+        InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, cx, cy);
+         //?} else {
+        /*InputConstants.grabOrReleaseMouse(mc.getWindow(), InputConstants.CURSOR_NORMAL, cx, cy);
+         *///?}
+        accessor.setRawXpos(cx);
+        accessor.setRawYpos(cy);
+        resetMouseState();
+        weGrabbedMouse = false;
+    }
+
     public static void grabMouseForFirstPerson() {
         Minecraft mc = Minecraft.getInstance();
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;

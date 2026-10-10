@@ -252,7 +252,7 @@ public abstract class GameRendererMixin {
     private void spatialGUI$prepareTargetEarly(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.updateFovProgress();
+            renderer.updateFrame();
         }
         if (renderer != null && renderer.shouldCapture() && SpatialGUIClient.isEnabled()) {
             renderer.prepareTarget();
@@ -456,7 +456,7 @@ public abstract class GameRendererMixin {
     private void spatialGUI$prepareTargetEarly(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.updateFovProgress();
+            renderer.updateFrame();
         }
         if (renderer != null && renderer.shouldCapture() && SpatialGUIClient.isEnabled()) {
             renderer.prepareTarget();
@@ -600,7 +600,7 @@ public class GameRendererMixin {
     private void spatialGUI$prepareTargetEarly(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
-            renderer.updateFovProgress();
+            renderer.updateFrame();
         }
         if (renderer != null && renderer.shouldCapture() && SpatialGUIClient.isEnabled()) {
             renderer.prepareTarget();

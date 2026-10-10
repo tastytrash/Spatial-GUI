@@ -24,6 +24,7 @@
     "gui.MouseHandlerSwingMixin",
     "gui.PauseScreenMixin",
     "gui.ScreenInvoker",
+    "gui.ScreenLayoutMixin",
     "gui.ScreenMixin",
     "gui.SubtitleOverlayMixin",
     "gui.WindowMixin",
