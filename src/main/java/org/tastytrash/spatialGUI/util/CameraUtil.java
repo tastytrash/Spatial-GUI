@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.SpatialGUI;
@@ -39,21 +40,32 @@ public class CameraUtil {
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(isInsideBlock || pathBlocked);
     }
 
-    public static Vec3 adjustCameraPositionForCollision(Entity entity, Vec3 playerEyePos, Vec3 targetCamPos) {
-        if (Minecraft.getInstance().level == null) return targetCamPos;
+    public static Vec3 adjustCameraPositionForCollision(Entity entity, Vec3 eye, Vec3 target) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return target;
 
-        var clipContext = new ClipContext(playerEyePos, targetCamPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
-        HitResult hit = Minecraft.getInstance().level.clip(clipContext);
-        if (hit.getType() != HitResult.Type.MISS) {
-            Vec3 hitVec = hit.getLocation();
-            Vec3 dir = playerEyePos.subtract(targetCamPos);
-            double len = dir.length();
-            if (len > 0.0001) {
-                dir = dir.normalize();
-                return hitVec.add(dir.scale(0.1));
+        Vec3 delta = target.subtract(eye);
+        double maxDist = delta.length();
+        if (maxDist < 0.001) return target;
+
+        final double clearance = 0.2;
+        double cameraDist = maxDist;
+
+        for (int i = 0; i < 8; i++) {
+            double offsetX = (i & 1) * 2 - 1;
+            double offsetY = (i >> 1 & 1) * 2 - 1;
+            double offsetZ = (i >> 2 & 1) * 2 - 1;
+            Vec3 offset = new Vec3((offsetX * clearance), (offsetY * clearance), (offsetZ * clearance));
+
+            Vec3 from = eye.add(offset);
+            HitResult hit = level.clip(new ClipContext(from, target.add(offset), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+
+            if (hit.getType() != HitResult.Type.MISS) {
+                cameraDist = Math.min(cameraDist, hit.getLocation().distanceTo(from));
             }
         }
-        return targetCamPos;
+
+        return eye.add(delta.scale(cameraDist / maxDist));
     }
 
     public static float getCurrentFov() {
