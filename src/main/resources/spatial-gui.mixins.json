@@ -14,6 +14,7 @@
     "client.MinecraftMixin",
     "client.OptionsMixin",
     "compat.DynamicCrosshairMixin",
+    "compat.PolytoneMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiGraphicsCursorMixin",
     "gui.GuiMixin",
