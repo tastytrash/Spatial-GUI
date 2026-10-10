@@ -5,6 +5,7 @@
   "refmap": "spatial-gui.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "compat.SophisticatedCoreMixin"
   ],
   "client": [
     "client.AbstractRecipeBookScreenMixin",

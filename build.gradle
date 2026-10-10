@@ -147,6 +147,7 @@ processResources {
 
     if (isFabric) {
         exclude "META-INF/neoforge.mods.toml"
+        exclude "META-INF/mods.toml"
         inputs.property "loader_version", project.loader_version
         inputs.property "minecraft_dependency", project.minecraft_dependency
         inputs.property "cloth_config_version", project.cloth_config_version
@@ -159,6 +160,7 @@ processResources {
         }
     } else if (isNeoForge) {
         exclude "fabric.mod.json"
+        exclude "META-INF/mods.toml"
         inputs.property "neoforge_version", project.neoforge_version
         inputs.property "minecraft_dependency", project.minecraft_dependency
         filesMatching("META-INF/neoforge.mods.toml") {
