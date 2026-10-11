@@ -47,6 +47,8 @@ public class AvatarRendererMixin {
         float normX = Math.clamp((float) (mouseX / width) * 2f - 1f, -1f, 1f);
         float normY = Math.clamp((float) (mouseY / height) * 2f - 1f, -1f, 1f);
 
+        if (SpatialGUI.config.mirrorHeadMovement) { normX = -normX; }
+
         float bodyRotationOffset = (float) SpatialGUI.config.avatarBodyRotationOffset;
         if (SpatialGUI.config.mirrorThirdPerson) {
             bodyRotationOffset = -bodyRotationOffset;
@@ -119,6 +121,8 @@ public class AvatarRendererMixin {
 
         float normX = Math.max(-1f, Math.min(1f, (float) mouseX / width * 2f - 1f));
         float normY = Math.max(-1f, Math.min(1f, (float) mouseY / height * 2f - 1f));
+
+        if (SpatialGUI.config.mirrorHeadMovement) { normX = -normX; }
 
         float bodyRotationOffset = (float) SpatialGUI.config.avatarBodyRotationOffset;
         if (SpatialGUI.config.mirrorThirdPerson) {

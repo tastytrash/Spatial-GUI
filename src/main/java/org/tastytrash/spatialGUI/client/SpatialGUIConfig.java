@@ -342,6 +342,10 @@ public class SpatialGUIConfig implements ConfigData {
 
     @ConfigEntry.Category("thirdPersonCamera")
     @ConfigEntry.Gui.Tooltip
+    public boolean mirrorHeadMovement = false;
+
+    @ConfigEntry.Category("thirdPersonCamera")
+    @ConfigEntry.Gui.Tooltip
     @ConfigEntry.BoundedDiscrete(min = 1, max = 5000)
     public int transitionDurationMs = 300;
 
