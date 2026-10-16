@@ -19,6 +19,7 @@ ___
 
 * Per-screen enable and disable lists for mod compatibility
 * Optional world blur behind the screen
+* Screen drop shadow
 * Configurable HUD and hotbar visibility
 * Adjustable GUI scale, render scale, screen opacity, and FOV-aware scaling
 * Screen opening animation

@@ -56,8 +56,8 @@ public class SpatialGUIKeybinds {
     private static void tick(Minecraft mc) {
         while (openConfig.consumeClick()) {
             //? if >=26.2 {
-//            Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.gui.screen());
-            //?} else {
+            /*Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.gui.screen());
+            *///?} else {
             Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.screen);
             //?}
             //? if >=26.1 {

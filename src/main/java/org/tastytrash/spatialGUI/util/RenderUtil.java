@@ -289,6 +289,10 @@ public final class RenderUtil {
     }
 
     public static void addCurvedScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, float arcRadians, int segments) {
+        addCurvedScreenQuad(buffer, pose, aspect, arcRadians, segments, 255, SpatialGUI.config.screenAlpha);
+    }
+
+    public static void addCurvedScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, float arcRadians, int segments, int rgb, int a) {
         float radius = aspect / arcRadians;
         float halfArc = arcRadians * 0.5F;
         float prevX = radius * (float) Math.sin(-halfArc);
@@ -301,15 +305,15 @@ public final class RenderUtil {
             float u = i / (float) segments;
 
             if (VulkanModCompat.isVulkanModLoaded()) {
-                addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 1.0F);
-                addQuadVertex(buffer, pose, x, -0.5F, z, u, 1.0F);
-                addQuadVertex(buffer, pose, x, 0.5F, z, u, 0.0F);
-                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 0.0F);
+                addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 1.0F, rgb, a);
+                addQuadVertex(buffer, pose, x, -0.5F, z, u, 1.0F, rgb, a);
+                addQuadVertex(buffer, pose, x, 0.5F, z, u, 0.0F, rgb, a);
+                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 0.0F, rgb, a);
             } else {
-                addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 0.0F);
-                addQuadVertex(buffer, pose, x, -0.5F, z, u, 0.0F);
-                addQuadVertex(buffer, pose, x, 0.5F, z, u, 1.0F);
-                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 1.0F);
+                addQuadVertex(buffer, pose, prevX, -0.5F, prevZ, prevU, 0.0F, rgb, a);
+                addQuadVertex(buffer, pose, x, -0.5F, z, u, 0.0F, rgb, a);
+                addQuadVertex(buffer, pose, x, 0.5F, z, u, 1.0F, rgb, a);
+                addQuadVertex(buffer, pose, prevX, 0.5F, prevZ, prevU, 1.0F, rgb, a);
             }
 
             prevX = x;

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
@@ -109,8 +110,21 @@ public class InventoryRenderer {
     private float closeYaw;
     private float closePitch;
 
+    private float smoothedLight = -1f;
+
     public InventoryRenderer(TextureTargetManager targetManager) {
         this.targetManager = targetManager;
+    }
+
+    private int computeLightingTint() {
+        var mc = Minecraft.getInstance();
+        if (!SpatialGUI.config.enableWorldLightingTint || mc.level == null || mc.player == null) return 255;
+
+        int light = mc.level.getMaxLocalRawBrightness(BlockPos.containing(mc.player.getEyePosition()));
+        float target = 255f - (float) SpatialGUI.config.lightingTintStrength * (1f - light / 15f);
+
+        smoothedLight = smoothedLight < 0 ? target : smoothedLight + (target - smoothedLight) * 0.1f;
+        return Math.round(smoothedLight);
     }
 
     private record ScreenPose(float scale, float aspect) {}
@@ -191,10 +205,20 @@ public class InventoryRenderer {
     }
 
     private void addScreenQuadMesh(VertexConsumer buffer, Matrix4f pose, float aspect, boolean isFirstPerson) {
+        int lightingTint = computeLightingTint();
         if (isCurvedScreenActive(isFirstPerson)) {
             float arcRadians = (float) Math.toRadians(SpatialGUI.config.curvedScreenArcDegrees);
-            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS);
-            meshQuadCount = CURVED_SEGMENTS;
+            int layers = SpatialGUI.config.dropShadowEnabled ? SpatialGUI.config.dropShadowLayers : 0;
+            for (int i = 0; i < layers; i++) {
+                float offsetX = (float) (SpatialGUI.config.dropShadowHorizontalOffset * (1 + i * 0.5));
+                float offsetY = (float) (SpatialGUI.config.dropShadowVerticalOffset * (1 + i * 0.5));
+                float offsetZ = (float) -SpatialGUI.config.dropShadowDepthOffset;
+                float scale = (float) (1.0 + (SpatialGUI.config.dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
+                Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
+                RenderUtil.addCurvedScreenQuad(buffer, layerPose, aspect, arcRadians, CURVED_SEGMENTS, 0, SpatialGUI.config.dropShadowAlpha / layers);
+            }
+            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS, lightingTint, SpatialGUI.config.screenAlpha);
+            meshQuadCount = (layers + 1) * CURVED_SEGMENTS;
         } else {
             int layers = SpatialGUI.config.dropShadowEnabled ? SpatialGUI.config.dropShadowLayers : 0;
             for (int i = 0; i < layers; i++) {
@@ -205,7 +229,7 @@ public class InventoryRenderer {
                 Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
                 RenderUtil.addScreenQuad(buffer, layerPose, aspect, 0, SpatialGUI.config.dropShadowAlpha / layers);
             }
-            RenderUtil.addScreenQuad(buffer, pose, aspect);
+            RenderUtil.addScreenQuad(buffer, pose, aspect, lightingTint, SpatialGUI.config.screenAlpha);
             meshQuadCount = layers + 1;
         }
     }
@@ -375,9 +399,8 @@ public class InventoryRenderer {
         Matrix4f pose = matrices.last().pose();
         VertexConsumer buffer = INVENTORY_BUFFER.getVertexBuilder(draw);
 
-        addScreenQuadMesh(buffer, pose, screenPose.aspect(), isFirstPerson);
-
         updateScreenBases(screenPose, isFirstPerson);
+        addScreenQuadMesh(buffer, pose, screenPose.aspect(), isFirstPerson);
 
         matrices.popPose();
 
@@ -490,11 +513,10 @@ public class InventoryRenderer {
 
         BufferBuilder buffer = new BufferBuilder(INVENTORY_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
+        updateScreenBases(screenPose, isFirstPerson);
         addScreenQuadMesh(buffer, pose, screenPose.aspect(), isFirstPerson);
 
         MeshData meshData = buffer.build();
-
-        updateScreenBases(screenPose, isFirstPerson);
 
         matrices.popPose();
 
@@ -612,9 +634,8 @@ public class InventoryRenderer {
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         //?}
 
-        addScreenQuadMesh(buffer, pose, screenPose.aspect(), isFirstPerson);
-
         updateScreenBases(screenPose, isFirstPerson);
+        addScreenQuadMesh(buffer, pose, screenPose.aspect(), isFirstPerson);
 
         matrices.popPose();
 

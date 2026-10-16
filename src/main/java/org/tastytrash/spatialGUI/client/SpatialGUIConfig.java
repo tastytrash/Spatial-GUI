@@ -70,6 +70,11 @@ public class SpatialGUIConfig {
     @TickBox
     public boolean firstPersonModeContainers = false;
 
+    @SerialEntry
+    @AutoGen(category = "general", group = "viewMode")
+    @TickBox
+    public boolean useCrosshairForFirstPerson = true;
+
     // hud 
     @MasterTickBox(value = {"hideHotbar"}, invert = true)
     @SerialEntry
@@ -181,35 +186,18 @@ public class SpatialGUIConfig {
     @DoubleSlider(min = 0.0, max = 0.05, step = 0.001)
     public double dropShadowDepthOffset = 0.002;
 
-    // look 
+    // lighting
+    @MasterTickBox(value = {"lightingTintStrength"})
     @SerialEntry
-    @AutoGen(category = "appearance", group = "look")
-    @IntSlider(min = 0, max = 255, step = 1)
-    public int screenAlpha = 255;
-
-    //? if >=26.1.2 {
-    @MasterTickBox(value = {"worldBlurStrength"})
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "look")
-    public boolean blurWorldBackground = false;
+    @AutoGen(category = "appearance", group = "lighting")
+    public boolean enableWorldLightingTint = false;
 
     @SerialEntry
-    @AutoGen(category = "appearance", group = "look")
-    @IntSlider(min = 1, max = 10, step = 1)
-    public int worldBlurStrength = 5;
-    //?}
+    @AutoGen(category = "appearance", group = "lighting")
+    @DoubleSlider(min = 0.0, max = 120.0, step = 1.0)
+    public double lightingTintStrength = 50.0;
 
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "look")
-    @TickBox
-    public boolean useLinearFiltering = true;
-
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "look")
-    @TickBox
-    public boolean useAnisotropicFiltering = true;
-
-    // firstPersonHands 
+    // firstPersonHands
     @MasterTickBox(value = {"hideShieldInFirstPerson"}, invert = true)
     @SerialEntry
     @AutoGen(category = "appearance", group = "firstPersonHands")
@@ -224,6 +212,34 @@ public class SpatialGUIConfig {
     @AutoGen(category = "appearance", group = "firstPersonHands")
     @TickBox
     public boolean swingArmOnFirstPersonClick = false;
+
+    // texture
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @IntSlider(min = 0, max = 255, step = 1)
+    public int screenAlpha = 255;
+
+    //? if >=26.1.2 {
+    @MasterTickBox(value = {"worldBlurStrength"})
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    public boolean blurWorldBackground = false;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @IntSlider(min = 1, max = 10, step = 1)
+    public int worldBlurStrength = 5;
+    //?}
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @TickBox
+    public boolean useLinearFiltering = true;
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @TickBox
+    public boolean useAnisotropicFiltering = true;
 
     // ===========
     // thirdPerson
@@ -412,11 +428,6 @@ public class SpatialGUIConfig {
     // controls 
     @SerialEntry
     @AutoGen(category = "firstPerson", group = "controls")
-    @TickBox
-    public boolean useCrosshairForFirstPerson = true;
-
-    @SerialEntry
-    @AutoGen(category = "firstPerson", group = "controls")
     @DoubleSlider(min = 0.01, max = 1.0, step = 0.01)
     public double firstPersonMouseSensitivityYaw = 0.4;
 
@@ -541,15 +552,16 @@ public class SpatialGUIConfig {
     @DoubleSlider(min = 0.1, max = 2.0, step = 0.01)
     public double autoScaleThirdPersonScreenMultiplier = 0.82;
 
-    
-    
-    
-    
+
+
+
+
     public int getEffectiveGuiScale() {
         if (overrideGuiScale) {
             return Mth.clamp(guiScale, 1, 6);
         }
-        return Minecraft.getInstance().options.guiScale().get();
+        Minecraft mc = Minecraft.getInstance();
+        return mc.getWindow().calculateScale(mc.options.guiScale().get(), mc.isEnforceUnicode());
     }
     
     public static class StringValueFactory implements ListGroup.ValueFactory<String> {
