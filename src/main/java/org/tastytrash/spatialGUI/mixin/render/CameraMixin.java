@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.compat.InvMoveCompat;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
@@ -112,7 +113,6 @@ public abstract class CameraMixin {
             if (!wasCapturing || !isTransitioning || resumedFromClosing) {
                 this.startTransition(renderer, newTargetYRot, newTargetXRot, isFirstPerson);
             }
-            SpatialGUIClient.setCameraYawOffset(smoothedCameraYaw);
 
             this.applyCameraUpdate(newTargetPos, newTargetYRot, newTargetXRot, isFirstPerson);
             lastOffset = position.subtract(MathUtil.lerpEntityPosition(this.entity, partialTicks));
@@ -132,7 +132,8 @@ public abstract class CameraMixin {
             float normalXRot = toFirstPerson ? this.entity.getXRot() : xRot;
 
             position = new Vec3(MathUtil.lerp(screenCameraPos.x, normalPos.x, easedProgress), MathUtil.lerp(screenCameraPos.y, normalPos.y, easedProgress), MathUtil.lerp(screenCameraPos.z, normalPos.z, easedProgress));
-            yRot = MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
+            boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
+            yRot = isThirdPersonFront ? normalYRot : MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
             xRot = (toFirstPerson || (SpatialGUI.config.lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
             SpatialGUIClient.setCameraPosition(position);
@@ -150,6 +151,8 @@ public abstract class CameraMixin {
         float yaw, pitch;
         float positionYaw;
 
+        float baseYaw = spatialGUI$baseYaw();
+
         Minecraft client = Minecraft.getInstance();
 
         if (!isFirstPerson && SpatialGUI.config.mirrorThirdPerson) {
@@ -165,29 +168,37 @@ public abstract class CameraMixin {
 
         if (isFirstPerson) {
             float maxPitch = 90;
-            float entityXRot = entity.getXRot();
+            float entityXRot = spatialGUI$basePitch();
 
             if (SpatialGUIRenderer.isCrosshairModeActive()) {
-                double[] rel = MouseHandlerUtil.resetFreeLookDelta();
-                double deltaX = rel[0];
-                double deltaY = rel[1];
+                if (InvMoveCompat.playerRotates()) {
+                    MouseHandlerUtil.resetFreeLookDelta();
+                    freeLookYaw = 0f;
+                    freeLookPitch = 0f;
+                    smoothedCameraYaw = 0f;
+                    smoothedCameraPitch = entityXRot;
+                } else {
+                    double[] rel = MouseHandlerUtil.resetFreeLookDelta();
+                    double deltaX = rel[0];
+                    double deltaY = rel[1];
 
-                double sens = CameraUtil.calculateMouseSensitivity();
-                //? if >1.21.1 {
-                double xOffset = deltaX * sens * (client.options.invertMouseX().get() ? -1 : 1);
-                //?} else {
-                /*double xOffset = deltaX * sens;
-                 *///?}
-                double yOffset = deltaY * sens * (client.options.invertMouseY().get() ? -1 : 1);
+                    double sens = CameraUtil.calculateMouseSensitivity();
+                    //? if >1.21.1 {
+                    double xOffset = deltaX * sens * (client.options.invertMouseX().get() ? -1 : 1);
+                    //?} else {
+                    /*double xOffset = deltaX * sens;
+                     *///?}
+                    double yOffset = deltaY * sens * (client.options.invertMouseY().get() ? -1 : 1);
 
-                freeLookYaw += (float) xOffset;
-                if (SpatialGUI.config.lockFirstPersonYaw) {
-                    freeLookYaw = Mth.clamp(freeLookYaw, -MAX_YAW_OFFSET, MAX_YAW_OFFSET);
+                    freeLookYaw += (float) xOffset;
+                    if (SpatialGUI.config.lockFirstPersonYaw) {
+                        freeLookYaw = Mth.clamp(freeLookYaw, -MAX_YAW_OFFSET, MAX_YAW_OFFSET);
+                    }
+                    freeLookPitch = Mth.clamp(freeLookPitch + (float) yOffset, -maxPitch - entityXRot, maxPitch - entityXRot);
+
+                    smoothedCameraYaw = freeLookYaw;
+                    smoothedCameraPitch = entityXRot + freeLookPitch;
                 }
-                freeLookPitch = Mth.clamp(freeLookPitch + (float) yOffset, -maxPitch - entityXRot, maxPitch - entityXRot);
-
-                smoothedCameraYaw = freeLookYaw;
-                smoothedCameraPitch = entityXRot + freeLookPitch;
             } else if (SpatialGUI.config.disableFirstPersonParallax) {
                 this.smoothParallaxOffsets(0f, 0f);
                 smoothedCameraYaw = parallaxYawOffset;
@@ -201,7 +212,7 @@ public abstract class CameraMixin {
             }
 
             smoothedCameraPitch = Mth.clamp(smoothedCameraPitch, -maxPitch, maxPitch);
-            yaw = entity.getYRot() + smoothedCameraYaw;
+            yaw = baseYaw + smoothedCameraYaw;
             pitch = smoothedCameraPitch;
             positionYaw = yaw;
         } else {
@@ -215,9 +226,9 @@ public abstract class CameraMixin {
             smoothedCameraYaw = parallaxYawOffset;
             smoothedCameraPitch = parallaxPitchOffset;
 
-            yaw = entity.getYRot() + smoothedCameraYaw;
+            yaw = baseYaw + smoothedCameraYaw;
             pitch = (float) SpatialGUI.config.cameraTargetPitch + smoothedCameraPitch;
-            positionYaw = entity.getYRot();
+            positionYaw = baseYaw;
         }
 
         float yawRadians = (float) Math.toRadians(positionYaw);
@@ -247,6 +258,18 @@ public abstract class CameraMixin {
     }
 
     @Unique
+    private float spatialGUI$baseYaw() {
+        if (InvMoveCompat.playerRotates()) return entity.getYRot();
+        return SpatialGUIClient.renderer().anchoredYaw();
+    }
+
+    @Unique
+    private float spatialGUI$basePitch() {
+        if (InvMoveCompat.playerRotates()) return entity.getXRot();
+        return SpatialGUIClient.renderer().anchoredPitch();
+    }
+
+    @Unique
     private void startTransition(SpatialGUIRenderer renderer, float newTargetYRot, float newTargetXRot, boolean isFirstPerson) {
         Vec3 savedStartPos = renderer.getCameraStartPos();
         if (savedStartPos != null) {
@@ -261,7 +284,7 @@ public abstract class CameraMixin {
         isTransitioning = true;
 
         if (isFirstPerson) {
-            smoothedCameraYaw = newTargetYRot - entity.getYRot();
+            smoothedCameraYaw = newTargetYRot - spatialGUI$baseYaw();
             smoothedCameraPitch = newTargetXRot;
         } else {
             smoothedCameraYaw = 0f;
@@ -283,7 +306,8 @@ public abstract class CameraMixin {
             float easedProgress = AnimationUtil.easeInOutSine(progress);
 
             position = new Vec3(MathUtil.lerp(startPos.x, newTargetPos.x, easedProgress), MathUtil.lerp(startPos.y, newTargetPos.y, easedProgress), MathUtil.lerp(startPos.z, newTargetPos.z, easedProgress));
-            yRot = progress >= 1.0f ? newTargetYRot : MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
+            boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
+            yRot = (progress >= 1.0f || isThirdPersonFront) ? newTargetYRot : MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
             xRot = (SpatialGUI.config.lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera() && progress < 1.0f) ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
         }
         SpatialGUIClient.setCameraPosition(position);
@@ -305,8 +329,8 @@ public abstract class CameraMixin {
         lastParallaxNanos = 0;
         baseXRot = 0f;
         wasCrosshairMode = false;
-        SpatialGUIClient.setCameraYawOffset(0f);
         SpatialGUIClient.setWasThirdPersonCamera(false);
+        SpatialGUIClient.setOriginalCameraType(null);
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
         SpatialGUIClient.setEffectiveFirstPersonMode(false);
         SpatialGUIClient.setCameraPosition(null);

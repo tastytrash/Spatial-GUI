@@ -20,6 +20,7 @@ public abstract class OptionsMixin {
         var renderer = SpatialGUIClient.renderer();
         if (renderer.shouldCapture() && SpatialGUIClient.isEnabled()) {
             SpatialGUIClient.setWasThirdPersonCamera(this.cameraType != CameraType.FIRST_PERSON);
+            SpatialGUIClient.setOriginalCameraType(this.cameraType);
             if (SpatialGUI.config.autoDetectCameraMode) {
                 return;
             }

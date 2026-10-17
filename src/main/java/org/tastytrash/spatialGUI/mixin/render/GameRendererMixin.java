@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,7 +39,6 @@ import static com.mojang.blaze3d.platform.Lighting.Entry.LEVEL;
  *///?}
 
 //? if >=26.1.2 {
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.GameRenderState;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.tastytrash.spatialGUI.render.WorldBlurRenderer;
@@ -303,7 +303,7 @@ public abstract class GameRendererMixin {
 
             renderer.renderInWorldPost();
 
-            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson) {
+            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
 
@@ -513,7 +513,7 @@ public abstract class GameRendererMixin {
 
             renderer.renderInWorldPost();
 
-            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson) {
+            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
 

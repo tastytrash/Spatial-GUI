@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2d;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,28 +17,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+import org.tastytrash.spatialGUI.compat.InvMoveCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 @Mixin(value = MouseHandler.class, priority = 1100)
 public class MouseHandlerMixin {
 
-    //? if <=1.21.1 {
-    /*@Shadow private double accumulatedDX;
+    //? if <26.3 {
+    @Shadow private double accumulatedDX;
     @Shadow private double accumulatedDY;
-    *///?}
+    //?}
+
+    @Unique private double spatialGUI$preReleaseX;
+    @Unique private double spatialGUI$preReleaseY;
 
     @Unique
     private static boolean shouldApplyMouseOverride() {
         if (!SpatialGUIClient.isEnabled()) return false;
-        Minecraft client = Minecraft.getInstance();
-        if (client.level == null) return false;
-        //? if >=26.2 {
-        /*Screen screen = client.screen;
-         *///?} else {
-        Screen screen = client.screen;
-        //?}
-        if (SpatialGUIClient.shouldHookScreen(screen)) return true;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return false;
+        if (SpatialGUIClient.shouldHookScreen(mc.screen)) return true;
         var renderer = SpatialGUIClient.renderer();
         return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());
     }
@@ -56,9 +54,11 @@ public class MouseHandlerMixin {
     }
     //?} else {
     /*@Unique
-    private static double spatialGUI$toRaw(boolean x, double scaled) {
+    private static double spatialGUI$override(boolean x, double original) {
+        if (!shouldApplyMouseOverride()) return original;
         var w = Minecraft.getInstance().getWindow();
-        return x ? scaled * w.getScreenWidth()  / (double) w.getGuiScaledWidth()
+        double scaled = MouseHandlerUtil.getLastPos(x, original);
+        return x ? scaled * w.getScreenWidth() / (double) w.getGuiScaledWidth()
                 : scaled * w.getScreenHeight() / (double) w.getGuiScaledHeight();
     }
 
@@ -70,9 +70,7 @@ public class MouseHandlerMixin {
         ^///?}
         at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;xpos:D"))
     private double spatialGUI$overrideX(double original) {
-        return shouldApplyMouseOverride()
-                ? spatialGUI$toRaw(true, MouseHandlerUtil.getLastPos(true, original))
-                : original;
+        return spatialGUI$override(true, original);
     }
 
     @ModifyExpressionValue(
@@ -83,9 +81,7 @@ public class MouseHandlerMixin {
         ^///?}
         at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;ypos:D"))
     private double spatialGUI$overrideY(double original) {
-        return shouldApplyMouseOverride()
-                ? spatialGUI$toRaw(false, MouseHandlerUtil.getLastPos(false, original))
-                : original;
+        return spatialGUI$override(false, original);
     }
     *///?}
 
@@ -103,45 +99,44 @@ public class MouseHandlerMixin {
          *///?}
 
         MouseHandlerAccessor acc = (MouseHandlerAccessor) this;
-        if (x == -50.0 && y == -50.0 && !acc.getMouseGrabbed()) {
-            //? if >=26.3 {
-            /*original.call(handle, x, y, xrel, yrel);
-             *///?} else {
-            original.call(handle, x, y);
-            //?}
-            return;
-        }
-
-        double[] delta = MouseHandlerUtil.captureMove(x, y, acc.getMouseGrabbed());
-        //? if >=26.3 {
-        /*delta[0] = xrel;
-        delta[1] = yrel;
-        *///?}
-
+        boolean grabbed = acc.getMouseGrabbed();
+        boolean ignoreFirst = acc.getIgnoreFirstMove();
         double outX = x;
         double outY = y;
+        double[] delta = null;
+        boolean restoreTurn = false;
 
-        var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && shouldApplyMouseOverride()) {
-            if (SpatialGUIRenderer.isCrosshairModeActive() && !acc.getIgnoreFirstMove() && !ControlifyCompat.inVirtualMove) {
-                MouseHandlerUtil.addFreeLookDelta(delta[0], delta[1]);
-            }
+        if (!(x == -50.0 && y == -50.0 && !grabbed)) {
+            delta = MouseHandlerUtil.captureMove(x, y, grabbed);
+            //? if >=26.3 {
+            /*delta[0] = xrel;
+            delta[1] = yrel;
+            *///?}
 
-            Vector2d mouse = renderer.updateMousePosition(
-                    MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY());
-            if (mouse != null) {
-                outX = mouse.x;
-                outY = mouse.y;
-            } else {
-                outX = acc.getRawXpos();
-                outY = acc.getRawYpos();
+            var renderer = SpatialGUIClient.renderer();
+            if (renderer != null && shouldApplyMouseOverride()) {
+                if (SpatialGUIRenderer.isCrosshairModeActive() && !ignoreFirst && !ControlifyCompat.inVirtualMove) {
+                    MouseHandlerUtil.addFreeLookDelta(delta[0], delta[1]);
+                }
+                Vector2d mouse = renderer.updateMousePosition(
+                        MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY());
+                outX = mouse != null ? mouse.x : acc.getRawXpos();
+                outY = mouse != null ? mouse.y : acc.getRawYpos();
+                restoreTurn = InvMoveCompat.playerRotates();
             }
         }
 
         //? if >=26.3 {
         /*original.call(handle, outX, outY, xrel, yrel);
          *///?} else {
+        double beforeX = this.accumulatedDX;
+        double beforeY = this.accumulatedDY;
         original.call(handle, outX, outY);
+        if (restoreTurn) {
+            boolean accumulate = grabbed && !ignoreFirst;
+            this.accumulatedDX = beforeX + (accumulate ? delta[0] : 0.0);
+            this.accumulatedDY = beforeY + (accumulate ? delta[1] : 0.0);
+        }
         //?}
     }
 
@@ -151,56 +146,42 @@ public class MouseHandlerMixin {
         //?} else {
         /*private void spatialGUI$cancelPlayerRotation(CallbackInfo ci) {
          *///?}
-        if (SpatialGUIRenderer.isCrosshairModeActive()) {
-            //? if <=1.21.1 {
-            /*if (!shouldApplyMouseOverride()) {
-                MouseHandlerUtil.addFreeLookDelta(this.accumulatedDX, this.accumulatedDY);
-            }
-            this.accumulatedDX = 0.0;
-            this.accumulatedDY = 0.0;
-            *///?}
-            ci.cancel();
+        if (!SpatialGUIRenderer.isCrosshairModeActive() || InvMoveCompat.playerRotates()) return;
+        //? if <=1.21.1 {
+        /*if (!shouldApplyMouseOverride()) {
+            MouseHandlerUtil.addFreeLookDelta(this.accumulatedDX, this.accumulatedDY);
         }
+        this.accumulatedDX = 0.0;
+        this.accumulatedDY = 0.0;
+        *///?}
+        ci.cancel();
     }
-
-    @Unique
-    private double spatialGUI$preReleaseX;
-
-    @Unique
-    private double spatialGUI$preReleaseY;
 
     @Inject(method = "releaseMouse", at = @At("HEAD"))
     private void spatialGUI$capturePreRelease(CallbackInfo ci) {
-        var spatialGUI$acc = (MouseHandlerAccessor) (Object) this;
-        spatialGUI$preReleaseX = spatialGUI$acc.getRawXpos();
-        spatialGUI$preReleaseY = spatialGUI$acc.getRawYpos();
-    }
-
-    @Unique
-    private static boolean spatialGUI$crosshairIncoming() {
-        return SpatialGUI.config != null && SpatialGUI.config.useCrosshairForFirstPerson && SpatialGUIClient.getEffectiveFirstPersonMode();
-    }
-
-    @Unique
-    private static Screen spatialGUI$currentScreen(Minecraft spatialGUI$mc) {
-        //? if >=26.2 {
-        /*return spatialGUI$mc.gui.screen();
-         *///?} else {
-        return spatialGUI$mc.screen;
-        //?}
+        var acc = (MouseHandlerAccessor) (Object) this;
+        spatialGUI$preReleaseX = acc.getRawXpos();
+        spatialGUI$preReleaseY = acc.getRawYpos();
     }
 
     @Inject(method = "releaseMouse", at = @At("TAIL"))
     private void spatialGUI$restoreCursorFields(CallbackInfo ci) {
-        Minecraft spatialGUI$mc = Minecraft.getInstance();
-        Screen spatialGUI$screen = spatialGUI$currentScreen(spatialGUI$mc);
-        if (spatialGUI$crosshairIncoming() || spatialGUI$screen == null || !SpatialGUIClient.shouldHookScreen(spatialGUI$screen)) return;
-        var spatialGUI$window = spatialGUI$mc.getWindow();
+        boolean crosshairIncoming = SpatialGUI.config != null
+                && SpatialGUI.config.useCrosshairForFirstPerson
+                && SpatialGUIClient.getEffectiveFirstPersonMode();
+        Minecraft mc = Minecraft.getInstance();
+        //? if >=26.2 {
+        /*Screen screen = mc.gui.screen();
+         *///?} else {
+        Screen screen = mc.screen;
+        //?}
+        if (crosshairIncoming || screen == null || !SpatialGUIClient.shouldHookScreen(screen)) return;
+        var window = mc.getWindow();
         if (spatialGUI$preReleaseX < 0 || spatialGUI$preReleaseY < 0
-                || spatialGUI$preReleaseX > spatialGUI$window.getScreenWidth()
-                || spatialGUI$preReleaseY > spatialGUI$window.getScreenHeight()) return;
-        var spatialGUI$acc = (MouseHandlerAccessor) (Object) this;
-        spatialGUI$acc.setRawXpos(spatialGUI$preReleaseX);
-        spatialGUI$acc.setRawYpos(spatialGUI$preReleaseY);
+                || spatialGUI$preReleaseX > window.getScreenWidth()
+                || spatialGUI$preReleaseY > window.getScreenHeight()) return;
+        var acc = (MouseHandlerAccessor) (Object) this;
+        acc.setRawXpos(spatialGUI$preReleaseX);
+        acc.setRawYpos(spatialGUI$preReleaseY);
     }
 }

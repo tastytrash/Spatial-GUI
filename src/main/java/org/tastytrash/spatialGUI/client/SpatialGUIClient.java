@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.client;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,7 +46,7 @@ public class SpatialGUIClient {
     private static boolean effectiveFirstPersonMode = false;
     private static boolean switchedToFirstPersonDueToBlock = false;
     private static boolean wasThirdPersonCamera = false;
-    private static float cameraYawOffset = 0f;
+    private static CameraType originalCameraType;
     private static boolean capturingPanorama = false;
     private static Vec3 cameraPosition;
     private static boolean wasClosing = false;
@@ -213,14 +214,6 @@ public class SpatialGUIClient {
         }
     }
 
-    public static float getCameraYawOffset() {
-        return cameraYawOffset;
-    }
-
-    public static void setCameraYawOffset(float yaw) {
-        cameraYawOffset = yaw;
-    }
-
     public static void setCapturingPanorama(boolean value) {
         capturingPanorama = value;
     }
@@ -239,5 +232,13 @@ public class SpatialGUIClient {
 
     public static void setWasClosing(boolean value) {
         wasClosing = value;
+    }
+
+    public static CameraType getOriginalCameraType() {
+        return originalCameraType;
+    }
+
+    public static void setOriginalCameraType(CameraType value) {
+        originalCameraType = value;
     }
  }

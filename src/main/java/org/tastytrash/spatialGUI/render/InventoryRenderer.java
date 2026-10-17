@@ -136,9 +136,9 @@ public class InventoryRenderer {
     }
 
     private ScreenPose computeScreenPose(PoseStack matrices, boolean isFirstPerson) {
-        var player = Minecraft.getInstance().player;
-        float yaw = closing ? closeYaw : player.getYRot();
-        float pitch = isFirstPerson ? (closing ? closePitch : player.getXRot()) : 0;
+        var renderer = SpatialGUIClient.renderer();
+        float yaw = closing ? closeYaw : renderer.anchoredYaw();
+        float pitch = isFirstPerson ? (closing ? closePitch : renderer.anchoredPitch()) : 0;
         float pitchClamp = (float) SpatialGUI.config.firstPersonPitchClamp;
         //? if >=26.2 {
         /*pitch = Math.clamp(pitch, -pitchClamp, pitchClamp);
@@ -294,8 +294,9 @@ public class InventoryRenderer {
         closeStartElapsed = animationMs;
         closeDurationMs = duration;
         closeFirstPerson = firstPerson;
-        closeYaw = player.getYRot();
-        closePitch = player.getXRot();
+        var renderer = SpatialGUIClient.renderer();
+        closeYaw = renderer.anchoredYaw();
+        closePitch = renderer.anchoredPitch();
         hasDrawnThisFrame = false;
         return true;
     }

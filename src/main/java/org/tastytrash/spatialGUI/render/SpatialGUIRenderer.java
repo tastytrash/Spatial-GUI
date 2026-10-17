@@ -58,6 +58,10 @@ public class SpatialGUIRenderer {
     private float pendingSnapYaw;
     private float pendingSnapPitch;
 
+    private boolean rotationAnchored;
+    private float anchoredYaw;
+    private float anchoredPitch;
+
     public SpatialGUIRenderer() {
         this.targetManager = new TextureTargetManager();
         this.screenExtractor = new ScreenExtractor();
@@ -111,6 +115,11 @@ public class SpatialGUIRenderer {
         }
 
         var player = client.player;
+        if (player != null) {
+            anchoredYaw = player.getYRot();
+            anchoredPitch = player.getXRot();
+            rotationAnchored = true;
+        }
         if (player != null && Minecraft.getInstance().level != null) {
             CameraUtil.checkBlockCollision(player);
         }
@@ -171,6 +180,7 @@ public class SpatialGUIRenderer {
         if (!startClosing) {
             inventoryRenderer.resetRecipeBookState();
             inventoryRenderer.resetPerspectiveState();
+            releaseRotationAnchor();
         }
         hookedScreen = null;
         isInventoryScreen = false;
@@ -233,6 +243,7 @@ public class SpatialGUIRenderer {
         inventoryRenderer.resetRecipeBookState();
         inventoryRenderer.resetPerspectiveState();
         targetManager.clearTarget();
+        releaseRotationAnchor();
     }
 
     public boolean isClosing() {
@@ -494,4 +505,19 @@ public class SpatialGUIRenderer {
         screenExtractor.extractIsolatedScreen(screen, partialTick, inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis(), targetManager, operation);
     }
 
+    public float anchoredYaw() {
+        if (rotationAnchored) return anchoredYaw;
+        var player = Minecraft.getInstance().player;
+        return player != null ? player.getYRot() : 0f;
+    }
+
+    public float anchoredPitch() {
+        if (rotationAnchored) return anchoredPitch;
+        var player = Minecraft.getInstance().player;
+        return player != null ? player.getXRot() : 0f;
+    }
+
+    private void releaseRotationAnchor() {
+        rotationAnchored = false;
+    }
 }

@@ -63,7 +63,7 @@ public class AvatarRendererMixin {
         if (SpatialGUI.config.mirrorHeadMovement) normX = -normX;
 
         float side = SpatialGUI.config.mirrorThirdPerson ? -1f : 1f;
-        float targetBody = client.player.getYRot() + side * (float) SpatialGUI.config.avatarBodyRotationOffset;
+        float targetBody = renderer.anchoredYaw() + side * (float) SpatialGUI.config.avatarBodyRotationOffset;
         float targetYaw = normX * (float) SpatialGUI.config.avatarMaxYawOffset + side * (float) SpatialGUI.config.avatarBaseYawOffset;
         float targetPitch = Mth.clamp(normY * (float) SpatialGUI.config.avatarMaxPitchOffset, -60f, 60f);
 

@@ -10,6 +10,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public class CameraUtil {
     public static void checkBlockCollision(Entity entity) {
@@ -18,7 +19,8 @@ public class CameraUtil {
             return;
         }
 
-        float yawRadians = (float) Math.toRadians(entity.getYRot());
+        var renderer = SpatialGUIClient.renderer();
+        float yawRadians = (float) Math.toRadians(renderer.anchoredYaw());
         double sideOffset = SpatialGUI.config.cameraSideOffset;
         if (SpatialGUI.config.mirrorThirdPerson) {
             sideOffset = -sideOffset;

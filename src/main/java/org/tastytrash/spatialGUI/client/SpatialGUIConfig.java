@@ -593,6 +593,12 @@ public class SpatialGUIConfig {
         }) {
             list.add(pkg + name);
         }
+        List<String> modded = List.of(
+                "dev.emi.emi.screen.RecipeScreen",
+                "mezz.jei.gui.recipes.RecipesGui",
+                "me.shedaniel.rei.impl.client.gui.screen.DefaultDisplayViewingScreen"
+        );
+        list.addAll(modded);
         return list;
     }
 
