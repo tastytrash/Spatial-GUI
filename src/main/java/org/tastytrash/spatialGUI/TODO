@@ -2,6 +2,8 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+First person and all screens doesnt properly unhide your mouse when going to the yacl screen
+
 Toasts rendering on the GUI
 
 -------- MID PRIORITY ---------------

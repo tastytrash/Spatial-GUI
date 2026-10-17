@@ -388,7 +388,7 @@ public class InventoryRenderer {
         StagedVertexBuffer.Draw draw = INVENTORY_BUFFER.appendDraw(
                 format,
                 primitive,
-                primitive == PrimitiveTopology.QUADS ? RenderSystem.getProjectionType().vertexSorting() : null
+                null
         );
 
         matrices.pushPose();
