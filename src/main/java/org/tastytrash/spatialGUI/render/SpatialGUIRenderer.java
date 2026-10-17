@@ -3,6 +3,7 @@ package org.tastytrash.spatialGUI.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
@@ -54,9 +55,7 @@ public class SpatialGUIRenderer {
     private float fovProgress = 0f;
     private long lastFovUpdateNano = 0L;
 
-    private boolean pendingCameraSnap = false;
-    private float pendingSnapYaw;
-    private float pendingSnapPitch;
+    private float[] preSnapState;
 
     private boolean rotationAnchored;
     private float anchoredYaw;
@@ -86,6 +85,7 @@ public class SpatialGUIRenderer {
         //?}
 
         boolean swapping = hookedScreen != null || removedFrame == frameCounter;
+        boolean keepAnchor = swapping && rotationAnchored;
 
         if (hookedScreen != null) onScreenRemoved(false);
 
@@ -103,7 +103,11 @@ public class SpatialGUIRenderer {
         if (inventoryRenderer.isClosing()) {
             finishClosing();
         }
-        pendingCameraSnap = false;
+        var snapPlayer = client.player;
+        if (swapping && preSnapState != null && snapPlayer != null) {
+            restoreRotation(snapPlayer, preSnapState);
+        }
+        preSnapState = null;
 
         skipWindowOverride = false;
         hookedScreen = screen;
@@ -116,8 +120,10 @@ public class SpatialGUIRenderer {
 
         var player = client.player;
         if (player != null) {
-            anchoredYaw = player.getYRot();
-            anchoredPitch = player.getXRot();
+            if (!keepAnchor) {
+                anchoredYaw = player.getYRot();
+                anchoredPitch = player.getXRot();
+            }
             rotationAnchored = true;
         }
         if (player != null && Minecraft.getInstance().level != null) {
@@ -190,27 +196,36 @@ public class SpatialGUIRenderer {
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
 
         var mc = Minecraft.getInstance();
-        if (wasEffectiveFirstPerson && SpatialGUI.config.keepFirstPersonCameraAngle) {
+        preSnapState = null;
+        if (wasEffectiveFirstPerson && SpatialGUI.config.keepFirstPersonCameraAngle && player != null) {
             //? if >=26.2 {
             /*float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
             float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
             *///?} else if >=1.21.11 {
-            float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
-            float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
-            //?} else {
+                    float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
+                    float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
+                    //?} else {
             /*float cameraYaw = mc.gameRenderer.getMainCamera().getYRot();
             float cameraPitch = mc.gameRenderer.getMainCamera().getXRot();
             *///?}
-            if (SpatialGUI.config.inheritScreenOriginOnSwap) {
-                pendingCameraSnap = true;
-                pendingSnapYaw = cameraYaw;
-                pendingSnapPitch = cameraPitch;
-            } else if (player != null) {
-                applyCameraSnap(player, cameraYaw, cameraPitch);
-            }
-        } else {
-            pendingCameraSnap = false;
+            preSnapState = captureRotation(player);
+            applyCameraSnap(player, cameraYaw, cameraPitch);
         }
+    }
+
+    private static float[] captureRotation(LocalPlayer player) {
+        return new float[]{player.getYRot(), player.getXRot(), player.yRotO, player.xRotO, player.yBob, player.xBob, player.yBobO, player.xBobO};
+    }
+
+    private static void restoreRotation(LocalPlayer player, float[] s) {
+        player.setYRot(s[0]);
+        player.setXRot(s[1]);
+        player.yRotO = s[2];
+        player.xRotO = s[3];
+        player.yBob = s[4];
+        player.xBob = s[5];
+        player.yBobO = s[6];
+        player.xBobO = s[7];
     }
 
     private static void applyCameraSnap(net.minecraft.client.player.LocalPlayer player, float cameraYaw, float cameraPitch) {
@@ -218,24 +233,11 @@ public class SpatialGUIRenderer {
         player.setXRot(cameraPitch);
         player.yRotO = cameraYaw;
         player.xRotO = cameraPitch;
-
         player.yBob = cameraYaw;
         player.xBob = cameraPitch;
         player.yBobO = cameraYaw;
         player.xBobO = cameraPitch;
     }
-
-    private void applyPendingCameraSnap() {
-        if (!pendingCameraSnap) {
-            return;
-        }
-        pendingCameraSnap = false;
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            applyCameraSnap(player, pendingSnapYaw, pendingSnapPitch);
-        }
-    }
-
 
     private void finishClosing() {
         if (!inventoryRenderer.isClosing()) return;
@@ -281,8 +283,6 @@ public class SpatialGUIRenderer {
     }
 
     public void updateMousePosition() {
-        frameCounter++;
-
         if (!shouldCapture()) {
             return;
         }
@@ -343,7 +343,6 @@ public class SpatialGUIRenderer {
         if (!bool) {
             wasTrue = false;
             cameraStartPos = null;
-            applyPendingCameraSnap();
             return false;
         }
 
@@ -424,6 +423,7 @@ public class SpatialGUIRenderer {
     }
 
     public void updateFrame() {
+        frameCounter++;
         var mc = Minecraft.getInstance();
         //? if >=26.2 {
         /*Screen screen = mc.gui.screen();

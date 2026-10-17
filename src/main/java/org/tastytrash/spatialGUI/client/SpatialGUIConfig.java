@@ -428,11 +428,6 @@ public class SpatialGUIConfig {
     @SerialEntry
     @AutoGen(category = "firstPerson", group = "camera")
     @TickBox
-    public boolean inheritScreenOriginOnSwap = true;
-
-    @SerialEntry
-    @AutoGen(category = "firstPerson", group = "camera")
-    @TickBox
     public boolean disableFirstPersonParallax = false;
 
     // controls 
@@ -606,7 +601,8 @@ public class SpatialGUIConfig {
         List<String> modded = List.of(
                 "dev.emi.emi.screen.RecipeScreen",
                 "mezz.jei.gui.recipes.RecipesGui",
-                "me.shedaniel.rei.impl.client.gui.screen.DefaultDisplayViewingScreen"
+                "me.shedaniel.rei.impl.client.gui.screen.DefaultDisplayViewingScreen",
+                "cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen"
         );
         list.addAll(modded);
         return list;

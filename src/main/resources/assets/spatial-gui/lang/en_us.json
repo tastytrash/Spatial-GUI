@@ -174,8 +174,6 @@
   "yacl3.config.spatial-gui:config.disableFirstPersonParallax.desc": "Disable parallax effect",
   "yacl3.config.spatial-gui:config.keepFirstPersonCameraAngle": "Keep First Person Camera Angle",
   "yacl3.config.spatial-gui:config.keepFirstPersonCameraAngle.desc": "Keep the camera angle when closing the GUI\nWARNING: This affects your server-side rotation \nand may be disallowed by servers",
-  "yacl3.config.spatial-gui:config.inheritScreenOriginOnSwap": "Inherit Screen Origin on Swap",
-  "yacl3.config.spatial-gui:config.inheritScreenOriginOnSwap.desc": "When a screen opens another screen, the new screen keeps the previous screen position instead of following your in-screen look direction",
   "yacl3.config.spatial-gui:config.useCrosshairForFirstPerson": "Use Crosshair for First Person",
   "yacl3.config.spatial-gui:config.useCrosshairForFirstPerson.desc": "Manually control the camera and use the crosshair for interacting, only in first person",
   "yacl3.config.spatial-gui:config.lockFirstPersonYaw": "Lock First Person Yaw",

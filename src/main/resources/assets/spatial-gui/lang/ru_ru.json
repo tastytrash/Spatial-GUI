@@ -174,8 +174,6 @@
   "yacl3.config.spatial-gui:config.disableFirstPersonParallax.desc": "Отключить эффект параллакса",
   "yacl3.config.spatial-gui:config.keepFirstPersonCameraAngle": "Сохранять угол камеры от первого лица",
   "yacl3.config.spatial-gui:config.keepFirstPersonCameraAngle.desc": "Сохранять угол камеры при закрытии интерфейса\nВНИМАНИЕ: Это влияет на ваш поворот на стороне сервера \nи может быть запрещено на некоторых серверах",
-  "yacl3.config.spatial-gui:config.inheritScreenOriginOnSwap": "Наследовать начало координат экрана при смене",
-  "yacl3.config.spatial-gui:config.inheritScreenOriginOnSwap.desc": "Когда один экран открывает другой, новый экран сохраняет положение предыдущего, вместо того чтобы следовать за направлением вашего взгляда внутри экрана.",
   "yacl3.config.spatial-gui:config.useCrosshairForFirstPerson": "Использовать перекрестие от первого лица",
   "yacl3.config.spatial-gui:config.useCrosshairForFirstPerson.desc": "Использовать положение внутриигрового перекрестия для взаимодействия мышью вместо фактического курсора мыши",
   "yacl3.config.spatial-gui:config.lockFirstPersonYaw": "Lock First Person Yaw",
