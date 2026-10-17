@@ -244,7 +244,9 @@ publishing {
 
 if (project.hasProperty('stonecutter')) {
     publishMods {
-        file = (isFabric && isObfuscated) ? remapJar.archiveFile : jar.archiveFile
+        file = isForge
+                ? tasks.named("reobfJar").flatMap { it.archiveFile }
+                : ((isFabric && isObfuscated) ? remapJar.archiveFile : jar.archiveFile)
         changelog = rootProject.file("CHANGELOG.md").text
         type = STABLE
         modLoaders.add(loader)
@@ -293,6 +295,6 @@ if (project.hasProperty('stonecutter')) {
             }
         }
 
-        dryRun = false
+        dryRun = true
     }
 }

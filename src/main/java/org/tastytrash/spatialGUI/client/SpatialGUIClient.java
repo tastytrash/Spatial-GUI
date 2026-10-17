@@ -50,7 +50,7 @@ public class SpatialGUIClient {
     private static boolean capturingPanorama = false;
     private static Vec3 cameraPosition;
     private static boolean wasClosing = false;
-
+    private static boolean inShouldHookScreen = false;
 
     //? if fabric {
     @Override
@@ -131,6 +131,22 @@ public class SpatialGUIClient {
         if (screen == null) return false;
         if (SpatialGUI.config == null) return false;
         if (Minecraft.getInstance().level == null) return false;
+        var client = Minecraft.getInstance();
+        boolean isFirstPerson;
+
+        if (inShouldHookScreen) {
+            isFirstPerson = true;
+        } else {
+            inShouldHookScreen = true;
+            try {
+                isFirstPerson = client.options.getCameraType() == CameraType.FIRST_PERSON;
+            } finally {
+                inShouldHookScreen = false;
+            }
+        }
+
+        if (isFirstPerson && SpatialGUI.config.disableFirstPerson) return false;
+        if (!isFirstPerson && SpatialGUI.config.disableThirdPerson) return false;
 
         String id = screen.getClass().getName();
         if (id.contains("TitleScreen") || id.contains("ReceivingLevelScreen")

@@ -37,7 +37,12 @@ public class MouseHandlerMixin {
         if (!SpatialGUIClient.isEnabled()) return false;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;
-        if (SpatialGUIClient.shouldHookScreen(mc.screen)) return true;
+        //? if >=26.2 {
+        /*Screen screen = mc.gui.screen();
+         *///?} else {
+        Screen screen = mc.screen;
+        //?}
+        if (SpatialGUIClient.shouldHookScreen(screen)) return true;
         var renderer = SpatialGUIClient.renderer();
         return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());
     }

@@ -136,6 +136,16 @@ public class SpatialGUIConfig {
     @ListGroup(valueFactory = StringValueFactory.class, controllerFactory = StringControllerFactory.class)
     public List<String> seenScreens = new ArrayList<>();
 
+    @SerialEntry
+    @AutoGen(category = "screens")
+    @TickBox
+    public boolean disableFirstPerson = false;
+
+    @SerialEntry
+    @AutoGen(category = "screens")
+    @TickBox
+    public boolean disableThirdPerson = false;
+
     // ==========
     // appearance
     // ==========

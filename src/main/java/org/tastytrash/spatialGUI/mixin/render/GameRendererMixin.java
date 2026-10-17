@@ -316,7 +316,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson) {
+            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
         }
@@ -521,7 +521,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson) {
+            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
         }
