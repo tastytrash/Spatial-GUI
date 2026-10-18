@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 
 //? if fabric {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,9 +29,11 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 public class SpatialGUIKeybinds {
     private static KeyMapping openConfig;
     private static KeyMapping reloadProfiles;
+    private static KeyMapping openEditor;
     private static boolean registered = false;
     private static final String OPEN_CONFIG_KEY = "key.spatial-gui.open_config";
     private static final String RELOAD_PROFILES_KEY = "key.spatial-gui.reload_profiles";
+    private static final String OPEN_EDITOR_KEY = "key.spatial-gui.open_editor";
 
     //? if fabric && >1.21.1 {
     public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =
@@ -81,18 +84,23 @@ public class SpatialGUIKeybinds {
             /*mc.setScreen(screen);
              *///?}
         }
+        while (openEditor.consumeClick()) {
+            EditorMode.toggle(mc);
+        }
     }
 
     //? if fabric && >=26.1.2 {
     public static void register() {
         openConfig = KeyMappingHelper.registerKeyMapping(createKey(OPEN_CONFIG_KEY));
         reloadProfiles = KeyMappingHelper.registerKeyMapping(createKey(RELOAD_PROFILES_KEY));
+        openEditor = KeyMappingHelper.registerKeyMapping(createKey(OPEN_EDITOR_KEY));
         ClientTickEvents.END_CLIENT_TICK.register(SpatialGUIKeybinds::tick);
     }
     //?} else if fabric {
     /*public static void register() {
         openConfig = KeyBindingHelper.registerKeyBinding(createKey(OPEN_CONFIG_KEY));
         reloadProfiles = KeyBindingHelper.registerKeyBinding(createKey(RELOAD_PROFILES_KEY));
+        openEditor = KeyBindingHelper.registerKeyBinding(createKey(OPEN_EDITOR_KEY));
         ClientTickEvents.END_CLIENT_TICK.register(SpatialGUIKeybinds::tick);
     }
     *///?} else if neoforge {
@@ -104,8 +112,10 @@ public class SpatialGUIKeybinds {
         //?}
         openConfig = createKey(OPEN_CONFIG_KEY);
         reloadProfiles = createKey(RELOAD_PROFILES_KEY);
+        openEditor = createKey(OPEN_EDITOR_KEY);
         event.register(openConfig);
         event.register(reloadProfiles);
+        event.register(openEditor);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> tick(Minecraft.getInstance()));
     }
     *///?} else if forge {
@@ -114,8 +124,10 @@ public class SpatialGUIKeybinds {
         registered = true;
         openConfig = createKey(OPEN_CONFIG_KEY);
         reloadProfiles = createKey(RELOAD_PROFILES_KEY);
+        openEditor = createKey(OPEN_EDITOR_KEY);
         event.register(openConfig);
         event.register(reloadProfiles);
+        event.register(openEditor);
         MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent e) -> {
             if (e.phase == TickEvent.Phase.END) tick(Minecraft.getInstance());
         });

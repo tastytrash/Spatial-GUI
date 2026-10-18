@@ -2,6 +2,8 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+Handles not in the right location for curved screens
+
 First person and all screens doesnt properly unhide your mouse when going to the yacl screen
 
 Toasts rendering on the GUI
@@ -22,6 +24,8 @@ Minecraft's water effects not applying properly when in the menu with velocity u
 
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
+
+Keep screen in fixed position during third person transition
 
 /////////////////////////////////////
 Visual editor

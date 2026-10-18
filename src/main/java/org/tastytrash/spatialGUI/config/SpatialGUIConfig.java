@@ -87,7 +87,7 @@ public class SpatialGUIConfig {
     public boolean hideHotbar = false;
 
     // guiScale 
-    @MasterTickBox(value = {"guiScale"}, invert = true)
+    @MasterTickBox(value = {"guiScale"})
     @SerialEntry
     @AutoGen(category = "general", group = "guiScale")
     @TickBox

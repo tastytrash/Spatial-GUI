@@ -12,6 +12,12 @@ stonecutter parameters {
             replace("= client.gui.screen()", "= client.screen")
         }
 
+        string(current.parsed < "26.1.2") {
+            replace("g.outline", "g.renderOutline")
+            replace("g.horizontalLine", "g.hLine")
+            replace("g.verticalLine", "g.vLine")
+        }
+
         string(current.parsed < "1.21.1") {
             replace("modelView.pushMatrix()", "modelView.pushPose()")
             replace("modelView.popMatrix()", "modelView.popPose()")

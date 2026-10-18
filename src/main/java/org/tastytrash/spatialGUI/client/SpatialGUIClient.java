@@ -8,9 +8,10 @@ import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.compat.VisorCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
-import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 //? if fabric {
  import net.fabricmc.api.ClientModInitializer;
  import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -131,6 +132,7 @@ public class SpatialGUIClient {
 
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
+        if (screen instanceof EditorScreen) return true;
         if (ConfigManager.config() == null) return false;
         if (Minecraft.getInstance().level == null) return false;
         var client = Minecraft.getInstance();
@@ -190,6 +192,14 @@ public class SpatialGUIClient {
         if (categorized) return toggle;
         if (ConfigManager.config().enabledScreens.contains(id)) return true;
         return ConfigManager.config().allScreens && Minecraft.getInstance().level != null;
+    }
+
+    public static void showScreen(Minecraft client, Screen screen) {
+        //? if >1.21.11 {
+        client.setScreenAndShow(screen);
+        //?} else {
+        /*client.setScreen(screen);
+        *///?}
     }
 
     public static SpatialGUIRenderer renderer() {
