@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.client.Minecraft;
@@ -296,14 +297,14 @@ public abstract class GameRendererMixin {
             //?}
             renderer.getScreenGuiRenderer().endFrame();
 
-            if (SpatialGUI.config.blurWorldBackground) {
-                WorldBlurRenderer.applyBlur(SpatialGUI.config.worldBlurStrength);
+            if (ConfigManager.config().blurWorldBackground) {
+                WorldBlurRenderer.applyBlur(ConfigManager.config().worldBlurStrength);
                 spatialGUI$renderPlayerInFront();
             }
 
             renderer.renderInWorldPost();
 
-            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
+            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !ConfigManager.config().hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
 
@@ -316,7 +317,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
+            if (renderer.isClosingFirstPerson() && !ConfigManager.config().hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
         }
@@ -358,7 +359,7 @@ public abstract class GameRendererMixin {
     ))
     private void spatialGUI$afterScreenExtraction(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && SpatialGUI.config.enabled && renderer.shouldCapture()) {
+        if (renderer != null && ConfigManager.config().enabled && renderer.shouldCapture()) {
             SpatialGUIRenderer.isExtractingScreen = false;
             SpatialGUIRenderer.skipWindowOverride = true;
         }
@@ -513,7 +514,7 @@ public abstract class GameRendererMixin {
 
             renderer.renderInWorldPost();
 
-            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
+            if (SpatialGUIClient.getEffectiveFirstPersonMode() && !ConfigManager.config().hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
 
@@ -521,7 +522,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (renderer.isClosingFirstPerson() && !SpatialGUI.config.hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
+            if (renderer.isClosingFirstPerson() && !ConfigManager.config().hideHandsInFirstPerson && Minecraft.getInstance().options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON) {
                 spatialGUI$renderHandsInFront();
             }
         }
@@ -549,7 +550,7 @@ public abstract class GameRendererMixin {
     ))
     private void spatialGUI$afterScreenExtraction(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && SpatialGUI.config.enabled && renderer.shouldCapture()) {
+        if (renderer != null && ConfigManager.config().enabled && renderer.shouldCapture()) {
             SpatialGUIRenderer.isExtractingScreen = false;
             SpatialGUIRenderer.skipWindowOverride = true;
         }
@@ -581,7 +582,7 @@ public abstract class GameRendererMixin {
         float factor = renderer.getFovOverrideFactor();
         if (factor <= 0f) return original;
 
-        return Mth.lerp(factor, original, (float) SpatialGUI.config.targetFov);
+        return Mth.lerp(factor, original, (float) ConfigManager.config().targetFov);
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -637,7 +638,7 @@ public class GameRendererMixin {
         float factor = renderer.getFovOverrideFactor();
         if (factor <= 0f) return original;
 
-        return Mth.lerp(factor, original, SpatialGUI.config.targetFov);
+        return Mth.lerp(factor, original, ConfigManager.config().targetFov);
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -759,7 +760,7 @@ public class GameRendererMixin {
         renderer.renderInWorldPost();
 
         boolean firstPerson = closing ? renderer.isClosingFirstPerson() : SpatialGUIClient.getEffectiveFirstPersonMode();
-        if (firstPerson && SpatialGUI.config.hideHandsInFirstPerson) {
+        if (firstPerson && ConfigManager.config().hideHandsInFirstPerson) {
             ci.cancel();
         }
     }

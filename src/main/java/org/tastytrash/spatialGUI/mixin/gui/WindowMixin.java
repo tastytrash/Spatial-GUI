@@ -1,15 +1,13 @@
 package org.tastytrash.spatialGUI.mixin.gui;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.EssentialCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
@@ -47,7 +45,7 @@ public class WindowMixin {
 
     @Unique
     private int getGuiScale() {
-        return SpatialGUI.config.getEffectiveGuiScale();
+        return ConfigManager.config().getEffectiveGuiScale();
     }
 
     @Unique

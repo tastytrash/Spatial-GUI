@@ -1,10 +1,10 @@
 package org.tastytrash.spatialGUI.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import org.tastytrash.spatialGUI.SpatialGUI;
 //? if <1.21.11 {
 //?} else if >26.2 {
 /*import com.mojang.renderpearl.api.GpuFormat;
@@ -59,7 +59,7 @@ public class TextureTargetManager {
             return;
         }
 
-        double scale = Mth.clamp(SpatialGUI.config.renderScalePercent, 25, 100) / 100.0;
+        double scale = Mth.clamp(ConfigManager.config().renderScalePercent, 25, 100) / 100.0;
         int width = Math.max(1, (int) Math.round(windowWidth * scale));
         int height = Math.max(1, (int) Math.round(windowHeight * scale));
 

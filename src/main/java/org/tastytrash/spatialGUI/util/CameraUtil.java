@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.util;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -14,20 +15,20 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public class CameraUtil {
     public static void checkBlockCollision(Entity entity) {
-        if (Minecraft.getInstance().level == null || !SpatialGUI.config.fallbackToFirstPersonOnBlockCollision) {
+        if (Minecraft.getInstance().level == null || !ConfigManager.config().fallbackToFirstPersonOnBlockCollision) {
             SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
             return;
         }
 
         var renderer = SpatialGUIClient.renderer();
         float yawRadians = (float) Math.toRadians(renderer.anchoredYaw());
-        double sideOffset = SpatialGUI.config.cameraSideOffset;
-        if (SpatialGUI.config.mirrorThirdPerson) {
+        double sideOffset = ConfigManager.config().cameraSideOffset;
+        if (ConfigManager.config().mirrorThirdPerson) {
             sideOffset = -sideOffset;
         }
-        double camX = entity.getX() + Math.sin(yawRadians) * SpatialGUI.config.cameraDistance + Math.cos(yawRadians) * sideOffset;
-        double camY = entity.getY() + SpatialGUI.config.cameraHeightOffset;
-        double camZ = entity.getZ() - Math.cos(yawRadians) * SpatialGUI.config.cameraDistance + Math.sin(yawRadians) * sideOffset;
+        double camX = entity.getX() + Math.sin(yawRadians) * ConfigManager.config().cameraDistance + Math.cos(yawRadians) * sideOffset;
+        double camY = entity.getY() + ConfigManager.config().cameraHeightOffset;
+        double camZ = entity.getZ() - Math.cos(yawRadians) * ConfigManager.config().cameraDistance + Math.sin(yawRadians) * sideOffset;
 
         Vec3 playerEyePos = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
         Vec3 targetCamPos = new Vec3(camX, camY, camZ);
@@ -75,17 +76,17 @@ public class CameraUtil {
         //? if >26.2 {
         /*return Minecraft.getInstance().gameRenderer.getMainCamera().getFov();
         *///?} else {
-        return SpatialGUI.config.overrideFov
-                ? (float) SpatialGUI.config.targetFov
+        return ConfigManager.config().overrideFov
+                ? (float) ConfigManager.config().targetFov
                 : (float) (int) Minecraft.getInstance().options.fov().get();
         //?}
     }
 
     public static float calculateFovMultiplier() {
-        if (!SpatialGUI.config.autoScaleByFov) return 1.0f;
+        if (!ConfigManager.config().autoScaleByFov) return 1.0f;
 
         float currentFov = getCurrentFov();
-        float baselineFov = (float) SpatialGUI.config.autoScaleBaselineFov;
+        float baselineFov = (float) ConfigManager.config().autoScaleBaselineFov;
 
         return currentFov / baselineFov;
     }
@@ -94,7 +95,7 @@ public class CameraUtil {
         if (isFirstPerson) return 0.0f;
         
         float fovMultiplier = calculateFovMultiplier();
-        float distanceMultiplier = (float) SpatialGUI.config.autoScaleDistanceMultiplier;
+        float distanceMultiplier = (float) ConfigManager.config().autoScaleDistanceMultiplier;
         float fovAdjustment = (1.0f / fovMultiplier) - 1.0f;
         float distanceFovAdjustment = fovAdjustment * distanceMultiplier;
         
@@ -105,7 +106,7 @@ public class CameraUtil {
         if (isFirstPerson) return 0.0f;
         
         float fovMultiplier = calculateFovMultiplier();
-        float sideOffsetMultiplier = (float) SpatialGUI.config.autoScaleSideOffsetMultiplier;
+        float sideOffsetMultiplier = (float) ConfigManager.config().autoScaleSideOffsetMultiplier;
         float fovAdjustment = (1.0f / fovMultiplier) - 1.0f;
         float sideOffsetFovAdjustment = fovAdjustment * sideOffsetMultiplier;
         

@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -118,10 +119,10 @@ public class InventoryRenderer {
 
     private int computeLightingTint() {
         var mc = Minecraft.getInstance();
-        if (!SpatialGUI.config.enableWorldLightingTint || mc.level == null || mc.player == null) return 255;
+        if (!ConfigManager.config().enableWorldLightingTint || mc.level == null || mc.player == null) return 255;
 
         int light = mc.level.getMaxLocalRawBrightness(BlockPos.containing(mc.player.getEyePosition()));
-        float target = 255f - (float) SpatialGUI.config.lightingTintStrength * (1f - light / 15f);
+        float target = 255f - (float) ConfigManager.config().lightingTintStrength * (1f - light / 15f);
 
         smoothedLight = smoothedLight < 0 ? target : smoothedLight + (target - smoothedLight) * 0.1f;
         return Math.round(smoothedLight);
@@ -139,7 +140,7 @@ public class InventoryRenderer {
         var renderer = SpatialGUIClient.renderer();
         float yaw = closing ? closeYaw : renderer.anchoredYaw();
         float pitch = isFirstPerson ? (closing ? closePitch : renderer.anchoredPitch()) : 0;
-        float pitchClamp = (float) SpatialGUI.config.firstPersonPitchClamp;
+        float pitchClamp = (float) ConfigManager.config().firstPersonPitchClamp;
         //? if >=26.2 {
         /*pitch = Math.clamp(pitch, -pitchClamp, pitchClamp);
          *///?} else {
@@ -176,7 +177,7 @@ public class InventoryRenderer {
         Matrix4f worldPose = WORLD_POSE_STACK.last().pose();
         quadBasis = RenderUtil.computeQuadBasis(worldPose, pose.aspect(), pose.scale());
         cylinderBasis = isCurvedScreenActive(isFirstPerson)
-                ? RenderUtil.computeCylinderBasis(worldPose, pose.aspect(), pose.scale(), (float) Math.toRadians(SpatialGUI.config.curvedScreenArcDegrees))
+                ? RenderUtil.computeCylinderBasis(worldPose, pose.aspect(), pose.scale(), (float) Math.toRadians(ConfigManager.config().curvedScreenArcDegrees))
                 : null;
     }
 
@@ -199,37 +200,37 @@ public class InventoryRenderer {
     }
 
     private static boolean isCurvedScreenActive(boolean isFirstPerson) {
-        return SpatialGUI.config.curvedScreenEnabled && isFirstPerson
-                && SpatialGUI.config.curvedScreenArcDegrees >= 5
-                && SpatialGUI.config.curvedScreenArcDegrees <= 150;
+        return ConfigManager.config().curvedScreenEnabled && isFirstPerson
+                && ConfigManager.config().curvedScreenArcDegrees >= 5
+                && ConfigManager.config().curvedScreenArcDegrees <= 150;
     }
 
     private void addScreenQuadMesh(VertexConsumer buffer, Matrix4f pose, float aspect, boolean isFirstPerson) {
         int lightingTint = computeLightingTint();
         if (isCurvedScreenActive(isFirstPerson)) {
-            float arcRadians = (float) Math.toRadians(SpatialGUI.config.curvedScreenArcDegrees);
-            int layers = SpatialGUI.config.dropShadowEnabled ? SpatialGUI.config.dropShadowLayers : 0;
+            float arcRadians = (float) Math.toRadians(ConfigManager.config().curvedScreenArcDegrees);
+            int layers = ConfigManager.config().dropShadowEnabled ? ConfigManager.config().dropShadowLayers : 0;
             for (int i = 0; i < layers; i++) {
-                float offsetX = (float) (SpatialGUI.config.dropShadowHorizontalOffset * (1 + i * 0.5));
-                float offsetY = (float) (SpatialGUI.config.dropShadowVerticalOffset * (1 + i * 0.5));
-                float offsetZ = (float) -SpatialGUI.config.dropShadowDepthOffset;
-                float scale = (float) (1.0 + (SpatialGUI.config.dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
+                float offsetX = (float) (ConfigManager.config().dropShadowHorizontalOffset * (1 + i * 0.5));
+                float offsetY = (float) (ConfigManager.config().dropShadowVerticalOffset * (1 + i * 0.5));
+                float offsetZ = (float) -ConfigManager.config().dropShadowDepthOffset;
+                float scale = (float) (1.0 + (ConfigManager.config().dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
                 Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
-                RenderUtil.addCurvedScreenQuad(buffer, layerPose, aspect, arcRadians, CURVED_SEGMENTS, 0, SpatialGUI.config.dropShadowAlpha / layers);
+                RenderUtil.addCurvedScreenQuad(buffer, layerPose, aspect, arcRadians, CURVED_SEGMENTS, 0, ConfigManager.config().dropShadowAlpha / layers);
             }
-            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS, lightingTint, SpatialGUI.config.screenAlpha);
+            RenderUtil.addCurvedScreenQuad(buffer, pose, aspect, arcRadians, CURVED_SEGMENTS, lightingTint, ConfigManager.config().screenAlpha);
             meshQuadCount = (layers + 1) * CURVED_SEGMENTS;
         } else {
-            int layers = SpatialGUI.config.dropShadowEnabled ? SpatialGUI.config.dropShadowLayers : 0;
+            int layers = ConfigManager.config().dropShadowEnabled ? ConfigManager.config().dropShadowLayers : 0;
             for (int i = 0; i < layers; i++) {
-                float offsetX = (float) (SpatialGUI.config.dropShadowHorizontalOffset * (1 + i * 0.5));
-                float offsetY = (float) (SpatialGUI.config.dropShadowVerticalOffset * (1 + i * 0.5));
-                float offsetZ = (float) -SpatialGUI.config.dropShadowDepthOffset;
-                float scale = (float) (1.0 + (SpatialGUI.config.dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
+                float offsetX = (float) (ConfigManager.config().dropShadowHorizontalOffset * (1 + i * 0.5));
+                float offsetY = (float) (ConfigManager.config().dropShadowVerticalOffset * (1 + i * 0.5));
+                float offsetZ = (float) -ConfigManager.config().dropShadowDepthOffset;
+                float scale = (float) (1.0 + (ConfigManager.config().dropShadowScaleMultiplier - 1.0) * (i + 1) / layers);
                 Matrix4f layerPose = new Matrix4f(pose).translate(offsetX, offsetY, offsetZ).scale(scale, scale, scale);
-                RenderUtil.addScreenQuad(buffer, layerPose, aspect, 0, SpatialGUI.config.dropShadowAlpha / layers);
+                RenderUtil.addScreenQuad(buffer, layerPose, aspect, 0, ConfigManager.config().dropShadowAlpha / layers);
             }
-            RenderUtil.addScreenQuad(buffer, pose, aspect, lightingTint, SpatialGUI.config.screenAlpha);
+            RenderUtil.addScreenQuad(buffer, pose, aspect, lightingTint, ConfigManager.config().screenAlpha);
             meshQuadCount = layers + 1;
         }
     }
@@ -270,8 +271,8 @@ public class InventoryRenderer {
 
     private static long animationTotalMs() {
         long total = 0;
-        if (SpatialGUI.config.enableFadeAnimation) total = Math.max(total, SpatialGUI.config.fadeDurationMs);
-        if (SpatialGUI.config.enableScaleAnimation) total = Math.max(total, SpatialGUI.config.openAnimationDurationMs);
+        if (ConfigManager.config().enableFadeAnimation) total = Math.max(total, ConfigManager.config().fadeDurationMs);
+        if (ConfigManager.config().enableScaleAnimation) total = Math.max(total, ConfigManager.config().openAnimationDurationMs);
         return total;
     }
 
@@ -284,7 +285,7 @@ public class InventoryRenderer {
         boolean firstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         long animationMs = Math.min(animationTotalMs(), Math.max(0L, now - screenOpenTime));
 
-        long cameraMs = firstPerson ? 0L : Math.round(Math.max(0, SpatialGUI.config.transitionDurationMs) * (1.0f - SpatialGUI.config.transitionSkipPercentage / 100.0f));
+        long cameraMs = firstPerson ? 0L : Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f));
         long duration = Math.max(animationMs, cameraMs);
         if (duration <= 0L) {
             return false;
@@ -338,10 +339,10 @@ public class InventoryRenderer {
     }
 
     private float getFadeAlpha() {
-        if (!SpatialGUI.config.enableFadeAnimation) {
+        if (!ConfigManager.config().enableFadeAnimation) {
             return 1.0F;
         }
-        return Math.min(1.0F, getAnimationElapsedMs() / (float) Math.max(1, SpatialGUI.config.fadeDurationMs));
+        return Math.min(1.0F, getAnimationElapsedMs() / (float) Math.max(1, ConfigManager.config().fadeDurationMs));
     }
 
     public void resetPerspectiveState() {
@@ -433,7 +434,7 @@ public class InventoryRenderer {
                 IDENTITY_MATRIX
         );
 
-        FilterMode filterMode = SpatialGUI.config.useLinearFiltering ? FilterMode.LINEAR : FilterMode.NEAREST;
+        FilterMode filterMode = ConfigManager.config().useLinearFiltering ? FilterMode.LINEAR : FilterMode.NEAREST;
 
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Spatial GUI",
@@ -456,7 +457,7 @@ public class InventoryRenderer {
                     //?}
                             ("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                                     AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
-                                    filterMode, filterMode, SpatialGUI.config.useAnisotropicFiltering
+                                    filterMode, filterMode, ConfigManager.config().useAnisotropicFiltering
                             ));
             renderPass.setVertexBuffer(0, info.vertexBuffer().slice());
             renderPass.setIndexBuffer(info.indexBuffer(), info.indexType());
@@ -547,7 +548,7 @@ public class InventoryRenderer {
                 IDENTITY_MATRIX
         );
 
-        FilterMode filterMode = SpatialGUI.config.useLinearFiltering ? FilterMode.LINEAR : FilterMode.NEAREST;
+        FilterMode filterMode = ConfigManager.config().useLinearFiltering ? FilterMode.LINEAR : FilterMode.NEAREST;
 
         var sequentialBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
         GpuBuffer indexBuffer = sequentialBuffer.getBuffer(meshQuadCount * 6);
@@ -570,7 +571,7 @@ public class InventoryRenderer {
                 renderPass.setUniform("DynamicTransforms", dynamicTransforms);
                 renderPass.bindTexture("Sampler0", texture, RenderSystem.getSamplerCache().getSampler(
                         AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
-                        filterMode, filterMode, SpatialGUI.config.useAnisotropicFiltering
+                        filterMode, filterMode, ConfigManager.config().useAnisotropicFiltering
                 ));
                 renderPass.setVertexBuffer(0, vertexBuffer);
                 renderPass.setIndexBuffer(indexBuffer, indexType);
@@ -656,7 +657,7 @@ public class InventoryRenderer {
 
         float fadeAlpha = getFadeAlpha();
 
-        int filter = SpatialGUI.config.useLinearFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST;
+        int filter = ConfigManager.config().useLinearFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST;
 
         client.getMainRenderTarget().bindWrite(true);
 

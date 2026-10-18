@@ -54,6 +54,8 @@ ___
 Open the config through the keybind (unbound by default), Mod Menu, or the config file.
 Spatial GUI has many options, so it is worth looking through them to tailor the mod to your preferences.
 
+For advanced users and modpack creators, per-screen configuration profiles are supported via `config/spatial-gui/profiles.json5`. This file contains documentation.
+
 ## Compatibility
 
 Spatial GUI is a client-side mod and does not need to be installed on the server.

@@ -1,8 +1,9 @@
 package org.tastytrash.spatialGUI;
 
-import org.tastytrash.spatialGUI.client.SpatialGUIConfig;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 
 //? if neoforge {
 /*import net.neoforged.api.distmarker.Dist;
@@ -40,5 +41,6 @@ public class SpatialGUI {
         LOGGER.info("Initializing Spatial GUI");
         SpatialGUIConfig.HANDLER.load();
         config = SpatialGUIConfig.get();
+        ConfigManager.reload();
     }
 }

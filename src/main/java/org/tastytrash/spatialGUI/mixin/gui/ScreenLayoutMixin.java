@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 
 @Mixin(Screen.class)
@@ -49,9 +50,10 @@ public abstract class ScreenLayoutMixin {
     @Unique
     private int spatialGUI$fix(int original, boolean isWidth) {
         Minecraft mc = Minecraft.getInstance();
-        if (SpatialGUI.config == null || mc.level == null || !SpatialGUIClient.isEnabled()) return original;
+        if (ConfigManager.config() == null || mc.level == null || !SpatialGUIClient.isEnabled()) return original;
         if (!SpatialGUIClient.shouldHookScreen((Screen) (Object) this)) return original;
         Window w = mc.getWindow();
-        return isWidth ? GuiScaleUtil.scaledWidth(w) : GuiScaleUtil.scaledHeight(w);
+        Screen self = (Screen) (Object) this;
+        return isWidth ? GuiScaleUtil.scaledWidth(w, self) : GuiScaleUtil.scaledHeight(w, self);
     }
 }

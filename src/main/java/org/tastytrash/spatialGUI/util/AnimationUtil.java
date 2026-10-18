@@ -1,7 +1,7 @@
 package org.tastytrash.spatialGUI.util;
 
-import org.tastytrash.spatialGUI.SpatialGUI;
-import org.tastytrash.spatialGUI.client.SpatialGUIConfig;
+import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
 public final class AnimationUtil {
     private AnimationUtil() {}
@@ -77,12 +77,12 @@ public final class AnimationUtil {
     public static float scaleForElapsed(float baseScale, long elapsedMs, boolean isRecipeBookOpen, int recipeBookCloseDelay) {
         int updatedDelay = isRecipeBookOpen ? -2 : Math.min(0, recipeBookCloseDelay + 1);
         boolean shouldShrink = isRecipeBookOpen || updatedDelay < 0;
-        float scale = shouldShrink ? baseScale / (float) SpatialGUI.config.recipeBookShrinkFactor : baseScale;
+        float scale = shouldShrink ? baseScale / (float) ConfigManager.config().recipeBookShrinkFactor : baseScale;
 
-        if (SpatialGUI.config.enableScaleAnimation) {
-            float animationProgress = Math.min(1.0F, (float) elapsedMs / (float) SpatialGUI.config.openAnimationDurationMs);
-            float easedProgress = applyEasing(SpatialGUI.config.animationEasing, animationProgress);
-            float startScalePercent = SpatialGUI.config.animationStartScalePercent / 100.0f;
+        if (ConfigManager.config().enableScaleAnimation) {
+            float animationProgress = Math.min(1.0F, (float) elapsedMs / (float) ConfigManager.config().openAnimationDurationMs);
+            float easedProgress = applyEasing(ConfigManager.config().animationEasing, animationProgress);
+            float startScalePercent = ConfigManager.config().animationStartScalePercent / 100.0f;
             float startScale = scale * startScalePercent;
             scale = org.tastytrash.spatialGUI.util.MathUtil.lerp(startScale, scale, easedProgress);
         }

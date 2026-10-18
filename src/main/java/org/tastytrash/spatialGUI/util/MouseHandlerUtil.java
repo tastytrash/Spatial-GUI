@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
@@ -246,7 +247,7 @@ public class MouseHandlerUtil {
     }
 
     public static void updateMouseGrabForFirstPerson(boolean isFirstPerson) {
-        if (!SpatialGUI.config.useCrosshairForFirstPerson || !isFirstPerson) {
+        if (!ConfigManager.config().useCrosshairForFirstPerson || !isFirstPerson) {
             releaseMouseFromFirstPerson();
         } else {
             grabMouseForFirstPerson();

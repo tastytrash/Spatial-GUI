@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.client;
+package org.tastytrash.spatialGUI.config;
 
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.controller.ControllerBuilder;
@@ -608,7 +608,7 @@ public class SpatialGUIConfig {
         return list;
     }
 
-    private static java.nio.file.Path configDir() {
+    public static java.nio.file.Path configDir() {
         //? if fabric {
         return FabricLoader.getInstance().getConfigDir();
         //?} else {

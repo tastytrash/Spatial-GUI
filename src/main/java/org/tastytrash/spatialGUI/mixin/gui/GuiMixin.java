@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.mixin.gui;
 
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 
 //? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -52,7 +53,7 @@ public class GuiMixin {
     ))
     private void spatialGUI$afterScreenExtraction(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && SpatialGUI.config.enabled && renderer.shouldCapture()) {
+        if (renderer != null && ConfigManager.config().enabled && renderer.shouldCapture()) {
             SpatialGUIRenderer.isExtractingScreen = false;
             SpatialGUIRenderer.skipWindowOverride = true;
         }

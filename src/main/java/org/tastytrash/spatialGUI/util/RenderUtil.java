@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.util;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -17,7 +18,7 @@ public final class RenderUtil {
     private RenderUtil() {}
 
     public static void addQuadVertex(VertexConsumer buffer, Matrix4f pose, float x, float y, float z, float u, float v) {
-        addQuadVertex(buffer, pose, x, y, z, u, v, 255, SpatialGUI.config.screenAlpha);
+        addQuadVertex(buffer, pose, x, y, z, u, v, 255, ConfigManager.config().screenAlpha);
     }
 
     public static void addQuadVertex(VertexConsumer buffer, Matrix4f pose, float x, float y, float z, float u, float v, int rgb, int a) {
@@ -29,7 +30,7 @@ public final class RenderUtil {
     }
 
     public static void addScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect) {
-        addScreenQuad(buffer, pose, aspect, 255, SpatialGUI.config.screenAlpha);
+        addScreenQuad(buffer, pose, aspect, 255, ConfigManager.config().screenAlpha);
     }
 
     public static void addScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, int rgb, int a) {
@@ -92,8 +93,8 @@ public final class RenderUtil {
         //? if >=26.1.2 {
         currentFov = Minecraft.getInstance().gameRenderer.getMainCamera().getFov();
         //?} else {
-        /*if (SpatialGUI.config.overrideFov) {
-            currentFov = (float) SpatialGUI.config.targetFov;
+        /*if (ConfigManager.config().overrideFov) {
+            currentFov = (float) ConfigManager.config().targetFov;
         } else {
             currentFov = (float) ((GameRendererInvoker) Minecraft.getInstance().gameRenderer)
                     .spatialGUI$getFov(Minecraft.getInstance().gameRenderer.getMainCamera(),
@@ -104,43 +105,43 @@ public final class RenderUtil {
                             ^///?}
         }
         *///?}
-        float baselineFov = (float) SpatialGUI.config.autoScaleBaselineFov;
-        float power = (float) SpatialGUI.config.autoScaleScreenPower;
+        float baselineFov = (float) ConfigManager.config().autoScaleBaselineFov;
+        float power = (float) ConfigManager.config().autoScaleScreenPower;
 
         float ratio = currentFov / baselineFov;
         return (float) Math.pow(ratio, power);
     }
 
     public static ScreenTransformConfig getScreenTransformConfig(boolean isFirstPerson) {
-        float fovMultiplier = calculateFovScaleMultiplier(SpatialGUI.config.autoScaleByFov);
+        float fovMultiplier = calculateFovScaleMultiplier(ConfigManager.config().autoScaleByFov);
 
         if (isFirstPerson) {
             return new ScreenTransformConfig(
-                    (float) SpatialGUI.config.firstPersonScreenDistance,
-                    (float) SpatialGUI.config.firstPersonScreenSideOffset,
-                    (float) SpatialGUI.config.firstPersonScreenHeightOffset,
-                    (float) SpatialGUI.config.firstPersonScreenYawOffset,
-                    (float) SpatialGUI.config.firstPersonScreenPitchOffset,
-                    (float) SpatialGUI.config.firstPersonScreenScale * fovMultiplier
+                    (float) ConfigManager.config().firstPersonScreenDistance,
+                    (float) ConfigManager.config().firstPersonScreenSideOffset,
+                    (float) ConfigManager.config().firstPersonScreenHeightOffset,
+                    (float) ConfigManager.config().firstPersonScreenYawOffset,
+                    (float) ConfigManager.config().firstPersonScreenPitchOffset,
+                    (float) ConfigManager.config().firstPersonScreenScale * fovMultiplier
             );
         }
 
-        float thirdPersonFovMultiplier = 1.0f + (fovMultiplier - 1.0f) * (float) SpatialGUI.config.autoScaleThirdPersonScreenMultiplier;
-        float sideOffset = (float) SpatialGUI.config.screenSideOffset;
-        float yawOffset = (float) SpatialGUI.config.screenYawOffset;
+        float thirdPersonFovMultiplier = 1.0f + (fovMultiplier - 1.0f) * (float) ConfigManager.config().autoScaleThirdPersonScreenMultiplier;
+        float sideOffset = (float) ConfigManager.config().screenSideOffset;
+        float yawOffset = (float) ConfigManager.config().screenYawOffset;
 
-        if (SpatialGUI.config.mirrorThirdPerson) {
+        if (ConfigManager.config().mirrorThirdPerson) {
             sideOffset = -sideOffset;
             yawOffset = -yawOffset;
         }
 
         return new ScreenTransformConfig(
-                (float) SpatialGUI.config.screenDistance,
+                (float) ConfigManager.config().screenDistance,
                 sideOffset,
-                (float) SpatialGUI.config.screenHeightOffset,
+                (float) ConfigManager.config().screenHeightOffset,
                 yawOffset,
-                (float) SpatialGUI.config.screenPitchOffset,
-                (float) SpatialGUI.config.screenScale * thirdPersonFovMultiplier
+                (float) ConfigManager.config().screenPitchOffset,
+                (float) ConfigManager.config().screenScale * thirdPersonFovMultiplier
         );
     }
 
@@ -289,7 +290,7 @@ public final class RenderUtil {
     }
 
     public static void addCurvedScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, float arcRadians, int segments) {
-        addCurvedScreenQuad(buffer, pose, aspect, arcRadians, segments, 255, SpatialGUI.config.screenAlpha);
+        addCurvedScreenQuad(buffer, pose, aspect, arcRadians, segments, 255, ConfigManager.config().screenAlpha);
     }
 
     public static void addCurvedScreenQuad(VertexConsumer buffer, Matrix4f pose, float aspect, float arcRadians, int segments, int rgb, int a) {

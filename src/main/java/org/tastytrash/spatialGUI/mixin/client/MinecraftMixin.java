@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 //? if >=26.1.2 {
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 
 @Mixin(Minecraft.class)
 //?} else {
@@ -26,7 +27,7 @@ public class MinecraftMixin {
     )
     private boolean spatialGUI$renderWorldInForcedFrame(boolean original) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && SpatialGUI.config.enabled && renderer.shouldCapture()) {
+        if (renderer != null && ConfigManager.config().enabled && renderer.shouldCapture()) {
             return true;
         }
         return original;

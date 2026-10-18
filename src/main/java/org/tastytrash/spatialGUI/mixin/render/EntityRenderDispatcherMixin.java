@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.mixin.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -33,7 +34,7 @@ public class EntityRenderDispatcherMixin {
         }
 
         var renderer = SpatialGUIClient.renderer();
-        if (renderer == null || !SpatialGUI.config.enabled || !SpatialGUI.config.blurWorldBackground) {
+        if (renderer == null || !ConfigManager.config().enabled || !ConfigManager.config().blurWorldBackground) {
             WorldBlurRenderer.setDeferredPlayerRenderState(null);
             return;
         }

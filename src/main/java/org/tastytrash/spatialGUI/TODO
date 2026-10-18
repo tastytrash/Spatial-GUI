@@ -23,6 +23,21 @@ Minecraft's water effects not applying properly when in the menu with velocity u
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
 
+/////////////////////////////////////
+Visual editor
+Is there any other mods that do something like this? Litematica?
+High priority:
+ - Rendered in game, shows an outline of the size of a normal container, and the whole screen
+ - Just sliders for now
+ - Either activates editor from keybind, or from YACL config button (is this possible?)
+
+Possible later ideas:
+ - Draggable handles, pos, rot, scale
+ - Save to profiles, allows for direct interaction with profiles.json5 in-game
+ - Animation/transition preview
+////////////////////////////////////////
+
+
 Parallax magnitude config
 
 Special transition case for third person front (?)

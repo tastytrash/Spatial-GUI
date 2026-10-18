@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.mixin.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,12 +61,12 @@ public class AvatarRendererMixin {
         var mouse = (MouseHandlerAccessor) client.mouseHandler;
         float normX = Mth.clamp((float) (mouse.getRawXpos() / client.getWindow().getScreenWidth()) * 2f - 1f, -1f, 1f);
         float normY = Mth.clamp((float) (mouse.getRawYpos() / client.getWindow().getScreenHeight()) * 2f - 1f, -1f, 1f);
-        if (SpatialGUI.config.mirrorHeadMovement) normX = -normX;
+        if (ConfigManager.config().mirrorHeadMovement) normX = -normX;
 
-        float side = SpatialGUI.config.mirrorThirdPerson ? -1f : 1f;
-        float targetBody = renderer.anchoredYaw() + side * (float) SpatialGUI.config.avatarBodyRotationOffset;
-        float targetYaw = normX * (float) SpatialGUI.config.avatarMaxYawOffset + side * (float) SpatialGUI.config.avatarBaseYawOffset;
-        float targetPitch = Mth.clamp(normY * (float) SpatialGUI.config.avatarMaxPitchOffset, -60f, 60f);
+        float side = ConfigManager.config().mirrorThirdPerson ? -1f : 1f;
+        float targetBody = renderer.anchoredYaw() + side * (float) ConfigManager.config().avatarBodyRotationOffset;
+        float targetYaw = normX * (float) ConfigManager.config().avatarMaxYawOffset + side * (float) ConfigManager.config().avatarBaseYawOffset;
+        float targetPitch = Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
 
         long now = System.nanoTime();
         boolean justOpened = !renderer.poseStarted;
@@ -80,7 +81,7 @@ public class AvatarRendererMixin {
             smoothedPitch = Mth.lerp(SMOOTHING, smoothedPitch, targetPitch);
         }
 
-        float t = Mth.clamp((now - openStartNanos) / 1000000f / SpatialGUI.config.openAnimationDurationMs, 0f, 1f);
+        float t = Mth.clamp((now - openStartNanos) / 1000000f / ConfigManager.config().openAnimationDurationMs, 0f, 1f);
         float open = 1f - (1f - t) * (1f - t) * (1f - t);
 
         shownBody = Mth.rotLerp(open, vanillaBody, targetBody);

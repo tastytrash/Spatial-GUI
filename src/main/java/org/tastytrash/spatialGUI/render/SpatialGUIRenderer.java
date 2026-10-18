@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -83,6 +84,8 @@ public class SpatialGUIRenderer {
          *///?} else {
         if (screen != Minecraft.getInstance().screen) return;
         //?}
+
+        ConfigManager.clearCache();
 
         boolean swapping = hookedScreen != null || removedFrame == frameCounter;
         boolean keepAnchor = swapping && rotationAnchored;
@@ -180,7 +183,7 @@ public class SpatialGUIRenderer {
         boolean wasEffectiveFirstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         MouseHandlerUtil.releaseMouseFromFirstPerson();
         boolean startClosing = animate
-                && SpatialGUI.config.enableCloseAnimation
+                && ConfigManager.config().enableCloseAnimation
                 && Minecraft.getInstance().level != null
                 && inventoryRenderer.beginClosing();
         if (!startClosing) {
@@ -197,7 +200,7 @@ public class SpatialGUIRenderer {
 
         var mc = Minecraft.getInstance();
         preSnapState = null;
-        if (wasEffectiveFirstPerson && SpatialGUI.config.keepFirstPersonCameraAngle && player != null) {
+        if (wasEffectiveFirstPerson && ConfigManager.config().keepFirstPersonCameraAngle && player != null) {
             //? if >=26.2 {
             /*float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
             float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
@@ -259,7 +262,7 @@ public class SpatialGUIRenderer {
     public boolean isClosingThirdToFirstPerson() {
         return inventoryRenderer.isClosing()
                 && !inventoryRenderer.isClosingFirstPerson()
-                && !SpatialGUI.config.autoDetectCameraMode
+                && !ConfigManager.config().autoDetectCameraMode
                 && !SpatialGUIClient.getWasThirdPersonCamera();
     }
 
@@ -268,8 +271,8 @@ public class SpatialGUIRenderer {
     }
 
     public float getCloseBlend() {
-        float duration = Math.max(1, SpatialGUI.config.transitionDurationMs);
-        float skipFraction = SpatialGUI.config.transitionSkipPercentage / 100.0f;
+        float duration = Math.max(1, ConfigManager.config().transitionDurationMs);
+        float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
         float openProgress = Math.max(skipFraction, 1.0f - inventoryRenderer.getCloseElapsedMs() / duration);
         return 1.0f - org.tastytrash.spatialGUI.util.AnimationUtil.easeInOutSine(openProgress);
     }
@@ -315,7 +318,7 @@ public class SpatialGUIRenderer {
             return new Vector2d(sourceX, sourceY);
         }
 
-        double guiScale = SpatialGUI.config.getEffectiveGuiScale();
+        double guiScale = ConfigManager.config().getEffectiveGuiScale();
         Vector2d mappedMouse = MouseHandlerUtil.mapMousePosition(
                 sourceX, sourceY, quadBasis, inventoryRenderer.getCylinderBasis(), guiScale,
                 targetManager.getInventoryTarget()
@@ -393,8 +396,8 @@ public class SpatialGUIRenderer {
     }
 
     public static boolean isCrosshairModeActive() {
-        return SpatialGUI.config != null
-                && SpatialGUI.config.useCrosshairForFirstPerson
+        return ConfigManager.config() != null
+                && ConfigManager.config().useCrosshairForFirstPerson
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
                 && SpatialGUIClient.renderer() != null
                 && SpatialGUIClient.renderer().getHookedScreen() != null;
@@ -454,8 +457,8 @@ public class SpatialGUIRenderer {
         //?}
 
         boolean active = current != null && current == hookedScreen && SpatialGUIClient.shouldHookScreen(current);
-        float target = (active && SpatialGUI.config.overrideFov) ? 1f : 0f;
-        float speed = SpatialGUI.config.fovLerpSpeed;
+        float target = (active && ConfigManager.config().overrideFov) ? 1f : 0f;
+        float speed = ConfigManager.config().fovLerpSpeed;
 
         if (speed <= 0f) {
             fovProgress = target;

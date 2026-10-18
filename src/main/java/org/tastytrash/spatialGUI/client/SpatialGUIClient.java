@@ -7,6 +7,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.compat.VisorCompat;
+import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.SpatialGUI;
 //? if fabric {
@@ -105,31 +107,31 @@ public class SpatialGUIClient {
     *///?}
 
     public static boolean isEnabled() {
-        if (SpatialGUI.config == null) return false;
+        if (ConfigManager.config() == null) return false;
         if (VisorCompat.isActive()) return false;
         if (capturingPanorama) return false;
-        return SpatialGUI.config.enabled;
+        return ConfigManager.config().enabled;
     }
 
     public static boolean shouldHideHud() {
-        return isEnabled() && SpatialGUI.config.hideHud
+        return isEnabled() && ConfigManager.config().hideHud
                 && renderer() != null && renderer().getHookedScreen() != null;
     }
 
     public static boolean shouldHideHotbar() {
-        return isEnabled() && SpatialGUI.config.hideHotbar
+        return isEnabled() && ConfigManager.config().hideHotbar
                 && renderer() != null && renderer().getHookedScreen() != null;
     }
 
     public static boolean shouldHideCrosshair() {
         return isEnabled() && getEffectiveFirstPersonMode()
-                && !SpatialGUI.config.useCrosshairForFirstPerson
+                && !ConfigManager.config().useCrosshairForFirstPerson
                 && renderer() != null && renderer().getHookedScreen() != null;
     }
 
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
-        if (SpatialGUI.config == null) return false;
+        if (ConfigManager.config() == null) return false;
         if (Minecraft.getInstance().level == null) return false;
         var client = Minecraft.getInstance();
         boolean isFirstPerson;
@@ -145,8 +147,8 @@ public class SpatialGUIClient {
             }
         }
 
-        if (isFirstPerson && SpatialGUI.config.disableFirstPerson) return false;
-        if (!isFirstPerson && SpatialGUI.config.disableThirdPerson) return false;
+        if (isFirstPerson && ConfigManager.config().disableFirstPerson) return false;
+        if (!isFirstPerson && ConfigManager.config().disableThirdPerson) return false;
 
         String id = screen.getClass().getName();
         if (id.contains("TitleScreen") || id.contains("ReceivingLevelScreen")
@@ -161,33 +163,33 @@ public class SpatialGUIClient {
                 || id.contains("WinScreen") || id.contains("FileFixer"))
             return false;
 
-        if (!id.contains("$") && !SpatialGUI.config.seenScreens.contains(id)) {
+        if (!id.contains("$") && !ConfigManager.config().seenScreens.contains(id)) {
             try {
-                SpatialGUI.config.seenScreens.add(id);
+                ConfigManager.config().seenScreens.add(id);
             } catch (UnsupportedOperationException e) {
-                SpatialGUI.config.seenScreens = new java.util.ArrayList<>(SpatialGUI.config.seenScreens);
-                SpatialGUI.config.seenScreens.add(id);
+                ConfigManager.config().seenScreens = new java.util.ArrayList<>(ConfigManager.config().seenScreens);
+                ConfigManager.config().seenScreens.add(id);
             }
         }
 
-        if (SpatialGUI.config.disabledScreens.contains(id)) return false;
+        if (ConfigManager.config().disabledScreens.contains(id)) return false;
 
         boolean categorized = true;
         boolean toggle;
         if (screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) {
-            toggle = SpatialGUI.config.inventory;
+            toggle = ConfigManager.config().inventory;
         } else if (screen instanceof AbstractContainerScreen<?>) {
-            toggle = SpatialGUI.config.containers;
+            toggle = ConfigManager.config().containers;
         } else if (screen instanceof PauseScreen) {
-            toggle = SpatialGUI.config.pauseScreen;
+            toggle = ConfigManager.config().pauseScreen;
         } else {
             categorized = false;
             toggle = false;
         }
 
         if (categorized) return toggle;
-        if (SpatialGUI.config.enabledScreens.contains(id)) return true;
-        return SpatialGUI.config.allScreens && Minecraft.getInstance().level != null;
+        if (ConfigManager.config().enabledScreens.contains(id)) return true;
+        return ConfigManager.config().allScreens && Minecraft.getInstance().level != null;
     }
 
     public static SpatialGUIRenderer renderer() {
@@ -219,13 +221,13 @@ public class SpatialGUIClient {
     }
 
     public static boolean shouldUseFirstPersonMode(Screen screen) {
-        if (SpatialGUI.config.autoDetectCameraMode) {
+        if (ConfigManager.config().autoDetectCameraMode) {
             var client = Minecraft.getInstance();
             return client.options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON;
         } else {
             boolean isInventoryScreen = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
                 || screen.getClass().getName().contains("InventoryScreen");
-            return (isInventoryScreen ? SpatialGUI.config.firstPersonModeInventory : SpatialGUI.config.firstPersonModeContainers)
+            return (isInventoryScreen ? ConfigManager.config().firstPersonModeInventory : ConfigManager.config().firstPersonModeContainers)
                 || switchedToFirstPersonDueToBlock;
         }
     }

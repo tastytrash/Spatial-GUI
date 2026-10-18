@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin {
@@ -33,7 +34,7 @@ public abstract class LocalPlayerMixin {
                 && SpatialGUIClient.isEnabled()
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
                 && renderer.getHookedScreen() != null
-                && !SpatialGUI.config.hideHandsInFirstPerson;
+                && !ConfigManager.config().hideHandsInFirstPerson;
     }
 
     @Unique

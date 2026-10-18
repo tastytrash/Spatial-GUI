@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 
 //? if >=1.21.11 {
 import net.minecraft.client.input.MouseButtonInfo;
@@ -33,7 +34,7 @@ public class MouseHandlerSwingMixin {
 
     @Unique
     private static void spatialGUI$trySwing(int action) {
-        if (!SpatialGUIClient.isEnabled() || !SpatialGUI.config.swingArmOnFirstPersonClick) return;
+        if (!SpatialGUIClient.isEnabled() || !ConfigManager.config().swingArmOnFirstPersonClick) return;
         if (action != 1) return;
 
         var renderer = SpatialGUIClient.renderer();

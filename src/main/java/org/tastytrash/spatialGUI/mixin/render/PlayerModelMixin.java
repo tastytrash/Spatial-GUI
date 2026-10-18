@@ -1,6 +1,5 @@
 package org.tastytrash.spatialGUI.mixin.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +11,7 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 
 //? if >1.21.1 {
 import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;import org.tastytrash.spatialGUI.client.SpatialGUIConfig;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 //?} else {
 /*import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.LivingEntity;

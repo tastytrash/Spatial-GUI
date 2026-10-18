@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 
 //? if >26.2 {
@@ -34,7 +35,7 @@ public class HandRendererMixin {
     private void spatialGUI$hideShield(PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState state, float partialTicks, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if (itemStack.getItem() == Items.SHIELD) {
             var renderer = SpatialGUIClient.renderer();
-            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && SpatialGUI.config.hideShieldInFirstPerson) {
+            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && ConfigManager.config().hideShieldInFirstPerson) {
                 ci.cancel();
             }
         }
@@ -49,7 +50,7 @@ public class HandRendererMixin {
     private void spatialGUI$hideShield(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if (itemStack.getItem() == Items.SHIELD) {
             var renderer = SpatialGUIClient.renderer();
-            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && SpatialGUI.config.hideShieldInFirstPerson) {
+            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && ConfigManager.config().hideShieldInFirstPerson) {
                 ci.cancel();
             }
         }
@@ -59,7 +60,7 @@ public class HandRendererMixin {
     private void spatialGUI$hideShield(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if (itemStack.getItem() == Items.SHIELD) {
             var renderer = SpatialGUIClient.renderer();
-            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && SpatialGUI.config.hideShieldInFirstPerson) {
+            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && ConfigManager.config().hideShieldInFirstPerson) {
                 ci.cancel();
             }
         }
@@ -69,7 +70,7 @@ public class HandRendererMixin {
     private void spatialGUI$hideShield(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, MultiBufferSource buffer, int lightCoords, CallbackInfo ci) {
         if (itemStack.getItem() == Items.SHIELD) {
             var renderer = SpatialGUIClient.renderer();
-            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && SpatialGUI.config.hideShieldInFirstPerson) {
+            if (renderer.shouldCapture() && SpatialGUIClient.isEnabled() && ConfigManager.config().hideShieldInFirstPerson) {
                 ci.cancel();
             }
         }

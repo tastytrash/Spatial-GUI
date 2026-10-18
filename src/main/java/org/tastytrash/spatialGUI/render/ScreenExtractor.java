@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2d;
@@ -139,7 +140,7 @@ public class ScreenExtractor {
     public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, TextureTargetManager targetManager, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> renderOperation) {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
-        double guiScale = SpatialGUI.config.getEffectiveGuiScale();
+        double guiScale = ConfigManager.config().getEffectiveGuiScale();
         boolean flatCursor = false;
         //? if neoforge {
         /*flatCursor = ControlifyCompat.isVirtualMouseActive() && !SpatialGUIRenderer.isCrosshairModeActive();

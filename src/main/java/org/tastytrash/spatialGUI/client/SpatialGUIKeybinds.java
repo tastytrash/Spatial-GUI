@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import org.tastytrash.spatialGUI.SpatialGUI;
+import net.minecraft.network.chat.Component;
+import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
 //? if fabric {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -25,7 +27,10 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 
 public class SpatialGUIKeybinds {
     private static KeyMapping openConfig;
+    private static KeyMapping reloadProfiles;
     private static boolean registered = false;
+    private static final String OPEN_CONFIG_KEY = "key.spatial-gui.open_config";
+    private static final String RELOAD_PROFILES_KEY = "key.spatial-gui.reload_profiles";
 
     //? if fabric && >1.21.1 {
     public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =
@@ -35,17 +40,17 @@ public class SpatialGUIKeybinds {
             new KeyMapping.Category(net.minecraft.resources.Identifier.fromNamespaceAndPath("spatial-gui", "main_category"));
     *///?}
 
-    private static KeyMapping createKey() {
+    private static KeyMapping createKey(String key) {
         //? if >1.21.1 {
         return new KeyMapping(
-                "key.spatial-gui.open_config",
+                key,
                 InputConstants.UNKNOWN.getType(),
                 InputConstants.UNKNOWN.getValue(),
                 SPATIAL_GUI_CATEGORY
         );
         //?} else {
         /*return new KeyMapping(
-                "key.spatial-gui.open_config",
+                key,
                 InputConstants.UNKNOWN.getType(),
                 InputConstants.UNKNOWN.getValue(),
                 "key.category.spatial-gui.main_category"
@@ -54,6 +59,16 @@ public class SpatialGUIKeybinds {
     }
 
     private static void tick(Minecraft mc) {
+        while (reloadProfiles.consumeClick()) {
+            String message = ConfigManager.reload();
+            if (mc.player != null) {
+                //? if 1.21.11 {
+                /*mc.player.displayClientMessage(Component.literal(message), true);
+                *///?} else {
+                mc.player.sendSystemMessage(Component.literal(message));
+                //?}
+            }
+        }
         while (openConfig.consumeClick()) {
             //? if >=26.2 {
             /*Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.gui.screen());
@@ -70,12 +85,14 @@ public class SpatialGUIKeybinds {
 
     //? if fabric && >=26.1.2 {
     public static void register() {
-        openConfig = KeyMappingHelper.registerKeyMapping(createKey());
+        openConfig = KeyMappingHelper.registerKeyMapping(createKey(OPEN_CONFIG_KEY));
+        reloadProfiles = KeyMappingHelper.registerKeyMapping(createKey(RELOAD_PROFILES_KEY));
         ClientTickEvents.END_CLIENT_TICK.register(SpatialGUIKeybinds::tick);
     }
     //?} else if fabric {
     /*public static void register() {
-        openConfig = KeyBindingHelper.registerKeyBinding(createKey());
+        openConfig = KeyBindingHelper.registerKeyBinding(createKey(OPEN_CONFIG_KEY));
+        reloadProfiles = KeyBindingHelper.registerKeyBinding(createKey(RELOAD_PROFILES_KEY));
         ClientTickEvents.END_CLIENT_TICK.register(SpatialGUIKeybinds::tick);
     }
     *///?} else if neoforge {
@@ -85,16 +102,20 @@ public class SpatialGUIKeybinds {
         //? if >1.21.1 {
         event.registerCategory(SPATIAL_GUI_CATEGORY);
         //?}
-        openConfig = createKey();
+        openConfig = createKey(OPEN_CONFIG_KEY);
+        reloadProfiles = createKey(RELOAD_PROFILES_KEY);
         event.register(openConfig);
+        event.register(reloadProfiles);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> tick(Minecraft.getInstance()));
     }
     *///?} else if forge {
     /*public static void register(RegisterKeyMappingsEvent event) {
         if (registered) return;
         registered = true;
-        openConfig = createKey();
+        openConfig = createKey(OPEN_CONFIG_KEY);
+        reloadProfiles = createKey(RELOAD_PROFILES_KEY);
         event.register(openConfig);
+        event.register(reloadProfiles);
         MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent e) -> {
             if (e.phase == TickEvent.Phase.END) tick(Minecraft.getInstance());
         });
