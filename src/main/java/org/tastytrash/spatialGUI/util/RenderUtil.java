@@ -1,18 +1,14 @@
 package org.tastytrash.spatialGUI.util;
 
+import org.joml.*;
 import org.tastytrash.spatialGUI.config.ConfigManager;
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector2d;
-import org.joml.Vector3f;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.VulkanModCompat;
-import org.tastytrash.spatialGUI.mixin.render.GameRendererInvoker;
+
+import java.lang.Math;
 
 public final class RenderUtil {
     private RenderUtil() {}
@@ -226,8 +222,7 @@ public final class RenderUtil {
         return new float[]{dx, dy, dz};
     }
 
-    public static Vector2d getInventoryMousePositionRay(double screenX, double screenY, QuadBasis basis, TextureTarget inventoryTarget) {
-        Minecraft mc = Minecraft.getInstance();
+    public static Vector2f getQuadPlanePosition(double screenX, double screenY, QuadBasis basis) {
         float[] ray = buildCameraRayDirection(screenX, screenY);
         if (ray == null) {
             return null;
@@ -249,10 +244,6 @@ public final class RenderUtil {
             return null;
         }
 
-        if (basis.halfWidth() <= 0f || basis.halfHeight() <= 0f) {
-            return null;
-        }
-
         float hx = dx * t - center.x();
         float hy = dy * t - center.y();
         float hz = dz * t - center.z();
@@ -262,8 +253,23 @@ public final class RenderUtil {
         float localX = hx * bRight.x() + hy * bRight.y() + hz * bRight.z();
         float localY = hx * bUp.x() + hy * bUp.y() + hz * bUp.z();
 
-        float u = (localX / basis.halfWidth() + 1f) / 2f;
-        float v = (localY / basis.halfHeight() + 1f) / 2f;
+        return new Vector2f(localX, localY);
+    }
+
+    public static Vector2d getQuadScreenPosition(double screenX, double screenY, QuadBasis basis) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (basis.halfWidth() <= 0f || basis.halfHeight() <= 0f) {
+            return null;
+        }
+
+        Vector2f plane = getQuadPlanePosition(screenX, screenY, basis);
+        if (plane == null) {
+            return null;
+        }
+
+        float u = (plane.x / basis.halfWidth() + 1f) / 2f;
+        float v = (plane.y / basis.halfHeight() + 1f) / 2f;
 
         if (Float.isNaN(u) || Float.isNaN(v)) {
             return null;
@@ -277,7 +283,6 @@ public final class RenderUtil {
 
         return new Vector2d(clampedU * targetWidth, (1.0 - clampedV) * targetHeight);
     }
-
     public record CylinderBasis(Vector3f axisPos, Vector3f axisDir, Vector3f refDir, Vector3f center, float radius, float arcRadians, float halfHeight) {}
 
     public static CylinderBasis computeCylinderBasis(Matrix4f worldPose, float aspect, float scale, float arcRadians) {
@@ -323,7 +328,7 @@ public final class RenderUtil {
         }
     }
 
-    public static Vector2d getInventoryMousePositionRayCurved(double screenX, double screenY, CylinderBasis basis) {
+    public static Vector2d getCylinderScreenPosition(double screenX, double screenY, CylinderBasis basis) {
         Minecraft mc = Minecraft.getInstance();
         float[] ray = buildCameraRayDirection(screenX, screenY);
         if (ray == null) {

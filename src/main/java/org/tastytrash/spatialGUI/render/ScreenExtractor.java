@@ -147,7 +147,7 @@ public class ScreenExtractor {
          *///?}
         if (quadBasis != null && !flatCursor) {
             MouseHandlerUtil.mapMousePosition(MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY(),
-                    quadBasis, cylinderBasis, guiScale, targetManager.getInventoryTarget());
+                    quadBasis, cylinderBasis, guiScale);
         }
 
         int mouseX = MouseHandlerUtil.getHoverX();

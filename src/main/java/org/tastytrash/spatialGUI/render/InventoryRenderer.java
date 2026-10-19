@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
-import org.tastytrash.spatialGUI.editor.EditorMesh;
+import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 //? if >1.21.1 {
@@ -60,7 +60,6 @@ import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.renderer.GameRenderer;
 import org.lwjgl.opengl.GL11;
 *///?}
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.AnimationUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
@@ -434,7 +433,7 @@ public class InventoryRenderer {
             EditorMesh.addHandles(INVENTORY_BUFFER.getVertexBuilder(overlayDraw), pose, screenPose.aspect());
         }
         *///?} else {
-        Matrix4f handlePose = EditorMesh.active() ? new Matrix4f(pose) : null;
+        Matrix4f handlePose = EditorGizmo.active() ? new Matrix4f(pose) : null;
         //?}
 
         matrices.popPose();
@@ -652,7 +651,7 @@ public class InventoryRenderer {
         }
 
         BufferBuilder buffer = new BufferBuilder(INVENTORY_BYTE_BUFFER, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        EditorMesh.addHandles(buffer, pose, aspect);
+        EditorGizmo.addHandles(buffer, pose, aspect);
         MeshData meshData = buffer.build();
         if (meshData == null) {
             return;
@@ -660,7 +659,7 @@ public class InventoryRenderer {
 
         GpuBufferSlice dynamicTransforms = writeTransforms(1f);
         var sequentialBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
-        GpuBuffer indexBuffer = sequentialBuffer.getBuffer(EditorMesh.QUADS * 6);
+        GpuBuffer indexBuffer = sequentialBuffer.getBuffer(EditorGizmo.QUADS * 6);
         VertexFormat.IndexType indexType = sequentialBuffer.type();
 
         try (meshData; GpuBuffer vertexBuffer = RenderSystem.getDevice().createBuffer(
@@ -680,7 +679,7 @@ public class InventoryRenderer {
                 renderPass.setUniform("DynamicTransforms", dynamicTransforms);
                 renderPass.setVertexBuffer(0, vertexBuffer);
                 renderPass.setIndexBuffer(indexBuffer, indexType);
-                renderPass.drawIndexed(0, 0, EditorMesh.QUADS * 6, 1);
+                renderPass.drawIndexed(0, 0, EditorGizmo.QUADS * 6, 1);
             }
         }
     }

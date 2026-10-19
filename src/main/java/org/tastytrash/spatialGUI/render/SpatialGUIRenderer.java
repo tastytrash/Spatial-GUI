@@ -7,9 +7,9 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2d;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
@@ -320,8 +320,7 @@ public class SpatialGUIRenderer {
 
         double guiScale = ConfigManager.config().getEffectiveGuiScale();
         Vector2d mappedMouse = MouseHandlerUtil.mapMousePosition(
-                sourceX, sourceY, quadBasis, inventoryRenderer.getCylinderBasis(), guiScale,
-                targetManager.getInventoryTarget()
+                sourceX, sourceY, quadBasis, inventoryRenderer.getCylinderBasis(), guiScale
         );
 
         if (mappedMouse == null) {
@@ -440,6 +439,7 @@ public class SpatialGUIRenderer {
         MouseHandlerUtil.syncCursorGrab();
         ControlifyCompat.handleFreeLook(isCrosshairModeActive());
         updateFovProgress();
+        EditorGizmo.update();
     }
 
     public void updateFovProgress() {

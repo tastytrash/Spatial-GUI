@@ -29,16 +29,18 @@ Keep screen in fixed position during third person transition
 
 /////////////////////////////////////
 Visual editor
-Is there any other mods that do something like this? Litematica?
 High priority:
- - Rendered in game, shows an outline of the size of a normal container, and the whole screen
- - Just sliders for now
- - Either activates editor from keybind, or from YACL config button (is this possible?)
+ - Save and quit so changes aren't always immediate/irreversible
+ - Camera controls for third person
+ - On-screen control tips
+ - Depth control, probably just scroll wheel
 
 Possible later ideas:
- - Draggable handles, pos, rot, scale
  - Save to profiles, allows for direct interaction with profiles.json5 in-game
  - Animation/transition preview
+ - Snap to grid
+ - Undo/redo
+ - More shortcuts
 ////////////////////////////////////////
 
 

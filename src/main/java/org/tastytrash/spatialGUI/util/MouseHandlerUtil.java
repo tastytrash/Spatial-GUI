@@ -3,7 +3,6 @@ package org.tastytrash.spatialGUI.util;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import org.joml.Vector2d;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
@@ -105,10 +104,10 @@ public class MouseHandlerUtil {
         return Double.isNaN(physicalY) ? fallback : physicalY;
     }
 
-    public static Vector2d mapMousePosition(double srcX, double srcY, QuadBasis quadBasis, CylinderBasis cylinderBasis, double guiScale, com.mojang.blaze3d.pipeline.TextureTarget target) {
+    public static Vector2d mapMousePosition(double srcX, double srcY, QuadBasis quadBasis, CylinderBasis cylinderBasis, double guiScale) {
         Vector2d mouse = cylinderBasis != null
-                ? RenderUtil.getInventoryMousePositionRayCurved(srcX, srcY, cylinderBasis)
-                : RenderUtil.getInventoryMousePositionRay(srcX, srcY, quadBasis, target);
+                ? RenderUtil.getCylinderScreenPosition(srcX, srcY, cylinderBasis)
+                : RenderUtil.getQuadScreenPosition(srcX, srcY, quadBasis);
         if (mouse == null) {
             return null;
         }

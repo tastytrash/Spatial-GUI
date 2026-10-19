@@ -1,5 +1,8 @@
 package org.tastytrash.spatialGUI.editor;
 
+//? if >1.21.1 {
+import net.minecraft.client.input.MouseButtonEvent;
+//?}
 //? if >1.21.11 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 //?} else {
@@ -55,4 +58,32 @@ public class EditorScreen extends Screen {
             g.outline(i, i, width - i * 2, height - i * 2, red);
         }
     }
+
+    //? if >1.21.1 {
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0) EditorGizmo.setPressed(true);
+        if (event.button() == 1) EditorGizmo.resetHandle();
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) EditorGizmo.setPressed(false);
+        return super.mouseReleased(event);
+    }
+    //?} else {
+    /*@Override
+    public boolean mouseClicked(double x, double y, int button) {
+        if (button == 0) EditorMesh.setPressed(true);
+        if (button == 1) EditorMesh.resetHandle();
+        return super.mouseClicked(x, y, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double x, double y, int button) {
+        if (button == 0) EditorMesh.setPressed(false);
+        return super.mouseReleased(x, y, button);
+    }
+    *///?}
 }
