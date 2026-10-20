@@ -13,11 +13,15 @@ public class PolytoneMixin {
 
     @Inject(method = "setupForGUI", at = @At("HEAD"), cancellable = true, remap = false)
     private void spatialGUI$skipGuiLightmap(boolean gui, CallbackInfo ci) {
-        if (gui && SpatialGUIClient.isEnabled() && SpatialGUIClient.getEffectiveFirstPersonMode()) {
-            var renderer = SpatialGUIClient.renderer();
-            if (renderer != null && renderer.shouldCapture()) {
-                ci.cancel();
-            }
+        var renderer = SpatialGUIClient.renderer();
+
+        if (!gui || !SpatialGUIClient.isEnabled() || renderer == null) {
+            return;
+        }
+
+        if ((SpatialGUIClient.getEffectiveFirstPersonMode() || renderer.isClosingFirstPerson())
+                && (renderer.shouldCapture() || renderer.isClosing())) {
+            ci.cancel();
         }
     }
 }

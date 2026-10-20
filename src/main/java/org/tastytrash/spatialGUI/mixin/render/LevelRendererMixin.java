@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 //? if <26.1.2 && >1.20.1 {
 /*import com.llamalad7.mixinextras.sugar.Local;
@@ -19,6 +20,15 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
+    //? if >=26.2 {
+    /*@Inject(method = "render", at = @At("HEAD"))
+     *///?} else {
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+            //?}
+    private void spatialGUI$levelRenderStart(CallbackInfo ci) {
+        SpatialGUIRenderer.renderingLevel = true;
+    }
+
     //? if >=26.2 {
     /*@Inject(method = "render", at = @At("TAIL"))
      *///?} else {
@@ -29,6 +39,8 @@ public class LevelRendererMixin {
             /*, @Local(argsOnly = true, ordinal = 0) Matrix4f modelViewMatrix
              *///?}
     ) {
+        SpatialGUIRenderer.renderingLevel = false;
+
         var renderer = SpatialGUIClient.renderer();
         if (!SpatialGUIClient.isEnabled() || renderer == null || !(renderer.shouldCapture() || renderer.isClosing())) {
             return;

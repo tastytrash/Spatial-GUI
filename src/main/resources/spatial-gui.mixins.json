@@ -24,7 +24,7 @@
     "gui.HudMixin",
     "gui.MouseHandlerAccessor",
     "gui.MouseHandlerMixin",
-    "gui.MouseHandlerSwingMixin",
+    "gui.MouseHandlerArmSwingMixin",
     "gui.PauseScreenMixin",
     "gui.ScreenInvoker",
     "gui.ScreenLayoutMixin",

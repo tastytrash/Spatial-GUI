@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 //? if >1.21.1 {
 import net.minecraft.client.model.player.PlayerModel;
@@ -29,6 +30,8 @@ public class PlayerModelMixin {
             hat.visible = true;
             spatialGUI$headHidden = false;
         }
+
+        if (!SpatialGUIRenderer.renderingLevel) return;
 
         var renderer = SpatialGUIClient.renderer();
         Vec3 cameraPos = SpatialGUIClient.getCameraPosition();

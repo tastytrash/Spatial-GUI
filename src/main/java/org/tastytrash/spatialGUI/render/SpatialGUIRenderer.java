@@ -40,6 +40,7 @@ public class SpatialGUIRenderer {
     public static boolean isExtractingScreen = false;
     public static boolean skipWindowOverride = false;
     public static Object cursorTarget = null;
+    public static boolean renderingLevel = false;
 
     private final TextureTargetManager targetManager;
     private final ScreenExtractor screenExtractor;

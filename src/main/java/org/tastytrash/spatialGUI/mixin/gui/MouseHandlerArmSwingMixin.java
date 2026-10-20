@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 
@@ -18,7 +17,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 //?}
 
 @Mixin(MouseHandler.class)
-public class MouseHandlerSwingMixin {
+public class MouseHandlerArmSwingMixin {
 
     //? if >=1.21.11 {
     @Inject(method = "onButton", at = @At("HEAD"))
