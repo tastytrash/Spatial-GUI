@@ -7,11 +7,16 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.compat.VulkanModCompat;
+import org.tastytrash.spatialGUI.mixin.render.GameRendererInvoker;
 
 import java.lang.Math;
 
 public final class RenderUtil {
     private RenderUtil() {}
+
+    public record QuadBasis(Vector3f centerOffset, Vector3f right, Vector3f up, Vector3f normal, float halfWidth, float halfHeight) {}
+
+    public record CylinderBasis(Vector3f axisPos, Vector3f axisDir, Vector3f refDir, Vector3f center, float radius, float arcRadians, float halfHeight) {}
 
     public static void addQuadVertex(VertexConsumer buffer, Matrix4f pose, float x, float y, float z, float u, float v) {
         addQuadVertex(buffer, pose, x, y, z, u, v, 255, ConfigManager.config().screenAlpha);
@@ -141,8 +146,6 @@ public final class RenderUtil {
         );
     }
 
-    public record QuadBasis(Vector3f centerOffset, Vector3f right, Vector3f up, Vector3f normal, float halfWidth, float halfHeight) {}
-
     public static QuadBasis computeQuadBasis(Matrix4f worldPose, float aspect, float scale) {
         Vector3f centerOffset = worldPose.transformPosition(new Vector3f());
         Vector3f right = worldPose.transformDirection(1f, 0f, 0f, new Vector3f()).normalize();
@@ -256,9 +259,7 @@ public final class RenderUtil {
         return new Vector2f(localX, localY);
     }
 
-    public static Vector2d getQuadScreenPosition(double screenX, double screenY, QuadBasis basis) {
-        Minecraft mc = Minecraft.getInstance();
-
+    private static Vector2f getQuadUv(double screenX, double screenY, QuadBasis basis) {
         if (basis.halfWidth() <= 0f || basis.halfHeight() <= 0f) {
             return null;
         }
@@ -275,15 +276,27 @@ public final class RenderUtil {
             return null;
         }
 
-        float clampedU = Mth.clamp(u, 0.0f, 1.0f);
-        float clampedV = Mth.clamp(v, 0.0f, 1.0f);
+        return new Vector2f(u, v);
+    }
+
+    public static boolean isMouseOverQuad(double screenX, double screenY, QuadBasis basis) {
+        Vector2f uv = getQuadUv(screenX, screenY, basis);
+        return uv != null && uv.x >= 0f && uv.x <= 1f && uv.y >= 0f && uv.y <= 1f;
+    }
+
+    public static Vector2d getQuadScreenPosition(double screenX, double screenY, QuadBasis basis) {
+        Vector2f uv = getQuadUv(screenX, screenY, basis);
+        if (uv == null) return null;
+
+        Minecraft mc = Minecraft.getInstance();
+        float clampedU = Mth.clamp(uv.x, 0.0f, 1.0f);
+        float clampedV = Mth.clamp(uv.y, 0.0f, 1.0f);
 
         int targetWidth = mc.getWindow().getWidth();
         int targetHeight = mc.getWindow().getHeight();
 
         return new Vector2d(clampedU * targetWidth, (1.0 - clampedV) * targetHeight);
     }
-    public record CylinderBasis(Vector3f axisPos, Vector3f axisDir, Vector3f refDir, Vector3f center, float radius, float arcRadians, float halfHeight) {}
 
     public static CylinderBasis computeCylinderBasis(Matrix4f worldPose, float aspect, float scale, float arcRadians) {
         float radiusLocal = aspect / arcRadians;
@@ -328,8 +341,7 @@ public final class RenderUtil {
         }
     }
 
-    public static Vector2d getCylinderScreenPosition(double screenX, double screenY, CylinderBasis basis) {
-        Minecraft mc = Minecraft.getInstance();
+    private static Vector2f getCylinderUv(double screenX, double screenY, CylinderBasis basis) {
         float[] ray = buildCameraRayDirection(screenX, screenY);
         if (ray == null) {
             return null;
@@ -412,12 +424,30 @@ public final class RenderUtil {
             return null;
         }
 
-        float clampedU = Mth.clamp(u, 0.0f, 1.0f);
-        float clampedV = Mth.clamp(v, 0.0f, 1.0f);
+        return new Vector2f(u, v);
+    }
+
+    public static boolean isMouseOverCylinder(double screenX, double screenY, CylinderBasis basis) {
+        Vector2f uv = getCylinderUv(screenX, screenY, basis);
+        return uv != null && uv.x >= 0f && uv.x <= 1f && uv.y >= 0f && uv.y <= 1f;
+    }
+
+    public static Vector2d getCylinderScreenPosition(double screenX, double screenY, CylinderBasis basis) {
+        Vector2f uv = getCylinderUv(screenX, screenY, basis);
+        if (uv == null) return null;
+
+        Minecraft mc = Minecraft.getInstance();
+        float clampedU = Mth.clamp(uv.x, 0.0f, 1.0f);
+        float clampedV = Mth.clamp(uv.y, 0.0f, 1.0f);
 
         int targetWidth = mc.getWindow().getWidth();
         int targetHeight = mc.getWindow().getHeight();
 
         return new Vector2d(clampedU * targetWidth, (1.0 - clampedV) * targetHeight);
+    }
+
+    public static boolean isMouseOver(double screenX, double screenY, QuadBasis quad, CylinderBasis cylinder) {
+        return (cylinder != null && isMouseOverCylinder(screenX, screenY, cylinder))
+                || (quad != null && isMouseOverQuad(screenX, screenY, quad));
     }
 }

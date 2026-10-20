@@ -75,14 +75,14 @@ public class EditorScreen extends Screen {
     //?} else {
     /*@Override
     public boolean mouseClicked(double x, double y, int button) {
-        if (button == 0) EditorMesh.setPressed(true);
-        if (button == 1) EditorMesh.resetHandle();
+        if (button == 0) EditorGizmo.setPressed(true);
+        if (button == 1) EditorGizmo.resetHandle();
         return super.mouseClicked(x, y, button);
     }
 
     @Override
     public boolean mouseReleased(double x, double y, int button) {
-        if (button == 0) EditorMesh.setPressed(false);
+        if (button == 0) EditorGizmo.setPressed(false);
         return super.mouseReleased(x, y, button);
     }
     *///?}

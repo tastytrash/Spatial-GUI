@@ -523,4 +523,11 @@ public class SpatialGUIRenderer {
     private void releaseRotationAnchor() {
         rotationAnchored = false;
     }
+
+    public boolean isMouseOverScreen() {
+        if (hookedScreen == null) return false;
+        return RenderUtil.isMouseOver(
+                MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY(),
+                inventoryRenderer.getQuadBasis(), inventoryRenderer.getCylinderBasis());
+    }
 }

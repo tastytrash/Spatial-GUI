@@ -319,6 +319,10 @@ public class InventoryRenderer {
         return closing;
     }
 
+    public boolean isOpening() {
+        return !closing && getAnimationElapsedMs() < animationTotalMs();
+    }
+
     public boolean isCloseFinished() {
         return System.currentTimeMillis() - closeStartTime >= closeDurationMs;
     }
@@ -404,7 +408,7 @@ public class InventoryRenderer {
         }
 
         StagedVertexBuffer.Draw draw = INVENTORY_BUFFER.appendDraw(format, INVENTORY_PIPELINE.getPrimitiveTopology(), null);
-        StagedVertexBuffer.Draw overlayDraw = EditorMesh.active()
+        StagedVertexBuffer.Draw overlayDraw = EditorGizmo.active()
                 ? INVENTORY_BUFFER.appendDraw(OVERLAY_PIPELINE.getVertexFormatBinding(0), OVERLAY_PIPELINE.getPrimitiveTopology(), null)
                 : null;
         VertexConsumer buffer = INVENTORY_BUFFER.getVertexBuilder(draw);
@@ -430,7 +434,7 @@ public class InventoryRenderer {
 
         //? if >=26.2 {
         /*if (overlayDraw != null) {
-            EditorMesh.addHandles(INVENTORY_BUFFER.getVertexBuilder(overlayDraw), pose, screenPose.aspect());
+            EditorGizmo.addHandles(INVENTORY_BUFFER.getVertexBuilder(overlayDraw), pose, screenPose.aspect());
         }
         *///?} else {
         Matrix4f handlePose = EditorGizmo.active() ? new Matrix4f(pose) : null;
@@ -727,7 +731,7 @@ public class InventoryRenderer {
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         //?}
-        EditorMesh.addHandles(buffer, pose, aspect);
+        EditorGizmo.addHandles(buffer, pose, aspect);
 
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 
