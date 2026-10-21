@@ -24,7 +24,8 @@ import net.minecraft.resources.Identifier;
 import org.tastytrash.spatialGUI.editor.EditorMode;
 //?} else {
 /*import net.minecraft.resources.ResourceLocation;
- *///?}
+import org.tastytrash.spatialGUI.editor.EditorMode;
+        *///?}
 import java.util.ArrayList;
 import java.util.List;
 

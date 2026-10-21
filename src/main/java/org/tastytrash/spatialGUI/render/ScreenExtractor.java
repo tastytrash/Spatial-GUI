@@ -158,13 +158,13 @@ public class ScreenExtractor {
         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
         screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
         //? if neoforge {
-        /*ControlifyCompat.renderVirtualMouse(graphics, partialTick);
+        /*ControlifyCompat.renderVirtualMouse(graphics);
          *///?}
         //?} else if >1.21.1 {
         /*GuiGraphics graphics = new GuiGraphics(mc, screenRenderState, mouseX, mouseY);
         screen.renderWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
         //? if neoforge {
-        /^ControlifyCompat.renderVirtualMouse(graphics, partialTick);
+        /^ControlifyCompat.renderVirtualMouse(graphics);
         ^///?}
         *///?} else {
         /*var target = targetManager.getTarget();

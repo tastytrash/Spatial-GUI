@@ -1,10 +1,13 @@
 package org.tastytrash.spatialGUI.mixin.gui;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+
+//? if >=1.21.11 {
+import net.minecraft.client.DeltaTracker;
+//?}
 
 //? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -69,30 +72,11 @@ public class GuiMixin {
     }
     *///? }
 }
-//?} else if >=1.21.11 {
-/*import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.tastytrash.spatialGUI.editor.EditorScreen;
-import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
-
-@Mixin(Gui.class)
-public class GuiMixin {
-    @Inject(method = "render", at = @At("HEAD"))
-    private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        SpatialGUIRenderer.skipWindowOverride = true;
-    }
-
-    @Inject(method = "render", at = @At("TAIL"))
-    private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        SpatialGUIRenderer.skipWindowOverride = false;
-        EditorScreen.extractHints(guiGraphics);
-    }
-}
-*///?} else {
+ //?} else {
 /*import net.minecraft.client.gui.GuiGraphics;
+//? if >=1.21.1 {
+import net.minecraft.client.DeltaTracker;
+//?}
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -102,12 +86,20 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 @Mixin(Gui.class)
 public class GuiMixin {
     @Inject(method = "render", at = @At("HEAD"))
-    private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    //? if >=1.21.1 {
+    private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    //?} else {
+    /^private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    ^///?}
         SpatialGUIRenderer.skipWindowOverride = true;
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    //? if >=1.21.1 {
+    private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    //?} else {
+    /^private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    ^///?}
         SpatialGUIRenderer.skipWindowOverride = false;
         EditorScreen.extractHints(guiGraphics);
     }

@@ -1,22 +1,26 @@
 package org.tastytrash.spatialGUI.compat;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Optional;
+//? if controlify {
+import dev.isxander.controlify.Controlify;
+import dev.isxander.controlify.controller.ControllerEntity;
+import dev.isxander.controlify.controller.input.ControllerStateView;
+import dev.isxander.controlify.controller.input.GamepadInputs;
+import dev.isxander.controlify.controller.input.InputComponent;
+//? if >1.21.11 {
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+ //?} else {
+/*import net.minecraft.client.gui.GuiGraphics;
+*///?}
+//? if fabric {
+import net.fabricmc.loader.api.FabricLoader;
+ //?} else {
+/*import net.neoforged.fml.ModList;
+*///?}
+//?}
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 public final class ControlifyCompat {
-    private static final String CTRLIFY = "dev.isxander.controlify.";
-
     public static boolean inVirtualMove;
-
-    private static Method renderVirtualMouse;
-    private static Method getController, getMouseHandler, isVirtualMouseEnabled, getInput, getSettings;
-    private static Method rawStateNow, getAxisState;
-    private static Object axisRight, axisLeft, axisDown, axisUp;
-    private static Field sens, hSens, vSens, hInvert, vInvert, deadzone;
-
-    private static boolean bound;
 
     public static final class LookSettings {
         public float h = 1f, v = 1f;
@@ -36,137 +40,30 @@ public final class ControlifyCompat {
     }
 
     public static boolean isVirtualMouseActive() {
-        if (!bound) bind();
-        if (isVirtualMouseEnabled == null) return false;
-        try {
-            Object instance = Class.forName(CTRLIFY + "Controlify").getMethod("instance").invoke(null);
-            return (boolean) isVirtualMouseEnabled.invoke(getMouseHandler.invoke(instance));
-        } catch (Throwable t) {
-            return false;
-        }
+        //? if controlify {
+        if (loaded()) return Bridge.isVirtualMouseActive();
+        //?}
+        return false;
     }
 
-    public static void renderVirtualMouse(Object graphics, float partialTick) {
-        if (!bound) bind();
-        if (getMouseHandler == null) return;
-        try {
-            Object instance = Class.forName(CTRLIFY + "Controlify").getMethod("instance").invoke(null);
-            Object handler = getMouseHandler.invoke(instance);
-            if (handler == null) return;
-            if (renderVirtualMouse == null) {
-                for (Method m : handler.getClass().getMethods()) {
-                    if (m.getName().equals("renderVirtualMouse")) { renderVirtualMouse = m; break; }
-                }
-                if (renderVirtualMouse == null) return;
-            }
-            Class<?>[] types = renderVirtualMouse.getParameterTypes();
-            Object[] args = new Object[types.length];
-            for (int i = 0; i < types.length; i++) {
-                Class<?> t = types[i];
-                if (t.isInstance(graphics)) args[i] = graphics;
-                else if (t == float.class) args[i] = partialTick;
-                else if (t == double.class) args[i] = (double) partialTick;
-                else return;
-            }
-            renderVirtualMouse.invoke(handler, args);
-        } catch (Throwable ignored) {}
+    public static void renderVirtualMouse(Object graphics) {
+        //? if controlify {
+        if (loaded()) Bridge.renderVirtualMouse(graphics);
+        //?}
     }
 
     public static LookSettings readLookSettings() {
-        LookSettings s = new LookSettings();
-        if (!bound) bind();
-        if (hSens == null) return s;
-        try {
-            Object ctrl = controller();
-            if (ctrl == null) return s;
-            Object input = ((Optional<?>) getInput.invoke(ctrl)).orElse(null);
-            if (input == null) return s;
-            Object sens = ControlifyCompat.sens.get(getSettings.invoke(input));
-            s.h = hSens.getFloat(sens);
-            s.v = vSens.getFloat(sens);
-            s.invH = hInvert != null && hInvert.getBoolean(sens);
-            s.invV = vInvert.getBoolean(sens);
-            s.deadzone = deadzone.getFloat(sens);
-        } catch (Throwable ignored) {}
-        return s;
+        //? if controlify {
+        if (loaded()) return Bridge.readLookSettings();
+        //?}
+        return new LookSettings();
     }
 
     public static double[] pollLookStick(LookSettings s) {
-        if (!bound) bind();
-        if (rawStateNow == null || getAxisState == null || axisRight == null) return null;
-        try {
-            Object ctrl = controller();
-            if (ctrl == null) return null;
-            Object input = ((Optional<?>) getInput.invoke(ctrl)).orElse(null);
-            if (input == null) return null;
-            Object raw = rawStateNow.invoke(input);
-
-            double rx = axisRaw(raw, axisRight) - axisRaw(raw, axisLeft);
-            double ry = axisRaw(raw, axisDown)  - axisRaw(raw, axisUp);
-            return s.stick(rx, ry);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    private static double axisRaw(Object state, Object id) throws Exception {
-        return ((Number) getAxisState.invoke(state, id)).doubleValue();
-    }
-
-    private static Object controller() throws Exception {
-        Object instance = Class.forName(CTRLIFY + "Controlify").getMethod("instance").invoke(null);
-        return ((Optional<?>) getController.invoke(instance)).orElse(null);
-    }
-
-    private static Method findMethod(Class<?> c, String... names) throws NoSuchMethodException {
-        for (String n : names) {
-            try { return c.getMethod(n); } catch (NoSuchMethodException ignored) {}
-        }
-        throw new NoSuchMethodException(c.getName() + " " + String.join("/", names));
-    }
-
-    private static void bind() {
-        bound = true;
-
-        try {
-            Class<?> c = Class.forName(CTRLIFY + "Controlify");
-            getController = findMethod(c, "getCurrentController", "currentController");
-            getMouseHandler = findMethod(c, "virtualMouseHandler", "getVirtualMouseHandler");
-            isVirtualMouseEnabled = findMethod(Class.forName(CTRLIFY + "virtualmouse.VirtualMouseHandler"), "isVirtualMouseEnabled");
-        } catch (Throwable ignored) {}
-
-        try {
-            Class<?> ce = Class.forName(CTRLIFY + "controller.ControllerEntity");
-            getInput = ce.getMethod("input");
-            Class<?> ic = Class.forName(CTRLIFY + "controller.input.InputComponent");
-            getSettings = ic.getMethod("settings");
-            Class<?> is = Class.forName(CTRLIFY + "config.settings.profile.InputSettings");
-            sens = is.getField("sensitivity");
-            Class<?> ss = Class.forName(CTRLIFY + "config.settings.profile.InputSettings$SensitivitySettings");
-            hSens = ss.getField("hLookSensitivity");
-            vSens = ss.getField("vLookSensitivity");
-            try { hInvert = ss.getField("hLookInvert"); } catch (NoSuchFieldException ignored) {}
-            vInvert = ss.getField("vLookInvert");
-            deadzone = ss.getField("defaultDeadzone");
-        } catch (Throwable ignored) {}
-
-        try {
-            Class<?> ic = Class.forName(CTRLIFY + "controller.input.InputComponent");
-            rawStateNow = ic.getMethod("rawStateNow");
-            Class<?> stateClass = Class.forName(CTRLIFY + "controller.input.ControllerStateView");
-            for (Method m : stateClass.getMethods()) {
-                if (m.getName().equals("getAxisState") && m.getParameterCount() == 1) {
-                    getAxisState = m;
-                    break;
-                }
-            }
-            if (getAxisState == null) throw new NoSuchMethodException("getAxisState");
-            Class<?> gamepad = Class.forName(CTRLIFY + "controller.input.GamepadInputs");
-            axisRight = gamepad.getField("RIGHT_STICK_AXIS_RIGHT").get(null);
-            axisLeft = gamepad.getField("RIGHT_STICK_AXIS_LEFT").get(null);
-            axisDown = gamepad.getField("RIGHT_STICK_AXIS_DOWN").get(null);
-            axisUp = gamepad.getField("RIGHT_STICK_AXIS_UP").get(null);
-        } catch (Throwable ignored) {}
+        //? if controlify {
+        if (loaded()) return Bridge.pollLookStick(s);
+        //?}
+        return null;
     }
 
     public static void handleFreeLook(boolean crosshairModeActive) {
@@ -177,4 +74,63 @@ public final class ControlifyCompat {
             MouseHandlerUtil.resetLookClock();
         }
     }
+
+    //? if controlify {
+    private static boolean loaded() {
+        //? if fabric {
+        return FabricLoader.getInstance().isModLoaded("controlify");
+         //?} else {
+        /*return ModList.get().isLoaded("controlify");
+        *///?}
+    }
+
+    private static final class Bridge {
+        private static InputComponent input() {
+            return Controlify.instance().getCurrentController()
+                    .flatMap(ControllerEntity::input)
+                    .orElse(null);
+        }
+
+        static boolean isVirtualMouseActive() {
+            var handler = Controlify.instance().virtualMouseHandler();
+            return handler != null && handler.isVirtualMouseEnabled();
+        }
+
+        static void renderVirtualMouse(Object graphics) {
+            var handler = Controlify.instance().virtualMouseHandler();
+            if (handler == null) return;
+            //? if >1.21.11 {
+            handler.renderVirtualMouse((GuiGraphicsExtractor) graphics);
+             //?} else {
+            /*handler.renderVirtualMouse((GuiGraphics) graphics);
+            *///?}
+        }
+
+        static LookSettings readLookSettings() {
+            LookSettings s = new LookSettings();
+            InputComponent input = input();
+            if (input == null) return s;
+
+            var sens = input.settings().sensitivity;
+            s.h = sens.hLookSensitivity;
+            s.v = sens.vLookSensitivity;
+            //? if >1.21.11 {
+            s.invH = sens.hLookInvert;
+             //?}
+            s.invV = sens.vLookInvert;
+            s.deadzone = sens.defaultDeadzone;
+            return s;
+        }
+
+        static double[] pollLookStick(LookSettings s) {
+            InputComponent input = input();
+            if (input == null) return null;
+
+            ControllerStateView raw = input.rawStateNow();
+            double rx = raw.getAxisState(GamepadInputs.RIGHT_STICK_AXIS_RIGHT) - raw.getAxisState(GamepadInputs.RIGHT_STICK_AXIS_LEFT);
+            double ry = raw.getAxisState(GamepadInputs.RIGHT_STICK_AXIS_DOWN) - raw.getAxisState(GamepadInputs.RIGHT_STICK_AXIS_UP);
+            return s.stick(rx, ry);
+        }
+    }
+    //?}
 }

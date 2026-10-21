@@ -24,7 +24,7 @@ public final class EditorGizmo {
     public static final int Y_HANDLE_COLOR = 0xA055FF55;
     public static final int ACTIVE_COLOR = 0xA0FFD84A;
 
-    private static final float CORNER_HIT_RADIUS = 0.12f;
+    private static final float CORNER_HIT_RADIUS = 0.2f;
     private static final float AXIS_PICK = 0.04f;
     private static final double AXIS_GAIN = 0.35;
 
@@ -102,9 +102,8 @@ public final class EditorGizmo {
 
     private static QuadBasis currentBasis() {
         if (!active()) return null;
-        var inventory = SpatialGUIClient.renderer().getInventoryRenderer();
-        QuadBasis basis = inventory.getQuadBasis();
-        return inventory.getCylinderBasis() == null && basis != null && basis.halfHeight() > 0f ? basis : null;
+        QuadBasis basis = SpatialGUIClient.renderer().getInventoryRenderer().getQuadBasis();
+        return basis != null && basis.halfHeight() > 0f ? basis : null;
     }
 
     public static boolean isDragging() {

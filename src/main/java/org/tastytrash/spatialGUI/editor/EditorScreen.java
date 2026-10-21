@@ -1,21 +1,25 @@
 package org.tastytrash.spatialGUI.editor;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 //? if >1.21.1 {
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 //?}
 //? if >1.21.11 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 //?} else {
 /*import net.minecraft.client.gui.GuiGraphics;
 *///?}
+
+//? if <1.21.11 {
+/*import net.minecraft.resources.ResourceLocation;
+*///?}
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
@@ -153,23 +157,23 @@ public class EditorScreen extends Screen {
     *///?}
 
     private static boolean handleKeyPress(int key, boolean ctrl, boolean shift) {
-        if (!ctrl && key == GLFW.GLFW_KEY_SPACE) {
+        if (!ctrl && key == InputConstants.KEY_SPACE) {
             EditorMode.setPreviewing(true);
             return true;
         }
 
-        if (!ctrl && key == GLFW.GLFW_KEY_V) {
+        if (!ctrl && key == InputConstants.KEY_V) {
             if (!EditorGizmo.isDragging()) EditorMode.toggleView();
             return true;
         }
 
         if (!ctrl) return false;
-        if (key == GLFW.GLFW_KEY_Z) {
+        if (key == InputConstants.KEY_Z) {
             if (shift) EditorHistory.redo();
             else EditorHistory.undo();
             return true;
         }
-        if (key == GLFW.GLFW_KEY_Y) {
+        if (key == InputConstants.KEY_Y) {
             EditorHistory.redo();
             return true;
         }
@@ -177,7 +181,7 @@ public class EditorScreen extends Screen {
     }
 
     private static boolean handleKeyRelease(int key) {
-        if (key == GLFW.GLFW_KEY_SPACE) {
+        if (key == InputConstants.KEY_SPACE) {
             EditorMode.setPreviewing(false);
             return true;
         }

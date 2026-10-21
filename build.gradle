@@ -32,6 +32,33 @@ def isFabric = loader == 'fabric'
 def isNeoForge = loader == 'neoforge'
 def isForge = loader == 'forge'
 def isObfuscated = (dependencyVersions[nodeName]?.obfuscated) ?: false
+def mc = dependencyVersions[nodeName].minecraft
+
+def compatMods = [
+        controlify: [
+                artifact: "maven.modrinth:controlify:{}",
+                versions: [
+                        "1.21.1" : "3.0.1+lts",
+//                        "1.21.11": "3.0.1+lts",
+                        "26.1.2" : "3.5.3+mc26.1",
+                        "26.2"   : "3.5.3+mc26.2",
+                        "26.3"   : "3.5.3+mc26.3",
+                ]
+        ],
+]
+
+def compatResolved = compatMods.collectEntries { id, spec ->
+    def version = spec.versions[nodeName] ?: spec.versions[mc]
+    [(id): version ? spec.artifact.replace("{}", version) : null]
+}
+
+stonecutter {
+    constants {
+        for (entry in compatResolved) {
+            put(entry.key, entry.value != null)
+        }
+    }
+}
 
 if (isFabric) {
     apply plugin: 'dev.kikugie.loom-back-compat'
@@ -77,6 +104,11 @@ if (isFabric) {
 
 repositories {
     maven { name = "Xander"; url = "https://maven.isxander.dev/releases" }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content { includeGroup "maven.modrinth" }
+    }
     if (isFabric) {
         maven { name = "Fabric"; url = "https://maven.fabricmc.net/" }
         maven { name = "Terraformers"; url = "https://maven.terraformersmc.com/" }
@@ -115,6 +147,12 @@ dependencies {
         jarJar("io.github.llamalad7:mixinextras-forge:0.4.1") {
             version { strictly '[0.4.1,)'; prefer '0.4.1' }
         }
+    }
+}
+
+compatResolved.each { id, coordinates ->
+    if (coordinates) {
+        dependencies.add(isNeoForge ? "compileOnly" : "modCompileOnly", coordinates)
     }
 }
 

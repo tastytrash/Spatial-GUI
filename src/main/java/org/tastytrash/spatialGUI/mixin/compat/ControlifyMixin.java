@@ -1,3 +1,4 @@
+//? if controlify {
 package org.tastytrash.spatialGUI.mixin.compat;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,3 +60,4 @@ public class ControlifyMixin {
         if (SpatialGUIRenderer.isCrosshairModeActive()) ci.cancel();
     }
 }
+//?}
