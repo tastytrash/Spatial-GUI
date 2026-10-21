@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.compat.VisorCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
-import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.editor.EditorMode;import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
@@ -196,7 +196,7 @@ public class SpatialGUIClient {
 
     public static void showScreen(Minecraft client, Screen screen) {
         //? if >1.21.11 {
-        client.setScreenAndShow(screen);
+        client.setScreen(screen);
         //?} else {
         /*client.setScreen(screen);
         *///?}
@@ -231,6 +231,10 @@ public class SpatialGUIClient {
     }
 
     public static boolean shouldUseFirstPersonMode(Screen screen) {
+        if (screen instanceof EditorScreen) {
+            Boolean forced = EditorMode.viewOverride();
+            if (forced != null) return forced;
+        }
         if (ConfigManager.config().autoDetectCameraMode) {
             var client = Minecraft.getInstance();
             return client.options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON;

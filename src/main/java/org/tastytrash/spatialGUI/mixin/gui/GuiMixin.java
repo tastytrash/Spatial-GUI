@@ -1,5 +1,7 @@
 package org.tastytrash.spatialGUI.mixin.gui;
 
+import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.tastytrash.spatialGUI.config.ConfigManager;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
@@ -24,8 +27,13 @@ public class GuiMixin {
     }
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void spatialGUI$endExtract(CallbackInfo ci) {
+    //? if <26.2 {
+    private void spatialGUI$endExtract(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+     //?} else {
+    /*private void spatialGUI$endExtract(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local(name = "graphics") GuiGraphicsExtractor graphics) {
+    *///?}
         SpatialGUIRenderer.skipWindowOverride = false;
+        EditorScreen.extractHints(graphics);
     }
 
     // swap the graphics so wrappers of this call (e.g. Architectury events REI uses)
@@ -61,12 +69,13 @@ public class GuiMixin {
     }
     *///? }
 }
-//?} else if >=1.21.1 {
+//?} else if >=1.21.11 {
 /*import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(Gui.class)
@@ -79,6 +88,7 @@ public class GuiMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         SpatialGUIRenderer.skipWindowOverride = false;
+        EditorScreen.extractHints(guiGraphics);
     }
 }
 *///?} else {
@@ -86,6 +96,7 @@ public class GuiMixin {
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(Gui.class)
@@ -98,6 +109,7 @@ public class GuiMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
         SpatialGUIRenderer.skipWindowOverride = false;
+        EditorScreen.extractHints(guiGraphics);
     }
 }
 *///?}

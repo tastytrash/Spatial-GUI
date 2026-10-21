@@ -3,7 +3,7 @@ package org.tastytrash.spatialGUI.editor;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;
 
-public final class HandleGeometry {
+public final class GizmoGeometry {
     private static final int[][] CUBE_FACES = {{0, 2, 3, 1}, {4, 5, 7, 6}, {0, 4, 6, 2}, {1, 3, 7, 5}, {0, 1, 5, 4}, {2, 6, 7, 3}};
     private static final int PYRAMID_QUADS = 5;
 
@@ -18,7 +18,7 @@ public final class HandleGeometry {
     private static final float AXIS_END_SIZE = 0.025f;
     private static final float HEAD_LENGTH = 0.07f;
 
-    private HandleGeometry() {}
+    private GizmoGeometry() {}
 
     static void addCube(VertexConsumer buffer, Matrix4f pose, int argb) {
         addBox(buffer, pose, CUBE_HALF, CUBE_HALF, CUBE_HALF, argb);

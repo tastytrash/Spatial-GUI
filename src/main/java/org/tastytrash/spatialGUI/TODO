@@ -30,17 +30,16 @@ Keep screen in fixed position during third person transition
 /////////////////////////////////////
 Visual editor
 High priority:
- - Save and quit so changes aren't always immediate/irreversible
+ - On screen buttons
+   - Save and quit/quit w/o saving
+   - Reset to defaults
+   - Third-person mirror toggle
  - Camera controls for third person
- - On-screen control tips
- - Depth control, probably just scroll wheel
 
 Possible later ideas:
  - Save to profiles, allows for direct interaction with profiles.json5 in-game
  - Animation/transition preview
  - Snap to grid
- - Undo/redo
- - More shortcuts
 ////////////////////////////////////////
 
 

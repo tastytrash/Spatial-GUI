@@ -74,15 +74,11 @@ public class SpatialGUIKeybinds {
         }
         while (openConfig.consumeClick()) {
             //? if >=26.2 {
-            /*Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.gui.screen());
+            /*Screen screen = SpatialGUIConfig.createScreen(mc.gui.screen());
             *///?} else {
-            Screen screen = SpatialGUIConfig.HANDLER.generateGui().generateScreen(mc.screen);
+            Screen screen = SpatialGUIConfig.createScreen(mc.screen);
             //?}
-            //? if >=26.1 {
-            mc.setScreenAndShow(screen);
-            //?} else {
-            /*mc.setScreen(screen);
-             *///?}
+            mc.setScreen(screen);
         }
         while (openEditor.consumeClick()) {
             EditorMode.toggle(mc);

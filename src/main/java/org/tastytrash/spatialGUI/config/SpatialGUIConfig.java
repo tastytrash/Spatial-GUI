@@ -1,6 +1,6 @@
 package org.tastytrash.spatialGUI.config;
 
-import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.ControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
@@ -9,6 +9,8 @@ import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 //? if fabric {
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,6 +21,7 @@ import net.fabricmc.loader.api.FabricLoader;
  *///?}
 //? if >=1.21.11 {
 import net.minecraft.resources.Identifier;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 //?} else {
 /*import net.minecraft.resources.ResourceLocation;
  *///?}
@@ -257,7 +260,7 @@ public class SpatialGUIConfig {
     // screen 
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "screen")
-    @DoubleSlider(min = 0.5, max = 10.0, step = 0.05)
+    @DoubleSlider(min = 0.1, max = 10.0, step = 0.05)
     public double screenDistance = 2.5;
 
     @SerialEntry
@@ -391,7 +394,7 @@ public class SpatialGUIConfig {
 
     @SerialEntry
     @AutoGen(category = "firstPerson", group = "screen")
-    @DoubleSlider(min = 0.5, max = 6.0, step = 0.05)
+    @DoubleSlider(min = 0.1, max = 10.0, step = 0.05)
     public double firstPersonScreenDistance = 1.5;
 
     @SerialEntry
@@ -614,5 +617,46 @@ public class SpatialGUIConfig {
         //?} else {
         /*return FMLPaths.CONFIGDIR.get();
          *///?}
+    }
+
+    public static Screen createScreen(Screen parent) {
+        YetAnotherConfigLib generated = HANDLER.generateGui();
+
+        ButtonOption openEditor = ButtonOption.createBuilder()
+                .name(Component.translatable("yacl3.spatial-gui.config.open_editor"))
+                .description(OptionDescription.of(Component.translatable("yacl3.spatial-gui.config.open_editor.description")))
+                .text(Component.translatable("yacl3.spatial-gui.config.open_editor.button"))
+                .available(Minecraft.getInstance().level != null)
+                .action((screen, option) -> {
+                    screen.finishOrSave();
+                    Minecraft client = Minecraft.getInstance();
+                    client.setScreen(null);
+                    client.execute(() -> EditorMode.toggle(client));
+                })
+                .build();
+
+        List<ConfigCategory> categories = new ArrayList<>(generated.categories());
+        ConfigCategory general = categories.get(0);
+
+        ConfigCategory.Builder builder = ConfigCategory.createBuilder()
+                .name(general.name())
+                .tooltip(general.tooltip());
+
+        for (OptionGroup group : general.groups()) {
+            if (group.isRoot()) {
+                builder.options(group.options());
+            } else {
+                builder.group(group);
+            }
+        }
+        builder.option(openEditor);
+
+        categories.set(0, builder.build());
+        return YetAnotherConfigLib.createBuilder()
+                .title(generated.title())
+                .categories(categories)
+                .save(generated.saveFunction())
+                .build()
+                .generateScreen(parent);
     }
 }

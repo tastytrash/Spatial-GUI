@@ -204,6 +204,10 @@
   "key.spatial-gui.reload_profiles": "Reload Screen Profiles",
   "key.category.spatial-gui.main_category": "Spatial GUI",
 
+  "yacl3.spatial-gui.config.open_editor": "Layout editor",
+  "yacl3.spatial-gui.config.open_editor.description": "Move and resize the screen in the world. Must be in a world.",
+  "yacl3.spatial-gui.config.open_editor.button": "Open",
+
   "yacl3.config.spatial-gui:config.seenScreens": "Seen Screens",
   "yacl3.config.spatial-gui:config.seenScreens.desc": "Class names of every screen you've opened.\nCopy a name from here into Enabled Screens or Disabled Screens.",
   "yacl3.config.spatial-gui:config.enabledScreens": "Enabled Screens",

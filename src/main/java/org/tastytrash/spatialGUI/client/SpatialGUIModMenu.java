@@ -8,7 +8,7 @@ import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 public class SpatialGUIModMenu implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> SpatialGUIConfig.HANDLER.generateGui().generateScreen(parent);
+        return SpatialGUIConfig::createScreen;
     }
 }
 //?}

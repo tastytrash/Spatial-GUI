@@ -17,11 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 /*@Mod(value = SpatialGUI.MOD_ID, dist = Dist.CLIENT)
  *///?}
 public class SpatialGUI {
-    //? if fabric {
-    public static final String MOD_ID = "spatial-gui";
-    //? } else {
-    /*public static final String MOD_ID = "spatial_gui";
-     *///? }
+    public static final String MOD_ID = "spatial_gui";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static SpatialGUIConfig config;
@@ -31,7 +27,7 @@ public class SpatialGUI {
         initCommon();
         container.registerExtensionPoint(
                 IConfigScreenFactory.class,
-                (modContainer, parentScreen) -> SpatialGUIConfig.HANDLER.generateGui().generateScreen(parentScreen)
+                (modContainer, parentScreen) -> SpatialGUIConfig.createScreen(parentScreen)
         );
         new org.tastytrash.spatialGUI.client.SpatialGUIClient(modBus);
     }

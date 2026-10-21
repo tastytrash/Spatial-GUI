@@ -17,7 +17,7 @@ public final class EditorGizmo {
     private static final int AXIS_X = 4;
     private static final int AXIS_Y = 5;
 
-    public static final int QUADS = SCALE_HANDLES * HandleGeometry.CUBE_QUADS + 2 * HandleGeometry.ARROW_QUADS;
+    public static final int QUADS = SCALE_HANDLES * GizmoGeometry.CUBE_QUADS + 2 * GizmoGeometry.ARROW_QUADS;
 
     public static final int SCALE_HANDLE_COLOR = 0xA0FFFFFF;
     public static final int X_HANDLE_COLOR = 0xA0FF5555;
@@ -59,10 +59,16 @@ public final class EditorGizmo {
             if (fp) config.firstPersonScreenHeightOffset = 0.0;
             else config.screenHeightOffset = -0.4;
         }
-        SpatialGUIConfig.HANDLER.save();
     }
 
     public static void update() {
+        if (EditorMode.previewing()) {
+            pressed = false;
+            handle = -1;
+            endDrag();
+            return;
+        }
+
         boolean started = pressed && !wasPressed;
         wasPressed = pressed;
 
@@ -101,8 +107,12 @@ public final class EditorGizmo {
         return inventory.getCylinderBasis() == null && basis != null && basis.halfHeight() > 0f ? basis : null;
     }
 
+    public static boolean isDragging() {
+        return dragging;
+    }
+
     private static void endDrag() {
-        if (dragging) SpatialGUIConfig.HANDLER.save();
+        if (dragging) EditorHistory.checkpoint();
         dragging = false;
     }
 
@@ -118,8 +128,8 @@ public final class EditorGizmo {
     }
 
     private static boolean onArrow(float along, float across, float k) {
-        return along >= (HandleGeometry.AXIS_START - AXIS_PICK) * k
-                && along <= (HandleGeometry.AXIS_START + HandleGeometry.AXIS_LENGTH + AXIS_PICK) * k
+        return along >= (GizmoGeometry.AXIS_START - AXIS_PICK) * k
+                && along <= (GizmoGeometry.AXIS_START + GizmoGeometry.AXIS_LENGTH + AXIS_PICK) * k
                 && Math.abs(across) < AXIS_PICK * k;
     }
 
@@ -172,6 +182,7 @@ public final class EditorGizmo {
     }
 
     public static void addHandles(VertexConsumer buffer, Matrix4f pose, float aspect) {
+        if (EditorMode.previewing()) return;
         addScaleHandles(buffer, pose, aspect);
         addPositionHandles(buffer, pose);
     }
@@ -181,12 +192,12 @@ public final class EditorGizmo {
             Vector2f corner = corner(i, aspect * 0.5f, 0.5f);
             Matrix4f handlePose = new Matrix4f(pose).translate(corner.x, corner.y, 0);
             if (i == handle) handlePose.scale(1.5f);
-            HandleGeometry.addCube(buffer, handlePose, i == handle ? ACTIVE_COLOR : SCALE_HANDLE_COLOR);
+            GizmoGeometry.addCube(buffer, handlePose, i == handle ? ACTIVE_COLOR : SCALE_HANDLE_COLOR);
         }
     }
 
     public static void addPositionHandles(VertexConsumer buffer, Matrix4f pose) {
-        HandleGeometry.addArrow(buffer, pose, handle == AXIS_X ? ACTIVE_COLOR : X_HANDLE_COLOR);
-        HandleGeometry.addArrow(buffer, new Matrix4f(pose).rotateZ(Mth.HALF_PI), handle == AXIS_Y ? ACTIVE_COLOR : Y_HANDLE_COLOR);
+        GizmoGeometry.addArrow(buffer, pose, handle == AXIS_X ? ACTIVE_COLOR : X_HANDLE_COLOR);
+        GizmoGeometry.addArrow(buffer, new Matrix4f(pose).rotateZ(Mth.HALF_PI), handle == AXIS_Y ? ACTIVE_COLOR : Y_HANDLE_COLOR);
     }
 }
