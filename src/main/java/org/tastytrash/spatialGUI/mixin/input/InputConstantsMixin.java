@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 
 //? if >=26.3 {
 /*import org.lwjgl.sdl.SDLMouse;
@@ -25,7 +26,7 @@ public class InputConstantsMixin {
 
     @Unique
     private static boolean spatialGUI$shouldKeepMouseGrabbed() {
-        if (!SpatialGUIClient.isEnabled() || !ConfigManager.config().useCrosshairForFirstPerson) return false;
+        if (!SpatialGUIClient.isEnabled() || !ConfigManager.config().useCrosshairForFirstPerson || EditorMode.mouseFree()) return false;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;

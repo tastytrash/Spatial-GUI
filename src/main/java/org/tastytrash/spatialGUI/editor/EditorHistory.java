@@ -81,4 +81,22 @@ public final class EditorHistory {
         last = redoStack.pop();
         last.apply();
     }
+
+    public static void undoAll() {
+        if (EditorGizmo.isDragging()) return;
+        checkpoint();
+        if (undoStack.isEmpty()) return;
+        redoStack.push(last);
+        while (undoStack.size() > 1) redoStack.push(undoStack.pop());
+        last = undoStack.pop();
+        last.apply();
+    }
+
+    public static boolean canUndo() {
+        return !undoStack.isEmpty();
+    }
+
+    public static boolean canRedo() {
+        return !redoStack.isEmpty();
+    }
 }

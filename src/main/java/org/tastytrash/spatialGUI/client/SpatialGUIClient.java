@@ -126,7 +126,7 @@ public class SpatialGUIClient {
 
     public static boolean shouldHideCrosshair() {
         return isEnabled() && getEffectiveFirstPersonMode()
-                && !ConfigManager.config().useCrosshairForFirstPerson
+                && (!ConfigManager.config().useCrosshairForFirstPerson || EditorMode.mouseFree())
                 && renderer() != null && renderer().getHookedScreen() != null;
     }
 

@@ -225,5 +225,22 @@
   "yacl3.config.enum.EasingType.back": "Back",
   "yacl3.config.enum.EasingType.exponential": "Exponential",
   "yacl3.config.enum.EasingType.quadratic": "Quadratic",
-  "yacl3.config.enum.EasingType.quartic": "Quartic"
+  "yacl3.config.enum.EasingType.quartic": "Quartic",
+
+  "spatial-gui.editor.button.undo": "Undo",
+  "spatial-gui.editor.button.redo": "Redo",
+  "spatial-gui.editor.button.toggle_view": "Toggle view",
+  "spatial-gui.editor.button.undo_all": "Undo all",
+  "spatial-gui.editor.button.save_quit": "Save & Quit",
+  "spatial-gui.editor.hint.esc": "Esc: Save & Quit",
+  "spatial-gui.editor.hint.scroll": "Scroll: Screen distance",
+  "spatial-gui.editor.hint.rmb": "RMB: Reset handle",
+  "spatial-gui.editor.hint.mmb": "MMB: Reset distance",
+  "spatial-gui.editor.hint.v_third": "V: Toggle to third person",
+  "spatial-gui.editor.hint.v_first": "V: Toggle to first person",
+  "spatial-gui.editor.hint.ctrl_z": "Ctrl+Z: Undo",
+  "spatial-gui.editor.hint.ctrl_y": "Ctrl+Y: Redo",
+  "spatial-gui.editor.hint.space": "Space: Preview",
+  "spatial-gui.editor.hint.tab_grab": "Tab: Grab mouse",
+  "spatial-gui.editor.hint.tab_free": "Tab: Free mouse"
 }

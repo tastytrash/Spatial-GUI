@@ -8,8 +8,6 @@ World flicker on first open
 
 Hand bob not updating in pause menu
 
-First person and all screens doesnt properly unhide your mouse when going to the yacl screen
-
 Toasts rendering on the GUI
 
 -------- MID PRIORITY ---------------
@@ -27,16 +25,14 @@ __________ SUGGESTIONS/FEATURES _________________
 
 Keep screen in fixed position during third person transition
 
+Make mouse releasing in crosshair not just a editor feature (bound to tab?)
+
 /////////////////////////////////////
 Visual editor
 High priority:
- - Some way to reset screen distance
  - Rotation gizmo, or just sliders
- - On screen buttons
-   - Save and quit/quit w/o saving
-   - Reset to defaults
-   - Third-person mirror toggle
  - Camera controls for third person
+ - Give all text translation keys
 
 Possible later ideas:
  - Save to profiles, allows for direct interaction with profiles.json5 in-game

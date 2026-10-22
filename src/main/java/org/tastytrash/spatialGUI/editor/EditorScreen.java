@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.editor;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.util.Mth;
 //? if >1.21.1 {
 import net.minecraft.client.input.KeyEvent;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
+import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 public class EditorScreen extends Screen {
     //? if >=1.21.11 {
@@ -31,6 +33,80 @@ public class EditorScreen extends Screen {
      *///?} else {
     /*private static final ResourceLocation INVENTORY_TEXTURE = new ResourceLocation("textures/gui/container/inventory.png");
      *///?}
+
+    private static final int BUTTON_WIDTH = 90;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int BUTTON_SPACING = 4;
+    private static final int SCREEN_MARGIN = 6;
+    private static final Button[] widgets = new Button[EditorMode.BUTTONS.length];
+    private static double pxPerGuiX = 1;
+    private static double pxPerGuiY = 1;
+
+    static {
+        for (int i = 0; i < widgets.length; i++) {
+            widgets[i] = Button.builder(Component.translatable(EditorMode.BUTTONS[i].translationKey()), b -> {})
+                    .bounds(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT)
+                    .build();
+        }
+    }
+
+    private static void drawButtons(Object g, Minecraft client) {
+        var window = client.getWindow();
+        int guiWidth = window.getGuiScaledWidth();
+        int guiHeight = window.getGuiScaledHeight();
+        pxPerGuiX = window.getScreenWidth() / (double) guiWidth;
+        pxPerGuiY = window.getScreenHeight() / (double) guiHeight;
+        int cursorX = (int) (MouseHandlerUtil.getPhysicalX(-1) / pxPerGuiX);
+        int cursorY = (int) (MouseHandlerUtil.getPhysicalY(-1) / pxPerGuiY);
+
+        int leftCount = 0, rightCount = 0;
+        for (var button : EditorMode.BUTTONS) {
+            if (button.rightSide()) rightCount++;
+            else leftCount++;
+        }
+
+        int leftPlaced = 0, rightPlaced = 0;
+        boolean usable = EditorMode.cursorFree();
+
+        for (int i = 0; i < widgets.length; i++) {
+            var button = EditorMode.BUTTONS[i];
+            boolean right = button.rightSide();
+            int count = right ? rightCount : leftCount;
+            int row = right ? rightPlaced++ : leftPlaced++;
+            int x = right ? guiWidth - SCREEN_MARGIN - BUTTON_WIDTH : SCREEN_MARGIN;
+            int y = guiHeight - SCREEN_MARGIN - (count - row) * (BUTTON_HEIGHT + BUTTON_SPACING) + BUTTON_SPACING;
+
+            Button widget = widgets[i];
+            widget.setPosition(x, y);
+
+            if (i == 0 || i == 3) {
+                widget.active = usable && EditorHistory.canUndo();
+            } else if (i == 1) {
+                widget.active = usable && EditorHistory.canRedo();
+            } else {
+                widget.active = usable;
+            }
+
+            //? if >1.21.11 {
+            widget.extractRenderState((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
+            //?} else {
+            /*widget.render((GuiGraphics) g, cursorX, cursorY, 0f);
+             *///?}
+        }
+    }
+
+    private static boolean clickFlatButton() {
+        if (EditorMode.previewing() || !EditorMode.cursorFree()) return false;
+        double cursorX = MouseHandlerUtil.getPhysicalX(-1) / pxPerGuiX;
+        double cursorY = MouseHandlerUtil.getPhysicalY(-1) / pxPerGuiY;
+        for (int i = 0; i < widgets.length; i++) {
+            if (widgets[i].isMouseOver(cursorX, cursorY)) {
+                EditorMode.BUTTONS[i].action().run();
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected EditorScreen() {
         super(Component.literal("Spatial GUI Editor"));
@@ -93,12 +169,12 @@ public class EditorScreen extends Screen {
         }
 
         // inventory border
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 4; i++) {
             g.outline(invX + i, invY + i, invWidth - i * 2, invHeight - i * 2, light_blue);
         }
 
         // outer border
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             g.outline(i, i, width - i * 2, height - i * 2, red);
         }
     }
@@ -167,6 +243,11 @@ public class EditorScreen extends Screen {
             return true;
         }
 
+        if (!ctrl && key == InputConstants.KEY_TAB) {
+            if (!EditorGizmo.isDragging()) EditorMode.toggleMouseFree();
+            return true;
+        }
+
         if (!ctrl) return false;
         if (key == InputConstants.KEY_Z) {
             if (shift) EditorHistory.redo();
@@ -189,9 +270,9 @@ public class EditorScreen extends Screen {
     }
 
     //? if >=26.1.2 {
-    public static void extractHints(GuiGraphicsExtractor g) {
+    public static void drawOverlay(GuiGraphicsExtractor g) {
     //?} else {
-    /*public static void extractHints(Object g) {
+    /*public static void drawOverlay(Object g) {
     *///?}
         var client = Minecraft.getInstance();
         //? if <26.2 {
@@ -202,7 +283,8 @@ public class EditorScreen extends Screen {
         if (EditorMode.previewing()) return;
 
         int y = 6;
-        for (String line : EditorMode.HINTS) {
+        for (String key : EditorMode.getHints()) {
+            String line = Component.translatable(key).getString();
             //? if >=26.1.2 {
             g.text(client.font, line, 6, y, 0xFFFFFFFF, true);
             //?} else if >1.21.11 {
@@ -212,6 +294,8 @@ public class EditorScreen extends Screen {
             *///?}
             y += 10;
         }
+
+        drawButtons(g, client);
     }
 
     //? if >1.21.1 {
@@ -224,8 +308,12 @@ public class EditorScreen extends Screen {
         //? if >1.21.1 {
         int button = event.button();
         //?}
+        if (button == 0 && clickFlatButton()) return true;
+        if (button == 0) EditorGizmo.setPressed(true);
+
         if (button == 0) EditorGizmo.setPressed(true);
         if (button == 1) EditorGizmo.resetHandle();
+        if (button == 2) EditorMode.resetScreenDistance();
         //? if >1.21.1 {
         return super.mouseClicked(event, doubleClick);
         //?} else {

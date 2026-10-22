@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.InvMoveCompat;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
@@ -180,22 +181,24 @@ public abstract class CameraMixin {
                     smoothedCameraPitch = entityXRot;
                 } else {
                     double[] rel = MouseHandlerUtil.resetFreeLookDelta();
-                    double deltaX = rel[0];
-                    double deltaY = rel[1];
+                    if (!EditorMode.mouseFree()) {
+                        double deltaX = rel[0];
+                        double deltaY = rel[1];
 
-                    double sens = CameraUtil.calculateMouseSensitivity();
-                    //? if >1.21.1 {
-                    double xOffset = deltaX * sens * (client.options.invertMouseX().get() ? -1 : 1);
-                    //?} else {
-                    /*double xOffset = deltaX * sens;
-                     *///?}
-                    double yOffset = deltaY * sens * (client.options.invertMouseY().get() ? -1 : 1);
+                        double sens = CameraUtil.calculateMouseSensitivity();
+                        //? if >1.21.1 {
+                        double xOffset = deltaX * sens * (client.options.invertMouseX().get() ? -1 : 1);
+                        //?} else {
+                        /*double xOffset = deltaX * sens;
+                         *///?}
+                        double yOffset = deltaY * sens * (client.options.invertMouseY().get() ? -1 : 1);
 
-                    freeLookYaw += (float) xOffset;
-                    if (ConfigManager.config().lockFirstPersonYaw) {
-                        freeLookYaw = Mth.clamp(freeLookYaw, -MAX_YAW_OFFSET, MAX_YAW_OFFSET);
+                        freeLookYaw += (float) xOffset;
+                        if (ConfigManager.config().lockFirstPersonYaw) {
+                            freeLookYaw = Mth.clamp(freeLookYaw, -MAX_YAW_OFFSET, MAX_YAW_OFFSET);
+                        }
+                        freeLookPitch = Mth.clamp(freeLookPitch + (float) yOffset, -maxPitch - entityXRot, maxPitch - entityXRot);
                     }
-                    freeLookPitch = Mth.clamp(freeLookPitch + (float) yOffset, -maxPitch - entityXRot, maxPitch - entityXRot);
 
                     smoothedCameraYaw = freeLookYaw;
                     smoothedCameraPitch = entityXRot + freeLookPitch;

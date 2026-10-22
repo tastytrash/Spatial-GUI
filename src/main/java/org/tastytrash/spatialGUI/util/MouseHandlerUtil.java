@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
@@ -90,10 +91,10 @@ public class MouseHandlerUtil {
     }
 
     public static double getSourceX() {
-        return SpatialGUIRenderer.isCrosshairModeActive() ? centerX() : getPhysicalX(centerX());
+        return SpatialGUIRenderer.isCrosshairModeActive() && !EditorMode.mouseFree() ? centerX() : getPhysicalX(centerX());
     }
     public static double getSourceY() {
-        return SpatialGUIRenderer.isCrosshairModeActive() ? centerY() : getPhysicalY(centerY());
+        return SpatialGUIRenderer.isCrosshairModeActive() && !EditorMode.mouseFree() ? centerY() : getPhysicalY(centerY());
     }
 
     public static double getPhysicalX(double fallback) {
@@ -246,7 +247,7 @@ public class MouseHandlerUtil {
     }
 
     public static void updateMouseGrabForFirstPerson(boolean isFirstPerson) {
-        if (!ConfigManager.config().useCrosshairForFirstPerson || !isFirstPerson) {
+        if (!ConfigManager.config().useCrosshairForFirstPerson || !isFirstPerson || EditorMode.mouseFree()) {
             releaseMouseFromFirstPerson();
         } else {
             grabMouseForFirstPerson();
@@ -257,6 +258,16 @@ public class MouseHandlerUtil {
         var w = Minecraft.getInstance().getWindow();
         mappedX = rawX * w.getGuiScaledWidth()  / (double) w.getScreenWidth();
         mappedY = rawY * w.getGuiScaledHeight() / (double) w.getScreenHeight();
+    }
+
+    public static void centerCursor() {
+        Minecraft mc = Minecraft.getInstance();
+        MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
+        double cx = centerX();
+        double cy = centerY();
+        accessor.setRawXpos(cx);
+        accessor.setRawYpos(cy);
+        resetMouseState();
     }
 
     private static final double LOOK_PX_PER_SECOND = 1200;

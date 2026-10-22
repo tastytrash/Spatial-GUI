@@ -19,6 +19,7 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.compat.InvMoveCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
@@ -174,6 +175,7 @@ public class MouseHandlerMixin {
     private void spatialGUI$restoreCursorFields(CallbackInfo ci) {
         boolean crosshairIncoming = ConfigManager.config() != null
                 && ConfigManager.config().useCrosshairForFirstPerson
+                && !EditorMode.mouseFree()
                 && SpatialGUIClient.getEffectiveFirstPersonMode();
         Minecraft mc = Minecraft.getInstance();
         //? if >=26.2 {
