@@ -106,7 +106,10 @@ public class SpatialGUIRenderer {
         //?}
 
         if (inventoryRenderer.isClosing()) {
-            finishClosing();
+            if (swapping) {
+                inventoryRenderer.endClosing();
+            }
+            else finishClosing();
         }
         var snapPlayer = client.player;
         if (swapping && preSnapState != null && snapPlayer != null) {

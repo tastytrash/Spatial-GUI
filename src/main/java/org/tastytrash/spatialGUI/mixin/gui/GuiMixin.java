@@ -101,7 +101,7 @@ public class GuiMixin {
     /^private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
     ^///?}
         SpatialGUIRenderer.skipWindowOverride = false;
-        EditorScreen.extractHints(guiGraphics);
+        EditorScreen.drawOverlay(guiGraphics);
     }
 }
 *///?}
