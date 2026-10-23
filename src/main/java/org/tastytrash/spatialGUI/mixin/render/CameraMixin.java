@@ -117,6 +117,7 @@ public abstract class CameraMixin {
             }
 
             this.applyCameraUpdate(newTargetPos, newTargetYRot, newTargetXRot, isFirstPerson);
+            SpatialGUIClient.setScreenAnchorDelta(newTargetPos.subtract(position));
             lastOffset = position.subtract(MathUtil.lerpEntityPosition(this.entity, partialTicks));
             lastYRot = yRot;
             lastXRot = xRot;
@@ -134,6 +135,7 @@ public abstract class CameraMixin {
             float normalXRot = toFirstPerson ? this.entity.getXRot() : xRot;
 
             position = new Vec3(MathUtil.lerp(screenCameraPos.x, normalPos.x, easedProgress), MathUtil.lerp(screenCameraPos.y, normalPos.y, easedProgress), MathUtil.lerp(screenCameraPos.z, normalPos.z, easedProgress));
+            SpatialGUIClient.setScreenAnchorDelta(screenCameraPos.subtract(position));
             boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
             yRot = isThirdPersonFront ? normalYRot : MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
             xRot = (toFirstPerson || (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
@@ -339,6 +341,7 @@ public abstract class CameraMixin {
         SpatialGUIClient.setEffectiveFirstPersonMode(false);
         SpatialGUIClient.setCameraPosition(null);
         SpatialGUIClient.setWasClosing(false);
+        SpatialGUIClient.setScreenAnchorDelta(Vec3.ZERO);
         MouseHandlerUtil.updateMouseGrabForFirstPerson(false);
     }
 }

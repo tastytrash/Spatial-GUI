@@ -52,6 +52,7 @@ public class SpatialGUIClient {
     private static CameraType originalCameraType;
     private static boolean capturingPanorama = false;
     private static Vec3 cameraPosition;
+    private static Vec3 screenAnchorDelta = Vec3.ZERO;
     private static boolean wasClosing = false;
     private static boolean inShouldHookScreen = false;
 
@@ -272,5 +273,13 @@ public class SpatialGUIClient {
 
     public static void setOriginalCameraType(CameraType value) {
         originalCameraType = value;
+    }
+
+    public static Vec3 getScreenAnchorDelta() {
+        return screenAnchorDelta;
+    }
+
+    public static void setScreenAnchorDelta(Vec3 delta) {
+        screenAnchorDelta = delta;
     }
  }

@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -158,12 +159,16 @@ public class InventoryRenderer {
 
         float scale = AnimationUtil.scaleForElapsed(config.scale(), getAnimationElapsedMs(), isRecipeBookOpen, recipeBookCloseDelay);
 
+        Vec3 anchor = SpatialGUIClient.getScreenAnchorDelta();
+
         if (matrices != null) {
+            matrices.translate(anchor.x, anchor.y, anchor.z);
             RenderUtil.applyScreenTransform(matrices, isFirstPerson, yawRadians, pitchRadians, config, lookX, lookY, lookZ);
             matrices.scale(scale, scale, scale);
         }
 
         WORLD_POSE_STACK.setIdentity();
+        WORLD_POSE_STACK.translate(anchor.x, anchor.y, anchor.z);
         RenderUtil.applyScreenTransform(WORLD_POSE_STACK, isFirstPerson, yawRadians, pitchRadians, config, lookX, lookY, lookZ);
         WORLD_POSE_STACK.scale(scale, scale, scale);
 
