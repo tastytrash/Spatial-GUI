@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 *///?}
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
@@ -192,13 +193,12 @@ public class EditorScreen extends Screen {
     public boolean mouseScrolled(double x, double y, double delta) {
     *///?}
         var config = ConfigManager.config();
-        boolean fp = org.tastytrash.spatialGUI.client.SpatialGUIClient.getEffectiveFirstPersonMode();
         //? if >1.20.1 {
         double distanceDelta = scrollY * 0.03;
         //?} else {
         /*double distanceDelta = delta * 0.03;
         *///?}
-        if (fp) {
+        if (SpatialGUIClient.getEffectiveFirstPersonMode()) {
             config.firstPersonScreenDistance = Mth.clamp(config.firstPersonScreenDistance + distanceDelta, 0.1, 10.0);
         } else {
             config.screenDistance = Mth.clamp(config.screenDistance + distanceDelta, 0.1, 10.0);
@@ -243,7 +243,7 @@ public class EditorScreen extends Screen {
             return true;
         }
 
-        if (!ctrl && key == InputConstants.KEY_TAB) {
+        if (!ctrl && key == InputConstants.KEY_TAB && SpatialGUIClient.getEffectiveFirstPersonMode()) {
             if (!EditorGizmo.isDragging()) EditorMode.toggleMouseFree();
             return true;
         }

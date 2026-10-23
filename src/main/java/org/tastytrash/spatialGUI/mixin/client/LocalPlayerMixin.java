@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin {
@@ -23,46 +23,10 @@ public abstract class LocalPlayerMixin {
 
     @Shadow protected abstract boolean isControlledCamera();
 
-    @Unique private float spatialGUI$xBobBefore;
-    @Unique private float spatialGUI$yBobBefore;
-    @Unique private boolean spatialGUI$wasActive = false;
-
     @Unique
     private static boolean spatialGUI$swayActive() {
         var renderer = SpatialGUIClient.renderer();
-        return renderer != null
-                && SpatialGUIClient.isEnabled()
-                && SpatialGUIClient.getEffectiveFirstPersonMode()
-                && renderer.getHookedScreen() != null
-                && !ConfigManager.config().hideHandsInFirstPerson;
-    }
-
-    @Unique
-    private static float spatialGUI$cameraPitch() {
-        //? if >1.21.1 {
-        return Minecraft.getInstance().gameRenderer.getMainCamera().xRot();
-        //?} else {
-        /*return Minecraft.getInstance().gameRenderer.getMainCamera().getXRot();
-        *///?}
-    }
-
-    @Unique
-    private static float spatialGUI$cameraYaw() {
-        //? if >1.21.1 {
-        return Minecraft.getInstance().gameRenderer.getMainCamera().yRot();
-        //?} else {
-        /*return Minecraft.getInstance().gameRenderer.getMainCamera().getYRot();
-        *///?}
-    }
-
-    //? if >1.21.1 {
-    @Inject(method = "applyInput", at = @At("HEAD"))
-    //?} else {
-    /*@Inject(method = "serverAiStep", at = @At("HEAD"))
-    *///?}
-    private void spatialGUI$captureBob(CallbackInfo ci) {
-        spatialGUI$xBobBefore = this.xBob;
-        spatialGUI$yBobBefore = this.yBob;
+        return renderer != null && renderer.bobSwayActive();
     }
 
     //? if >1.21.1 {
@@ -71,27 +35,17 @@ public abstract class LocalPlayerMixin {
     /*@Inject(method = "serverAiStep", at = @At("TAIL"))
     *///?}
     private void spatialGUI$bobFollowsCamera(CallbackInfo ci) {
-        if (!spatialGUI$swayActive() || !this.isControlledCamera()) {
-            spatialGUI$wasActive = false;
-            return;
-        }
+        if (!spatialGUI$swayActive() || !this.isControlledCamera()) return;
 
-        float camPitch = spatialGUI$cameraPitch();
-        float camYaw = spatialGUI$cameraYaw();
-
-        if (!spatialGUI$wasActive) {
-            spatialGUI$wasActive = true;
-        }
-
-        this.xBob = spatialGUI$xBobBefore + (camPitch - spatialGUI$xBobBefore) * 0.5F;
-        this.yBob = spatialGUI$yBobBefore + Mth.wrapDegrees(camYaw - spatialGUI$yBobBefore) * 0.5F;
+        this.xBob = this.xBobO + (SpatialGUIRenderer.cameraPitch() - this.xBobO) * 0.5F;
+        this.yBob = this.yBobO + Mth.wrapDegrees(SpatialGUIRenderer.cameraYaw() - this.yBobO) * 0.5F;
     }
 
     //? if <26.3 {
     @ModifyReturnValue(method = "getViewXRot", at = @At("RETURN"))
     private float spatialGUI$cameraViewXRot(float original, float a) {
         if (!spatialGUI$swayActive()) return original;
-        return spatialGUI$cameraPitch();
+        return SpatialGUIRenderer.cameraPitch();
     }
     //?}
 
@@ -99,6 +53,6 @@ public abstract class LocalPlayerMixin {
     private float spatialGUI$cameraViewYRot(float original, float a) {
         if (!spatialGUI$swayActive()) return original;
         float bob = Mth.lerp(a, this.yBobO, this.yBob);
-        return bob + Mth.wrapDegrees(spatialGUI$cameraYaw() - bob);
+        return bob + Mth.wrapDegrees(SpatialGUIRenderer.cameraYaw() - bob);
     }
 }

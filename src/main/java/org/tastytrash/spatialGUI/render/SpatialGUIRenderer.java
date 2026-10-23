@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,6 +12,7 @@ import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.editor.EditorMode;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
@@ -57,6 +59,7 @@ public class SpatialGUIRenderer {
     private boolean prevPoseStarted;
     private float fovProgress = 0f;
     private long lastFovUpdateNano = 0L;
+    private long lastBobNano = 0L;
 
     private float[] preSnapState;
 
@@ -75,7 +78,8 @@ public class SpatialGUIRenderer {
         *///? } else if forge {
         /*MinecraftForge.EVENT_BUS.addListener(this::onScreenRenderPre);
         MinecraftForge.EVENT_BUS.addListener(this::onScreenClosing);
-        *///?}
+        MinecraftForge.EVENT_BUS.addListener(this::onGuiRenderPost);
+        *///? }
     }
 
     public void hookScreen(Screen screen) {
@@ -175,6 +179,13 @@ public class SpatialGUIRenderer {
             onScreenRemoved();
         }
     }
+
+    //? if forge {
+    /^private void onGuiRenderPost(net.minecraftforge.client.event.RenderGuiEvent.Post event) {
+        skipWindowOverride = false;
+        EditorScreen.drawOverlay(event.getGuiGraphics());
+    }
+    ^///? }
     *///? }
 
     private void onScreenRemoved() {
@@ -444,6 +455,7 @@ public class SpatialGUIRenderer {
         MouseHandlerUtil.syncCursorGrab();
         ControlifyCompat.handleFreeLook(isCrosshairModeActive());
         updateFovProgress();
+        updatePausedHandBob();
         EditorGizmo.update();
     }
 
@@ -479,6 +491,32 @@ public class SpatialGUIRenderer {
         fovProgress += (target - fovProgress) * alpha;
 
         if (Math.abs(target - fovProgress) < 0.001f) fovProgress = target;
+    }
+
+    public boolean bobSwayActive() {
+        return SpatialGUIClient.isEnabled()
+                && SpatialGUIClient.getEffectiveFirstPersonMode()
+                && hookedScreen != null
+                && !ConfigManager.config().hideHandsInFirstPerson;
+    }
+
+    private void updatePausedHandBob() {
+        long now = System.nanoTime();
+        float dt = lastBobNano == 0L ? 0f : Math.min((now - lastBobNano) / 1_000_000_000f, 0.1f);
+        lastBobNano = now;
+
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        if (player == null || !mc.isPaused() || !bobSwayActive()) return;
+
+        float a = 1f - (float) Math.pow(0.5, dt * 20.0);
+        float pitch = player.xBob + (cameraPitch() - player.xBob) * a;
+        float yaw = player.yBob + Mth.wrapDegrees(cameraYaw() - player.yBob) * a;
+
+        player.xBobO = pitch;
+        player.xBob = pitch;
+        player.yBobO = yaw;
+        player.yBob = yaw;
     }
 
     //? if >1.21.1 {
@@ -523,6 +561,16 @@ public class SpatialGUIRenderer {
         if (rotationAnchored) return anchoredPitch;
         var player = Minecraft.getInstance().player;
         return player != null ? player.getXRot() : 0f;
+    }
+
+    public static float cameraPitch() {
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        return camera.xRot();
+    }
+
+    public static float cameraYaw() {
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        return camera.yRot();
     }
 
     private void releaseRotationAnchor() {

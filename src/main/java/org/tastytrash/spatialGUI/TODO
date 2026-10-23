@@ -2,17 +2,9 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Editor tips not rendering Forge
-
-World flicker on first open
-
-Hand bob not updating in pause menu
-
 Toasts rendering on the GUI
 
 -------- MID PRIORITY ---------------
-
-The inventory puppet head gets hidden when the players head is hidden as well
 
 Hand bob gets reset when leaving the GUI
 

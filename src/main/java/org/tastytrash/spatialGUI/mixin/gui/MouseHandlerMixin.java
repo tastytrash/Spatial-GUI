@@ -122,7 +122,7 @@ public class MouseHandlerMixin {
 
             var renderer = SpatialGUIClient.renderer();
             if (renderer != null && shouldApplyMouseOverride()) {
-                if (SpatialGUIRenderer.isCrosshairModeActive() && !ignoreFirst && !ControlifyCompat.inVirtualMove) {
+                if (SpatialGUIRenderer.isCrosshairModeActive() && grabbed && !ignoreFirst && !ControlifyCompat.inVirtualMove) {
                     MouseHandlerUtil.addFreeLookDelta(delta[0], delta[1]);
                 }
                 Vector2d mouse = renderer.updateMousePosition(
