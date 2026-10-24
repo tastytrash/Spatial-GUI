@@ -292,7 +292,8 @@ public class InventoryRenderer {
         boolean firstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         long animationMs = Math.min(animationTotalMs(), Math.max(0L, now - screenOpenTime));
 
-        long cameraMs = firstPerson ? 0L : Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f));
+        boolean cameraMoves = !firstPerson || SpatialGUIClient.getWasThirdPersonCamera();
+        long cameraMs = cameraMoves ? Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f)) : 0L;
         long duration = Math.max(animationMs, cameraMs);
         if (duration <= 0L) {
             return false;

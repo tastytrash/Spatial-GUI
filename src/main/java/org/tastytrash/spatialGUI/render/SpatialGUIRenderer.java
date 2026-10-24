@@ -283,6 +283,11 @@ public class SpatialGUIRenderer {
                 && !SpatialGUIClient.getWasThirdPersonCamera();
     }
 
+    public boolean isClosingWithCameraTransition() {
+        return inventoryRenderer.isClosing()
+                && (!inventoryRenderer.isClosingFirstPerson() || SpatialGUIClient.getWasThirdPersonCamera());
+    }
+
     public long getCloseElapsedMs() {
         return inventoryRenderer.getCloseElapsedMs();
     }

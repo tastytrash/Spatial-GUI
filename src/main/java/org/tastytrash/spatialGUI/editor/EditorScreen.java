@@ -305,15 +305,18 @@ public class EditorScreen extends Screen {
     /*@Override
     public boolean mouseClicked(double x, double y, int button) {
     *///?}
+        int left = InputConstants.MOUSE_BUTTON_LEFT;
+        int right = InputConstants.MOUSE_BUTTON_RIGHT;
+        int middle = InputConstants.MOUSE_BUTTON_MIDDLE;
         //? if >1.21.1 {
         int button = event.button();
         //?}
-        if (button == 0 && clickFlatButton()) return true;
-        if (button == 0) EditorGizmo.setPressed(true);
+        if (button == left && clickFlatButton()) return true;
+        if (button == left) EditorGizmo.setPressed(true);
 
-        if (button == 0) EditorGizmo.setPressed(true);
-        if (button == 1) EditorGizmo.resetHandle();
-        if (button == 2) EditorMode.resetScreenDistance();
+        if (button == left) EditorGizmo.setPressed(true);
+        if (button == right) EditorGizmo.resetHandle();
+        if (button == middle) EditorMode.resetScreenDistance();
         //? if >1.21.1 {
         return super.mouseClicked(event, doubleClick);
         //?} else {
@@ -331,7 +334,7 @@ public class EditorScreen extends Screen {
         //? if >1.21.1 {
         int button = event.button();
         //?}
-        if (button == 0) EditorGizmo.setPressed(false);
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) EditorGizmo.setPressed(false);
         //? if >1.21.1 {
         return super.mouseReleased(event);
         //?} else {

@@ -13,11 +13,11 @@ group = project.maven_group
 
 def dependencyVersions = [
         "1.20.1-forge":    [minecraft: "1.20.1", minecraft_dependency: "1.20.1", forge: "1.20.1-47.2.20", yacl: "3.6.6+1.20.1-forge", obfuscated: true, java: 17],
-        "1.20.1-fabric":   [minecraft: "1.20.1", minecraft_dependency: "1.20.1", fabric: "0.92.2+1.20.1", loader: "0.19.3", yacl: "3.6.6+1.20.1-fabric", modmenu: "7.2.2", obfuscated: true, java: 17],
+        "1.20.1-fabric":   [minecraft: "1.20.1", minecraft_dependency: "1.20.1", fabric: "0.92.2+1.20.1", loader: "0.18.4", yacl: "3.6.6+1.20.1-fabric", modmenu: "7.2.2", obfuscated: true, java: 17],
         "1.21.1-neoforge": [minecraft: "1.21.1", minecraft_dependency: "1.21.1", neoforge: "21.1.240", yacl: "3.6.1+1.21-neoforge", obfuscated: true, java: 21],
-        "1.21.1-fabric":   [minecraft: "1.21.1", minecraft_dependency: "1.21.1", fabric: "0.116.0+1.21.1", loader: "0.19.3", yacl: "3.6.1+1.21-fabric", modmenu: "11.0.4", obfuscated: true, java: 21],
+        "1.21.1-fabric":   [minecraft: "1.21.1", minecraft_dependency: "1.21.1", fabric: "0.116.0+1.21.1", loader: "0.18.4", yacl: "3.6.1+1.21-fabric", modmenu: "11.0.4", obfuscated: true, java: 21],
         "1.21.11-neoforge":[minecraft: "1.21.11", minecraft_dependency: ">=1.21.6 <=1.21.11", neoforge: "21.11.42", yacl: "3.8.2+1.21.11-neoforge", obfuscated: true, java: 21],
-        "1.21.11-fabric":  [minecraft: "1.21.11", minecraft_dependency: ">=1.21.6 <=1.21.11", fabric: "0.140.0+1.21.11", loader: "0.19.3", yacl: "3.8.2+1.21.11-fabric", modmenu: "17.0.0", obfuscated: true, java: 21],
+        "1.21.11-fabric":  [minecraft: "1.21.11", minecraft_dependency: ">=1.21.6 <=1.21.11", fabric: "0.140.0+1.21.11", loader: "0.18.4", yacl: "3.8.2+1.21.11-fabric", modmenu: "17.0.0", obfuscated: true, java: 21],
         "26.1.2-fabric":   [minecraft: "26.1.2", minecraft_dependency: ">=26.1 <=26.1.2", fabric: "0.150.0+26.1.2", yacl: "3.9.3+26.1-fabric", modmenu: "18.0.0", java: 25],
         "26.1.2-neoforge": [minecraft: "26.1.2", minecraft_dependency: ">=26.1 <=26.1.2", neoforge: "26.1.0.19-beta", yacl: "3.9.3+26.1-neoforge", java: 25],
         "26.2-fabric":     [minecraft: "26.2", minecraft_dependency: "26.2", fabric: "0.155.2+26.2", yacl: "3.9.7+26.2-fabric", modmenu: "20.0.1", java: 25],

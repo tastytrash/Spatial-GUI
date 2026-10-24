@@ -123,7 +123,7 @@ public abstract class CameraMixin {
             lastXRot = xRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
             wasCapturing = true;
-        } else if (renderer.isClosing() && !renderer.isClosingFirstPerson() && lastOffset != null && this.entity != null && SpatialGUIClient.isEnabled()) {
+        } else if (renderer.isClosingWithCameraTransition() && lastOffset != null && this.entity != null && SpatialGUIClient.isEnabled()) {
             closingCameraActive = true;
             SpatialGUIClient.setWasClosing(true);
             float easedProgress = renderer.getCloseBlend();
@@ -138,7 +138,8 @@ public abstract class CameraMixin {
             SpatialGUIClient.setScreenAnchorDelta(screenCameraPos.subtract(position));
             boolean isThirdPersonFront = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
             yRot = isThirdPersonFront ? normalYRot : MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
-            xRot = (toFirstPerson || (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
+            boolean fromFirstPerson = renderer.isClosingFirstPerson();
+            xRot = (toFirstPerson || fromFirstPerson || (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
             SpatialGUIClient.setCameraPosition(position);
         } else {
