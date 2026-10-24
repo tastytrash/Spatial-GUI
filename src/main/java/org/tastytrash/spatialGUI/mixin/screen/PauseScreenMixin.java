@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.screen;
 
 import net.minecraft.client.gui.screens.PauseScreen;
 import org.spongepowered.asm.mixin.Mixin;

@@ -13,6 +13,11 @@ import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
+//? if <=1.21.1 {
+/*import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+*///?}
+
 @Pseudo
 @Mixin(targets = "dev.isxander.controlify.virtualmouse.VirtualMouseHandler", remap = false)
 public class ControlifyMixin {
@@ -59,5 +64,20 @@ public class ControlifyMixin {
     private void spatialGUI$stopScrollInCrosshair(CallbackInfo ci) {
         if (SpatialGUIRenderer.isCrosshairModeActive()) ci.cancel();
     }
+
+    //? if <=1.21.1 {
+    /*@Inject(method = "renderVirtualMouse", at = @At("HEAD"), require = 0, remap = false)
+    private void spatialGUI$keepAlphaStart(CallbackInfo ci) {
+        if (SpatialGUIRenderer.isExtractingScreen) {
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        }
+    }
+
+    @Inject(method = "renderVirtualMouse", at = @At("RETURN"), require = 0, remap = false)
+    private void spatialGUI$keepAlphaEnd(CallbackInfo ci) {
+        if (SpatialGUIRenderer.isExtractingScreen) RenderSystem.defaultBlendFunc();
+    }
+    *///?}
 }
 //?}

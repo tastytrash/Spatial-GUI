@@ -15,7 +15,7 @@ import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
-import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 
 //? if fabric {

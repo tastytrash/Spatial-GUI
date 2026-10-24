@@ -6,7 +6,7 @@ import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.editor.EditorMode;
-import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;

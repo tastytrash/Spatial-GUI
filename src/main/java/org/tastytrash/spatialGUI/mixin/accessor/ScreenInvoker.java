@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.accessor;
 
 import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;

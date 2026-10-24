@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.render;
 
 import net.minecraft.world.phys.Vec3;
+import org.lwjgl.opengl.GL12;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -463,10 +464,8 @@ public class InventoryRenderer {
         *///?} else if >1.21.1 {
         MeshData meshData = buffer.build();
         if (meshData != null) {
-            try {
+            try (meshData) {
                 drawInventory(meshData, texture);
-            } finally {
-                meshData.close();
             }
         }
         //?} else if 1.21.1 {
@@ -517,7 +516,7 @@ public class InventoryRenderer {
             renderInWorld(capturedPoseStack);
         } finally {
             //? if >1.21.1 {
-            if (prevBuffer != null && prevType != null) {
+            if (prevBuffer != null) {
                 RenderSystem.setProjectionMatrix(prevBuffer, prevType);
             }
             //?} else {
@@ -705,11 +704,7 @@ public class InventoryRenderer {
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, textureId);
-        RenderSystem.bindTexture(textureId);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 33071);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 33071);
+        targetManager.getInventoryTarget().setFilterMode(filter);
 
         RenderSystem.setShaderColor(fadeAlpha, fadeAlpha, fadeAlpha, fadeAlpha);
         RenderSystem.enableBlend();
@@ -729,7 +724,7 @@ public class InventoryRenderer {
         }
     }
 
-        private void drawHandles(Matrix4f pose, float aspect) {
+    private void drawHandles(Matrix4f pose, float aspect) {
         //? if 1.21.1 {
         /^BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         ^///?} else {

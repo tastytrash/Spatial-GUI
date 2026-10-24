@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.client;
+package org.tastytrash.spatialGUI.mixin.screen;
 
 //? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -117,7 +117,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
-import org.tastytrash.spatialGUI.mixin.gui.ScreenInvoker;
+import org.tastytrash.spatialGUI.mixin.accessor.ScreenInvoker;
 
 @Mixin({InventoryScreen.class, CraftingScreen.class, AbstractFurnaceScreen.class})
 public class AbstractRecipeBookScreenMixin {

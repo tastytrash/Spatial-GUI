@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.render;
+package org.tastytrash.spatialGUI.mixin.player;
 
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.phys.Vec3;

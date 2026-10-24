@@ -14,7 +14,7 @@ public class EssentialCompat {
                     String name = f.getDeclaringClass().getName();
                     return name.equals(EssentialCompat.class.getName())
                             || name.equals(Window.class.getName())
-                            || name.equals("org.tastytrash.spatialGUI.mixin.gui.WindowMixin");
+                            || name.equals("org.tastytrash.spatialGUI.mixin.screen.WindowMixin");
                 }).findFirst())
                 .map(f -> f.getDeclaringClass().getName().startsWith("gg.essential."))
                 .orElse(false);

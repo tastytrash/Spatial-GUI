@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.compat.VulkanModCompat;
-import org.tastytrash.spatialGUI.mixin.render.GameRendererInvoker;
+import org.tastytrash.spatialGUI.mixin.accessor.GameRendererInvoker;
 
 import java.lang.Math;
 

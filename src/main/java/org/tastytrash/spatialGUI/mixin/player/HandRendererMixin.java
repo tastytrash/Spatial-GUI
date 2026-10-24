@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.render;
+package org.tastytrash.spatialGUI.mixin.player;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;

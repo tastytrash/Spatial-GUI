@@ -1,13 +1,12 @@
-package org.tastytrash.spatialGUI.mixin.render;
+package org.tastytrash.spatialGUI.mixin.player;
 
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
-import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 
 //? if >1.21.1 {
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;

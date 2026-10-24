@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.input;
 
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Minecraft;

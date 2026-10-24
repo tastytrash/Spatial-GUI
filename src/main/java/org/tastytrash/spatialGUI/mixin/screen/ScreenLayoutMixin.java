@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.screen;
 
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;

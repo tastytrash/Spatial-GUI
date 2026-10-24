@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.hud;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.Gui;

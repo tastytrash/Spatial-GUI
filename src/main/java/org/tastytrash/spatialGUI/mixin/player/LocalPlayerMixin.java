@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.client;
+package org.tastytrash.spatialGUI.mixin.player;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.Minecraft;

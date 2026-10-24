@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.screen;
 
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;

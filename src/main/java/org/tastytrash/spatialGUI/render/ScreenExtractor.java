@@ -8,6 +8,7 @@ import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.mixin.gui.GuiRendererAccessor;
 import org.tastytrash.spatialGUI.mixin.render.GameRendererAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.GameRendererAccessor;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
@@ -200,6 +201,9 @@ public class ScreenExtractor {
                 } else {
                     screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
                 }
+                //? if neoforge {
+                /^ControlifyCompat.renderVirtualMouse(graphics);
+                ^///?}
                 graphics.flush();
             } finally {
                 modelView.popMatrix();

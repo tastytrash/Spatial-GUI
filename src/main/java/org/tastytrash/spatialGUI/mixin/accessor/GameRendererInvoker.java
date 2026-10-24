@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.render;
+package org.tastytrash.spatialGUI.mixin.accessor;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;

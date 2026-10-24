@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.InvMoveCompat;
 import org.tastytrash.spatialGUI.editor.EditorMode;
-import org.tastytrash.spatialGUI.mixin.gui.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.util.AnimationUtil;

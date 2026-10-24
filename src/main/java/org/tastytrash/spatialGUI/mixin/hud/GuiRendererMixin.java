@@ -1,4 +1,4 @@
-package org.tastytrash.spatialGUI.mixin.gui;
+package org.tastytrash.spatialGUI.mixin.hud;
 
 import org.spongepowered.asm.mixin.Mixin;
 
