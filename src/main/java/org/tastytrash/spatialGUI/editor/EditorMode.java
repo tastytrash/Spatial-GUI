@@ -88,6 +88,10 @@ public class EditorMode {
         return mouseFree || !SpatialGUIRenderer.isCrosshairModeActive();
     }
 
+    public static void resetMouseFree() {
+        mouseFree = false;
+    }
+
     public static void toggleMouseFree() {
         mouseFree = !mouseFree;
         MouseHandlerUtil.centerCursor();

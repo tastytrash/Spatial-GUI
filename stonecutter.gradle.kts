@@ -26,8 +26,6 @@ stonecutter parameters {
         }
 
         string(current.parsed < "1.21.11") {
-            replace("camera.yRot()", "camera.getYRot()")
-            replace("camera.xRot()", "camera.getXRot()")
             replace(".grabOrReleaseMouse(mc.getWindow(), ", ".grabOrReleaseMouse(mc.getWindow().getWindow(), ")
             replace("invertMouseY()", "invertYMouse()")
         }

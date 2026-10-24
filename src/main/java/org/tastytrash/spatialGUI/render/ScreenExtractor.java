@@ -6,8 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
-import org.tastytrash.spatialGUI.mixin.gui.GuiRendererAccessor;
-import org.tastytrash.spatialGUI.mixin.render.GameRendererAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.GuiRendererAccessor;
 import org.tastytrash.spatialGUI.mixin.accessor.GameRendererAccessor;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
@@ -202,8 +201,8 @@ public class ScreenExtractor {
                     screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
                 }
                 //? if neoforge {
-                /^ControlifyCompat.renderVirtualMouse(graphics);
-                ^///?}
+                ControlifyCompat.renderVirtualMouse(graphics);
+                //?}
                 graphics.flush();
             } finally {
                 modelView.popMatrix();

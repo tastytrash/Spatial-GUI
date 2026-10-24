@@ -690,7 +690,7 @@ public class GameRendererMixin {
     }
 
     //? if fabric {
-    @WrapOperation(method = "render", at = @At(
+    /^@WrapOperation(method = "render", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
     ))
@@ -705,15 +705,15 @@ public class GameRendererMixin {
             operation.call(screen, graphics, mouseX, mouseY, partialTick);
         }
     }
-    //?} else {
-    /^@Redirect(method = "render", at = @At(
+    ^///?} else {
+    @Redirect(method = "render", at = @At(
             value = "INVOKE",
             //? if neoforge {
-            /^¹target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
-            ¹^///?} else if forge {
-            /^¹target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+            target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            //?} else if forge {
+            /^target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
             remap = false
-            ¹^///?}
+            ^///?}
     ))
     private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         var renderer = SpatialGUIClient.renderer();
@@ -734,12 +734,12 @@ public class GameRendererMixin {
     @Unique
     private static void spatialGUI$drawScreen(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         //? if neoforge {
-        /^¹ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
-         ¹^///?} else if forge {
-        /^¹ForgeHooksClient.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
-        ¹^///?}
+        ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+         //?} else if forge {
+        /^ForgeHooksClient.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
+        ^///?}
     }
-    ^///?}
+    //?}
 
     @Inject(method = "render", at = @At("TAIL"))
     private void spatialGUI$endRender(CallbackInfo ci) {

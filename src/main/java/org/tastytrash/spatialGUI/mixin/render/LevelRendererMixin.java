@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
+import org.tastytrash.spatialGUI.util.CameraUtil;
 
 //? if <26.1.2 && >1.20.1 {
 /*import com.llamalad7.mixinextras.sugar.Local;
@@ -54,8 +55,8 @@ public class LevelRendererMixin {
         var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         //?}
         poseStack.mulPose(new Quaternionf()
-                .rotateX((float) Math.toRadians(camera.xRot()))
-                .rotateY((float) Math.toRadians(camera.yRot() + 180.0f))
+                .rotateX((float) Math.toRadians(CameraUtil.pitch()))
+                .rotateY((float) Math.toRadians(CameraUtil.yaw() + 180.0f))
                 .get(new Matrix4f())
         );
         //?} else if >1.20.1 {
@@ -63,8 +64,8 @@ public class LevelRendererMixin {
          *///?} else {
         /*var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         poseStack.mulPose(new Quaternionf()
-                .rotateX((float) Math.toRadians(camera.xRot()))
-                .rotateY((float) Math.toRadians(camera.yRot() + 180.0f))
+                .rotateX((float) Math.toRadians(CameraUtil.pitch()))
+                .rotateY((float) Math.toRadians(CameraUtil.yaw() + 180.0f))
         );
         *///?}
 

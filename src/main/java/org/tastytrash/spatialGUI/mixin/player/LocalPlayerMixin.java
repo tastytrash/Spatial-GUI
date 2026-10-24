@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
+import org.tastytrash.spatialGUI.util.CameraUtil;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin {
@@ -37,15 +38,15 @@ public abstract class LocalPlayerMixin {
     private void spatialGUI$bobFollowsCamera(CallbackInfo ci) {
         if (!spatialGUI$swayActive() || !this.isControlledCamera()) return;
 
-        this.xBob = this.xBobO + (SpatialGUIRenderer.cameraPitch() - this.xBobO) * 0.5F;
-        this.yBob = this.yBobO + Mth.wrapDegrees(SpatialGUIRenderer.cameraYaw() - this.yBobO) * 0.5F;
+        this.xBob = this.xBobO + (CameraUtil.pitch() - this.xBobO) * 0.5F;
+        this.yBob = this.yBobO + Mth.wrapDegrees(CameraUtil.yaw() - this.yBobO) * 0.5F;
     }
 
     //? if <26.3 {
     @ModifyReturnValue(method = "getViewXRot", at = @At("RETURN"))
     private float spatialGUI$cameraViewXRot(float original, float a) {
         if (!spatialGUI$swayActive()) return original;
-        return SpatialGUIRenderer.cameraPitch();
+        return CameraUtil.pitch();
     }
     //?}
 
@@ -53,6 +54,6 @@ public abstract class LocalPlayerMixin {
     private float spatialGUI$cameraViewYRot(float original, float a) {
         if (!spatialGUI$swayActive()) return original;
         float bob = Mth.lerp(a, this.yBobO, this.yBob);
-        return bob + Mth.wrapDegrees(SpatialGUIRenderer.cameraYaw() - bob);
+        return bob + Mth.wrapDegrees(CameraUtil.yaw() - bob);
     }
 }

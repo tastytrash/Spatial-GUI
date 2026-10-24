@@ -12,6 +12,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.client.SpatialGUIKeybinds;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+//? if >1.21.1 {
+import net.minecraft.client.input.KeyEvent;
+//?}
 
 //? if >1.20.1 && <26.1.2 {
 /*import net.minecraft.client.gui.GuiGraphics;
@@ -92,6 +100,35 @@ public class ScreenMixin {
         }
     }
     *///?}
+
+    //? if >1.21.1 {
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    private void spatialGUI$toggleMouseFree(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (spatialGUI$canToggleMouse() && SpatialGUIKeybinds.matchesToggleMouseFree(event)
+                && SpatialGUIKeybinds.pressToggleMouseFree()) {
+            cir.setReturnValue(true);
+        }
+    }
+    //?} else {
+    /*@Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    private void spatialGUI$toggleMouseFree(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (spatialGUI$canToggleMouse() && SpatialGUIKeybinds.matchesToggleMouseFree(keyCode, scanCode)
+                && SpatialGUIKeybinds.pressToggleMouseFree()) {
+            cir.setReturnValue(true);
+        }
+    }
+    *///?}
+
+    @Unique
+    private boolean spatialGUI$canToggleMouse() {
+        var renderer = SpatialGUIClient.renderer();
+        if (renderer == null || !SpatialGUIClient.isEnabled() || renderer.getHookedScreen() != (Object) this) return false;
+        GuiEventListener focused = ((Screen) (Object) this).getFocused();
+        while (focused instanceof ContainerEventHandler container && container.getFocused() != null) {
+            focused = container.getFocused();
+        }
+        return !(focused instanceof EditBox);
+    }
 
     @Unique
     private boolean spatialGUI$isHooked() {

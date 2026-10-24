@@ -8,6 +8,7 @@
   "mixins": [
   ],
   "client": [
+    "accessor.CameraAccessor",
     "accessor.GameRendererAccessor",
     "accessor.GameRendererInvoker",
     "accessor.GuiRendererAccessor",

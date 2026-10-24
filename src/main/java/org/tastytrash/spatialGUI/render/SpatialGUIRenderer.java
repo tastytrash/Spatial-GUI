@@ -195,6 +195,7 @@ public class SpatialGUIRenderer {
     private void onScreenRemoved(boolean animate) {
         if (hookedScreen == null) return;
         skipWindowOverride = false;
+        EditorMode.resetMouseFree();
         var player = Minecraft.getInstance().player;
         boolean wasEffectiveFirstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         MouseHandlerUtil.releaseMouseFromFirstPerson();
@@ -510,8 +511,8 @@ public class SpatialGUIRenderer {
         if (player == null || !mc.isPaused() || !bobSwayActive()) return;
 
         float a = 1f - (float) Math.pow(0.5, dt * 20.0);
-        float pitch = player.xBob + (cameraPitch() - player.xBob) * a;
-        float yaw = player.yBob + Mth.wrapDegrees(cameraYaw() - player.yBob) * a;
+        float pitch = player.xBob + (CameraUtil.pitch() - player.xBob) * a;
+        float yaw = player.yBob + Mth.wrapDegrees(CameraUtil.yaw() - player.yBob) * a;
 
         player.xBobO = pitch;
         player.xBob = pitch;
@@ -561,16 +562,6 @@ public class SpatialGUIRenderer {
         if (rotationAnchored) return anchoredPitch;
         var player = Minecraft.getInstance().player;
         return player != null ? player.getXRot() : 0f;
-    }
-
-    public static float cameraPitch() {
-        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        return camera.xRot();
-    }
-
-    public static float cameraYaw() {
-        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        return camera.yRot();
     }
 
     private void releaseRotationAnchor() {

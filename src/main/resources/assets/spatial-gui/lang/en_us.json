@@ -203,6 +203,7 @@
   "key.spatial-gui.open_config": "Open Spatial GUI Config",
   "key.spatial-gui.open_editor": "Open Visual Editor",
   "key.spatial-gui.reload_profiles": "Reload Screen Profiles",
+  "key.spatial-gui.toggle_mouse_free": "Toggle Mouse in Crosshair Mode",
   "key.category.spatial-gui.main_category": "Spatial GUI",
 
   "yacl3.spatial-gui.config.open_editor": "Layout editor",

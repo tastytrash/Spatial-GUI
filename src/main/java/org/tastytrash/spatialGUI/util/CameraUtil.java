@@ -11,6 +11,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.mixin.accessor.CameraAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public class CameraUtil {
@@ -116,5 +117,13 @@ public class CameraUtil {
     public static double calculateMouseSensitivity() {
         double ss = Minecraft.getInstance().options.sensitivity().get() * 0.6 + 0.2;
         return ss * ss * ss;
+    }
+
+    public static float pitch() {
+        return ((CameraAccessor) Minecraft.getInstance().gameRenderer.getMainCamera()).spatialGUI$getXRot();
+    }
+
+    public static float yaw() {
+        return ((CameraAccessor) Minecraft.getInstance().gameRenderer.getMainCamera()).spatialGUI$getYRot();
     }
 }

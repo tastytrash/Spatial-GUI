@@ -166,12 +166,12 @@ public final class RenderUtil {
 
         //? if >=26.2 {
         /*var camera = mc.gameRenderer.getMainCamera();
-        float yawRadians = (float) Math.toRadians(camera.yRot());
-        float pitchRadians = (float) Math.toRadians(camera.xRot());
+        float yawRadians = (float) Math.toRadians(CameraUtil.yaw());
+        float pitchRadians = (float) Math.toRadians(CameraUtil.pitch());
         *///?} else {
         var camera = mc.gameRenderer.getMainCamera();
-        float yawRadians = (float) Math.toRadians(camera.yRot());
-        float pitchRadians = (float) Math.toRadians(camera.xRot());
+        float yawRadians = (float) Math.toRadians(CameraUtil.yaw());
+        float pitchRadians = (float) Math.toRadians(CameraUtil.pitch());
         //?}
 
         float fx = (float) (-Math.sin(yawRadians) * Math.cos(pitchRadians));
