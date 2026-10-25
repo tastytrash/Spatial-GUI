@@ -6,6 +6,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 
 public final class GuiScaleUtil {
+    public static Screen pendingScreen;
+
     public static int effectiveScale(Window w) {
         return ConfigManager.config().getEffectiveGuiScale();
     }

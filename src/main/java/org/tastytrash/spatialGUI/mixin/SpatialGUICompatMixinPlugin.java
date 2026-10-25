@@ -32,7 +32,8 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
             "compat.DynamicCrosshairMixin", "dynamiccrosshair",
             "compat.OwoBlurMixin", "owo",
             "compat.PolytoneMixin", "polytone",
-            "compat.SophisticatedCoreMixin", "sophisticatedcore"
+            "compat.SophisticatedCoreMixin", "sophisticatedcore",
+            "compat.TravelersBackpackMixin", "travelersbackpack"
     );
 
     @Override

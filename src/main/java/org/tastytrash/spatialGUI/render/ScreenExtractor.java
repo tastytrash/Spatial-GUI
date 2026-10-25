@@ -201,8 +201,8 @@ public class ScreenExtractor {
                     screen.renderWithTooltip(graphics, mouseX, mouseY, partialTick);
                 }
                 //? if neoforge {
-                ControlifyCompat.renderVirtualMouse(graphics);
-                //?}
+                /^ControlifyCompat.renderVirtualMouse(graphics);
+                ^///?}
                 graphics.flush();
             } finally {
                 modelView.popMatrix();

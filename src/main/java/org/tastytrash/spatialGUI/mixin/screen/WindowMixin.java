@@ -51,6 +51,7 @@ public class WindowMixin {
     @Unique
     private static boolean shouldOverride() {
         if (!SpatialGUIClient.isEnabled()) return false;
+        if (GuiScaleUtil.pendingScreen != null) return true;
         if (SpatialGUIRenderer.skipWindowOverride && !EssentialCompat.isEssentialCaller()) return false;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;

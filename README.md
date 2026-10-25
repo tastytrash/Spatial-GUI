@@ -17,6 +17,7 @@ ___
 
 ### General
 
+* Visual editor
 * Per-screen enable and disable lists for mod compatibility
 * Optional world blur behind the screen
 * Screen drop shadow

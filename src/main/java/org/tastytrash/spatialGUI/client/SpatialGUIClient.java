@@ -134,6 +134,11 @@ public class SpatialGUIClient {
     public static boolean shouldHookScreen(Screen screen) {
         if (screen == null) return false;
         if (screen instanceof EditorScreen) return true;
+        //? if >1.20.1 {
+        if (screen instanceof net.minecraft.client.gui.screens.GenericMessageScreen) return false;
+        //?} else {
+//        if (screen instanceof net.minecraft.client.gui.screens.GenericDirtMessageScreen) return false;
+        //?}
         if (ConfigManager.config() == null) return false;
         if (Minecraft.getInstance().level == null) return false;
         var client = Minecraft.getInstance();
