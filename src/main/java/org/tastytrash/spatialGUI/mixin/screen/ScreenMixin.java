@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 //? if >1.21.1 {
 import net.minecraft.client.input.KeyEvent;
 //?}
@@ -41,6 +42,12 @@ public class ScreenMixin {
         if (renderer != null && SpatialGUIClient.shouldHookScreen(screen)) {
             renderer.hookScreen(screen);
         }
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void spatialGUI$markPendingScreen(CallbackInfo ci) {
+        Screen self = (Screen) (Object) this;
+        GuiScaleUtil.pendingScreen = SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(self) ? self : null;
     }
 
     //? if >=26.1.2 {

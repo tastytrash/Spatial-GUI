@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 
 public final class GuiScaleUtil {
     public static Screen pendingScreen;
+    public static boolean pendingOverride;
 
     public static int effectiveScale(Window w) {
         return ConfigManager.config().getEffectiveGuiScale();

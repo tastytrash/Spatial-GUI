@@ -49,6 +49,7 @@ public class ScreenExtractor {
     //? if >1.21.1 {
     private GuiRenderState screenRenderState;
     private GuiRenderer screenGuiRenderer;
+
     //? if fabric {
     private static List<PictureInPictureRenderer<?>> vanillaPipRenderers(Minecraft mc) {
         GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
@@ -115,6 +116,11 @@ public class ScreenExtractor {
         ensureScreenGuiRenderer();
         return screenGuiRenderer;
     }
+    //? if <26.1.2 {
+    /*public GuiRenderState getScreenRenderState() {
+        return screenRenderState;
+    }
+    *///?}
     //?}
 
     //? if >=26.1.2 {

@@ -11,6 +11,7 @@
     "accessor.CameraAccessor",
     "accessor.GameRendererAccessor",
     "accessor.GameRendererInvoker",
+    "accessor.GuiGraphicsAccessor",
     "accessor.GuiRendererAccessor",
     "accessor.MouseHandlerAccessor",
     "accessor.ScreenInvoker",

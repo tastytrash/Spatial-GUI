@@ -33,7 +33,8 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
             "compat.OwoBlurMixin", "owo",
             "compat.PolytoneMixin", "polytone",
             "compat.SophisticatedCoreMixin", "sophisticatedcore",
-            "compat.TravelersBackpackMixin", "travelersbackpack"
+            "compat.CreateStockKeeperMixin", "create",
+            "compat.StorageDrawersMixin", "storagedrawers"
     );
 
     @Override

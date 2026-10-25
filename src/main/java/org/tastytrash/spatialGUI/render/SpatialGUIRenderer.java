@@ -13,6 +13,7 @@ import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
@@ -154,6 +155,13 @@ public class SpatialGUIRenderer {
         //?} else if fabric {
         /*ScreenEvents.afterRender(screen).register((screenArg, graphics, mouseX, mouseY, tickDelta) -> prepareTarget());
          *///?}
+
+        //? if fabric && 1.20.1 {
+        /*var afterRenderEvent = ScreenEvents.afterRender(screen);
+        var lateFlushPhase = new net.minecraft.resources.ResourceLocation("spatial_gui", "late_flush");
+        afterRenderEvent.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, lateFlushPhase);
+        afterRenderEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> graphics.flush());
+        *///?}
 
         //? if fabric {
         ScreenEvents.remove(screen).register(removedScreen -> {
@@ -443,6 +451,7 @@ public class SpatialGUIRenderer {
     }
 
     public void onFrameStart() {
+        GuiScaleUtil.pendingScreen = null;
         inventoryRenderer.onFrameStart();
     }
 
@@ -529,6 +538,12 @@ public class SpatialGUIRenderer {
     public net.minecraft.client.gui.render.GuiRenderer getScreenGuiRenderer() {
         return screenExtractor.getScreenGuiRenderer();
     }
+
+    //? if <26.1.2 {
+    /*public net.minecraft.client.gui.render.state.GuiRenderState getScreenRenderState() {
+        return screenExtractor.getScreenRenderState();
+    }
+    *///?}
 
     public GpuBufferSlice getCapturedProjectionBuffer() {
         return inventoryRenderer.getCapturedProjectionBuffer();

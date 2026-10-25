@@ -567,7 +567,9 @@ public class SpatialGUIConfig {
 
     public int getEffectiveGuiScale() {
         if (overrideGuiScale) {
-            return Mth.clamp(guiScale, 1, 6);
+            var window = Minecraft.getInstance().getWindow();
+            int maxFit = Mth.clamp(Math.min(window.getWidth() / 320, window.getHeight() / 240), 1, 6);
+            return Mth.clamp(guiScale, 1, maxFit);
         }
         Minecraft mc = Minecraft.getInstance();
         return mc.getWindow().calculateScale(mc.options.guiScale().get(), mc.isEnforceUnicode());

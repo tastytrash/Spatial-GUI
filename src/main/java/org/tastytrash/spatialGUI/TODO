@@ -2,10 +2,6 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Look into EaseGUI and re-animated compat
-
-Tooltip text rendering incorrectly with JEI (Fabric 1.20.1)
-
 -------- MID PRIORITY ---------------
 
 Hand bob gets reset when leaving the GUI
