@@ -44,6 +44,7 @@ public class MouseHandlerMixin {
          *///?} else {
         Screen screen = mc.screen;
         //?}
+        if (MouseHandlerUtil.usesRawMouse(screen)) return false;
         if (SpatialGUIClient.shouldHookScreen(screen)) return true;
         var renderer = SpatialGUIClient.renderer();
         return renderer != null && SpatialGUIClient.shouldHookScreen(renderer.getHookedScreen());

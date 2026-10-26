@@ -161,9 +161,9 @@ public class MouseHandlerUtil {
     public static void syncCursorGrab() {
         Minecraft mc = Minecraft.getInstance();
         //? if >=26.2 {
-        /*if (mc.gui.screen() == null || SpatialGUIRenderer.isCrosshairModeActive()) return;
+        /*if (mc.gui.screen() == null || SpatialGUIRenderer.isCrosshairModeActive() || usesRawMouse(mc.gui.screen())) return;
          *///?} else {
-        if (mc.screen == null || SpatialGUIRenderer.isCrosshairModeActive()) return;
+        if (mc.screen == null || SpatialGUIRenderer.isCrosshairModeActive() || usesRawMouse(mc.screen)) return;
         //?}
         if (ControlifyCompat.isVirtualMouseActive()) return;
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
@@ -265,9 +265,13 @@ public class MouseHandlerUtil {
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) mc.mouseHandler;
         double cx = centerX();
         double cy = centerY();
+        resetMouseState();
         accessor.setRawXpos(cx);
         accessor.setRawYpos(cy);
-        resetMouseState();
+        physicalX = cx;
+        physicalY = cy;
+        lastPhysicalX = cx;
+        lastPhysicalY = cy;
     }
 
     private static final double LOOK_PX_PER_SECOND = 1200;
@@ -281,5 +285,9 @@ public class MouseHandlerUtil {
         lookNanos = now;
         if (stick == null || !Double.isFinite(stick[0]) || !Double.isFinite(stick[1])) return;
         addFreeLookDelta(stick[0] * LOOK_PX_PER_SECOND * dt, stick[1] * LOOK_PX_PER_SECOND * dt);
+    }
+
+    public static boolean usesRawMouse(net.minecraft.client.gui.screens.Screen screen) {
+        return screen != null && screen.getClass().getName().startsWith("dev.tr7zw.itemswapper.");
     }
 }

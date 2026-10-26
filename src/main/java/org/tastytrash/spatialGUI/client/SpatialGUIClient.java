@@ -135,12 +135,12 @@ public class SpatialGUIClient {
         if (screen == null) return false;
         if (screen instanceof EditorScreen) return true;
 
-        //? if >1.20.1 && < 26.1.2 {
-        /*if (screen instanceof net.minecraft.client.gui.screens.GenericMessageScreen) return false;
-        *///?} else {
-        if (screen instanceof net.minecraft.client.gui.screens.GenericDirtMessageScreen) return false;
-        //?}
-        //? if < 26.1.2 {
+        //? if >1.20.1 {
+        if (screen instanceof net.minecraft.client.gui.screens.GenericMessageScreen) return false;
+        //?} else {
+        /*if (screen instanceof net.minecraft.client.gui.screens.GenericDirtMessageScreen) return false;
+        *///?}
+        //? if <1.21.11 {
         /*if (screen instanceof net.minecraft.client.gui.screens.LevelLoadingScreen
          || screen instanceof net.minecraft.client.gui.screens.ReceivingLevelScreen) return false;
         *///?}

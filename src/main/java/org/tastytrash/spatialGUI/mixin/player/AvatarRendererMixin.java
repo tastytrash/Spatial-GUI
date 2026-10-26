@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.mixin.player;
 
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -62,10 +63,12 @@ public class AvatarRendererMixin {
         float normY = Mth.clamp((float) (mouse.getRawYpos() / client.getWindow().getScreenHeight()) * 2f - 1f, -1f, 1f);
         if (ConfigManager.config().mirrorHeadMovement) normX = -normX;
 
+        boolean isElytraFlying = client.player != null && client.player.isFallFlying();
+
         float side = ConfigManager.config().mirrorThirdPerson ? -1f : 1f;
         float targetBody = renderer.anchoredYaw() + side * (float) ConfigManager.config().avatarBodyRotationOffset;
         float targetYaw = normX * (float) ConfigManager.config().avatarMaxYawOffset + side * (float) ConfigManager.config().avatarBaseYawOffset;
-        float targetPitch = Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
+        float targetPitch = isElytraFlying ? vanillaPitch : Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
 
         long now = System.nanoTime();
         boolean justOpened = !renderer.poseStarted;

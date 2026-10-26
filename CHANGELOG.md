@@ -1,6 +1,10 @@
-* Added the editor mode, please feel free to open a GitHub Discussion with features you wish the editor had, as it is pretty barebones currently
-* Added configuration profiles and rules, this is located in `/minecraft/config/spatial-gui/profiles.json5`, there is an in-game keybind to reload the profiles (default unbound)
-* Added a keybind to toggle the mouse in crosshair mode (default left alt)
-* The screen position now stays in place during an opening/closing transition
-* Lowered the Fabric loader minimum requirement to 0.18.4 on versions 1.21.11 and under
-* Lots of bug fixes, thank you everyone who reported issues on the GitHub
+* Add elytra flying offset in the config
+* Fix Item Swapper compatibility issue
+* Fix issue on NeoForge causing some mods' overlays not to render
+* Fix Storage Drawers rendering issue
+* Fix JEI tooltip rendering in 1.20.1 Fabric
+* Fix crosshair hiding with 'Hide HUD' enabled
+* Fix Traveler's Backpack & certain Create Fly GUI's rendering too large
+* Smaller general fixes 
+
+Thank you so much to everyone who reported issues on the GitHub! Your reports help make Spatial GUI better with every release.

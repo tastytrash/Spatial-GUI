@@ -43,7 +43,7 @@ public class EditorMode {
     }
 
     public static void toggle(Minecraft client) {
-        if (client.level == null) return;
+        if (client.level == null || !ConfigManager.config().enabled) return;
         Screen screen = client.screen;
         if (screen instanceof EditorScreen) {
             screen.onClose();

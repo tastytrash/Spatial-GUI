@@ -289,6 +289,16 @@ public class SpatialGUIConfig {
     @DoubleSlider(min = 0.5, max = 10.0, step = 0.05)
     public double screenScale = 3.5;
 
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "screen")
+    @DoubleSlider(min = -2.0, max = 2.0, step = 0.05)
+    public double elytraFlyingSideOffset = -0.5;
+
+    @SerialEntry
+    @AutoGen(category = "thirdPerson", group = "screen")
+    @DoubleSlider(min = -2.0, max = 2.0, step = 0.05)
+    public double elytraFlyingHeightOffset = -0.4;
+
     // camera 
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "camera")

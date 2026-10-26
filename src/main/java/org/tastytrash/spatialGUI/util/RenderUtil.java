@@ -129,7 +129,14 @@ public final class RenderUtil {
 
         float thirdPersonFovMultiplier = 1.0f + (fovMultiplier - 1.0f) * (float) ConfigManager.config().autoScaleThirdPersonScreenMultiplier;
         float sideOffset = (float) ConfigManager.config().screenSideOffset;
+        float heightOffset = (float) ConfigManager.config().screenHeightOffset;
         float yawOffset = (float) ConfigManager.config().screenYawOffset;
+
+        var player = Minecraft.getInstance().player;
+        if (player != null && player.isFallFlying()) {
+            sideOffset += (float) ConfigManager.config().elytraFlyingSideOffset;
+            heightOffset += (float) ConfigManager.config().elytraFlyingHeightOffset;
+        }
 
         if (ConfigManager.config().mirrorThirdPerson) {
             sideOffset = -sideOffset;
@@ -139,7 +146,7 @@ public final class RenderUtil {
         return new ScreenTransformConfig(
                 (float) ConfigManager.config().screenDistance,
                 sideOffset,
-                (float) ConfigManager.config().screenHeightOffset,
+                heightOffset,
                 yawOffset,
                 (float) ConfigManager.config().screenPitchOffset,
                 (float) ConfigManager.config().screenScale * thirdPersonFovMultiplier

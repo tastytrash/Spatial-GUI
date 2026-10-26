@@ -174,6 +174,7 @@ public class SpatialGUIRenderer {
 
     //? if neoforge || forge {
     /*private void onScreenRenderPre(ScreenEvent.Render.Pre event) {
+        if (isExtractingScreen) return;
         if (event.getScreen() == hookedScreen) {
             event.setCanceled(true);
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -181,7 +182,6 @@ public class SpatialGUIRenderer {
             SpatialGUIRenderer.skipWindowOverride = true;
         }
     }
-
     private void onScreenClosing(ScreenEvent.Closing event) {
         if (event.getScreen() == hookedScreen) {
             onScreenRemoved();
@@ -316,9 +316,7 @@ public class SpatialGUIRenderer {
     }
 
     public void updateMousePosition() {
-        if (!shouldCapture()) {
-            return;
-        }
+        if (!shouldCapture() || MouseHandlerUtil.usesRawMouse(hookedScreen)) return;
 
         Minecraft client = Minecraft.getInstance();
         MouseHandlerAccessor mouseHandler = (MouseHandlerAccessor) client.mouseHandler;

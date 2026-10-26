@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.mixin.render;
 
+import net.minecraft.client.player.LocalPlayer;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.Camera;
@@ -153,6 +154,11 @@ public abstract class CameraMixin {
         float distance = CameraUtil.calculateAutoFovDistance((float) ConfigManager.config().cameraDistance, isFirstPerson);
         float sideOffset = CameraUtil.calculateAutoFovSideOffset((float) ConfigManager.config().cameraSideOffset, isFirstPerson);
         float heightOffset = isFirstPerson ? entity.getEyeHeight() : Mth.clamp((float) ConfigManager.config().cameraHeightOffset, -4f, 4f);
+        if (!isFirstPerson && entity instanceof LocalPlayer player && player.isFallFlying()) {
+            sideOffset += (float) ConfigManager.config().elytraFlyingSideOffset;
+            heightOffset += (float) ConfigManager.config().elytraFlyingHeightOffset;
+        }
+
         float yaw, pitch;
         float positionYaw;
 
