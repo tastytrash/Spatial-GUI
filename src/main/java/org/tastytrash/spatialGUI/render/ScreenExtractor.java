@@ -81,7 +81,9 @@ public class ScreenExtractor {
             /*screenGuiRenderer = new GuiRenderer(
                     screenRenderState,
                     mc.gameRenderer.featureRenderDispatcher(),
-                    capturedPipRegistrations == null ? List.of() : capturedPipRegistrations
+                    capturedPipRegistrations == null ? List.of() : capturedPipRegistrations.stream()
+                            .filter(r -> r.stateClass().getName().startsWith("net.minecraft."))
+                            .toList()
             );
             *///?} else if fabric {
             screenGuiRenderer = new GuiRenderer(

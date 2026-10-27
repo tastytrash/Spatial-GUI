@@ -2,7 +2,7 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Lodged
+Translation keys for editor dropdown
 
 -------- MID PRIORITY ---------------
 
@@ -15,8 +15,6 @@ Minecraft's water effects not applying properly when in the menu with velocity u
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
 
-Make mouse releasing in crosshair not just a editor feature (what should this be bound to?)
-
 Refresh rate?
 
 /////////////////////////////////////
@@ -24,12 +22,10 @@ Visual editor
 High priority:
  - Rotation gizmo, or just sliders
  - Camera controls for third person
- - Give all text translation keys
 
 Possible later ideas:
- - Profiles
  - Animation/transition preview
- - Snap to grid
+ - Snap to grid?
 ////////////////////////////////////////
 
 

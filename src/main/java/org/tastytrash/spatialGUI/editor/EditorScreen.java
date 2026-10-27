@@ -2,9 +2,11 @@ package org.tastytrash.spatialGUI.editor;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.util.Mth;
 //? if >1.21.1 {
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -36,9 +38,9 @@ public class EditorScreen extends Screen {
      *///?}
 
     private static final int BUTTON_WIDTH = 90;
-    private static final int BUTTON_HEIGHT = 20;
+    static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_SPACING = 4;
-    private static final int SCREEN_MARGIN = 6;
+    static final int SCREEN_MARGIN = 6;
     private static final Button[] widgets = new Button[EditorMode.BUTTONS.length];
     private static double pxPerGuiX = 1;
     private static double pxPerGuiY = 1;
@@ -88,18 +90,26 @@ public class EditorScreen extends Screen {
                 widget.active = usable;
             }
 
-            //? if >1.21.11 {
-            widget.extractRenderState((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
-            //?} else {
-            /*widget.render((GuiGraphics) g, cursorX, cursorY, 0f);
-             *///?}
+            renderWidget(widget, g, cursorX, cursorY);
         }
+
+        EditorDropdown.draw(g, guiWidth, cursorX, cursorY, usable);
     }
 
-    private static boolean clickFlatButton() {
+    static void renderWidget(AbstractWidget widget, Object g, int cursorX, int cursorY) {
+        //? if >1.21.11 {
+        widget.extractRenderState((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
+        //?} else {
+        /*widget.render((GuiGraphics) g, cursorX, cursorY, 0f);
+        *///?}
+    }
+
+    private static boolean clickFlatButton(int mouseButton) {
         if (EditorMode.previewing() || !EditorMode.cursorFree()) return false;
         double cursorX = MouseHandlerUtil.getPhysicalX(-1) / pxPerGuiX;
         double cursorY = MouseHandlerUtil.getPhysicalY(-1) / pxPerGuiY;
+        if (EditorDropdown.click(cursorX, cursorY, mouseButton)) return true;
+        if (mouseButton != InputConstants.MOUSE_BUTTON_LEFT) return false;
         for (int i = 0; i < widgets.length; i++) {
             if (widgets[i].isMouseOver(cursorX, cursorY)) {
                 EditorMode.BUTTONS[i].action().run();
@@ -113,8 +123,8 @@ public class EditorScreen extends Screen {
         super(Component.literal("Spatial GUI Editor"));
         EditorMode.begin();
         EditorHistory.reset();
+        EditorDropdown.close();
     }
-
 
     @Override
     public boolean isPauseScreen() {
@@ -123,6 +133,7 @@ public class EditorScreen extends Screen {
 
     @Override
     public void removed() {
+        EditorDropdown.close();
         EditorGizmo.setPressed(false);
         EditorHistory.checkpoint();
         EditorMode.end();
@@ -209,6 +220,7 @@ public class EditorScreen extends Screen {
     //? if >1.21.1 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (EditorDropdown.keyPressed(event)) return true;
         if (handleKeyPress(event.key(), event.hasControlDown(), event.hasShiftDown())) return true;
         return super.keyPressed(event);
     }
@@ -221,6 +233,7 @@ public class EditorScreen extends Screen {
     //?} else {
     /*@Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (EditorDropdown.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (handleKeyPress(keyCode, hasControlDown(), hasShiftDown())) return true;
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -229,6 +242,20 @@ public class EditorScreen extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (handleKeyRelease(keyCode)) return true;
         return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+    *///?}
+
+    //? if >1.21.1 {
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (EditorDropdown.charTyped(event)) return true;
+        return super.charTyped(event);
+    }
+    //?} else {
+    /*@Override
+    public boolean charTyped(char character, int modifiers) {
+        if (EditorDropdown.charTyped(character, modifiers)) return true;
+        return super.charTyped(character, modifiers);
     }
     *///?}
 
@@ -311,7 +338,7 @@ public class EditorScreen extends Screen {
         //? if >1.21.1 {
         int button = event.button();
         //?}
-        if (button == left && clickFlatButton()) return true;
+        if ((button == left || button == right) && clickFlatButton(button)) return true;
         if (button == left) EditorGizmo.setPressed(true);
 
         if (button == left) EditorGizmo.setPressed(true);

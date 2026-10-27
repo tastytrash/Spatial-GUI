@@ -6,7 +6,7 @@ For reproducible bugs and crashes, please open a [GitHub Issue](https://github.c
 ___
 <br><br>
 
-# Spatial GUI
+![Spatial GUI Logo](https://cdn.modrinth.com/data/cached_images/0491bbf0b71c806766d4844d1fe96e4c3f8c0662.png)
 
 **A client-side Minecraft mod that turns screens into immersive 3D displays, with fully configurable first-person and third-person modes.**
 
