@@ -44,7 +44,7 @@ public final class EditorGizmo {
         pressed = value;
     }
 
-    public static void resetHandle() {
+    public static void resetSelectedHandle() {
         if (handle < 0) return;
         var config = ConfigManager.config();
         boolean fp = SpatialGUIClient.getEffectiveFirstPersonMode();
@@ -62,17 +62,10 @@ public final class EditorGizmo {
     }
 
     public static void update() {
-        if (EditorMode.previewing()) {
-            pressed = false;
-            handle = -1;
-            endDrag();
-            return;
-        }
-
         boolean started = pressed && !wasPressed;
         wasPressed = pressed;
 
-        QuadBasis basis = currentBasis();
+        QuadBasis basis = EditorMode.previewing() ? null : currentBasis();
         if (basis == null) {
             pressed = false;
             handle = -1;
@@ -96,7 +89,7 @@ public final class EditorGizmo {
         if (started && handle >= 0) {
             dragging = true;
             grab.set(plane);
-            grabRatio = handle < SCALE_HANDLES ? ratio(plane, basis) : 0f;
+            grabRatio = handle < SCALE_HANDLES ? cornerRatio(plane, basis) : 0f;
         }
     }
 
@@ -118,7 +111,7 @@ public final class EditorGizmo {
     private static int pick(Vector2f plane, QuadBasis basis) {
         float radius = CORNER_HIT_RADIUS * basis.halfHeight();
         for (int i = 0; i < SCALE_HANDLES; i++) {
-            if (plane.distanceSquared(corner(i, basis.halfWidth(), basis.halfHeight())) < radius * radius) return i;
+            if (plane.distanceSquared(cornerPosition(i, basis.halfWidth(), basis.halfHeight())) < radius * radius) return i;
         }
         float k = basis.halfHeight() * 2f;
         if (onArrow(plane.x, plane.y, k)) return AXIS_X;
@@ -132,17 +125,17 @@ public final class EditorGizmo {
                 && Math.abs(across) < AXIS_PICK * k;
     }
 
-    private static Vector2f corner(int i, float halfWidth, float halfHeight) {
+    private static Vector2f cornerPosition(int i, float halfWidth, float halfHeight) {
         return new Vector2f(i < 2 ? -halfWidth : halfWidth, i % 2 == 0 ? -halfHeight : halfHeight);
     }
 
-    private static float ratio(Vector2f plane, QuadBasis basis) {
-        Vector2f corner = corner(handle, basis.halfWidth(), basis.halfHeight());
+    private static float cornerRatio(Vector2f plane, QuadBasis basis) {
+        Vector2f corner = cornerPosition(handle, basis.halfWidth(), basis.halfHeight());
         return plane.dot(corner) / corner.lengthSquared();
     }
 
     private static void scaleTo(Vector2f plane, QuadBasis basis) {
-        double factor = ratio(plane, basis) / grabRatio;
+        double factor = cornerRatio(plane, basis) / grabRatio;
         var config = ConfigManager.config();
         if (SpatialGUIClient.getEffectiveFirstPersonMode()) {
             config.firstPersonScreenScale = Mth.clamp(config.firstPersonScreenScale * factor, 0.5, 10.0);
@@ -156,11 +149,19 @@ public final class EditorGizmo {
         boolean fp = SpatialGUIClient.getEffectiveFirstPersonMode();
 
         Vector3f need = new Vector3f(basis.right()).mul(plane.x - grab.x).fma(plane.y - grab.y, basis.up());
-        Vector3f dir = handle == AXIS_X ? sideDirection(basis.right(), config, fp) : new Vector3f(0, 1, 0);
-        nudge(config, fp, need.dot(dir) * AXIS_GAIN);
+        Vector3f dir = handle == AXIS_X ? sideAxis(basis.right(), config, fp) : new Vector3f(0, 1, 0);
+        double delta = need.dot(dir) * AXIS_GAIN;
+
+        if (handle == AXIS_X) {
+            if (fp) config.firstPersonScreenSideOffset = Mth.clamp(config.firstPersonScreenSideOffset + delta, -3.0, 3.0);
+            else config.screenSideOffset = Mth.clamp(config.screenSideOffset + delta, -5.0, 5.0);
+        } else {
+            if (fp) config.firstPersonScreenHeightOffset = Mth.clamp(config.firstPersonScreenHeightOffset + delta, -3.0, 3.0);
+            else config.screenHeightOffset = Mth.clamp(config.screenHeightOffset + delta, -3.0, 3.0);
+        }
     }
 
-    private static Vector3f sideDirection(Vector3f right, SpatialGUIConfig config, boolean fp) {
+    private static Vector3f sideAxis(Vector3f right, SpatialGUIConfig config, boolean fp) {
         boolean mirror = !fp && config.mirrorThirdPerson;
         double yawDeg = fp ? config.firstPersonScreenYawOffset : config.screenYawOffset;
         float yawOffset = (float) Math.toRadians(mirror ? -yawDeg : yawDeg);
@@ -170,32 +171,16 @@ public final class EditorGizmo {
         return mirror ? dir.negate() : dir;
     }
 
-    private static void nudge(SpatialGUIConfig c, boolean fp, double delta) {
-        if (handle == AXIS_X) {
-            if (fp) c.firstPersonScreenSideOffset = Mth.clamp(c.firstPersonScreenSideOffset + delta, -3.0, 3.0);
-            else c.screenSideOffset = Mth.clamp(c.screenSideOffset + delta, -5.0, 5.0);
-        } else {
-            if (fp) c.firstPersonScreenHeightOffset = Mth.clamp(c.firstPersonScreenHeightOffset + delta, -3.0, 3.0);
-            else c.screenHeightOffset = Mth.clamp(c.screenHeightOffset + delta, -3.0, 3.0);
-        }
-    }
-
     public static void addHandles(VertexConsumer buffer, Matrix4f pose, float aspect) {
         if (EditorMode.previewing()) return;
-        addScaleHandles(buffer, pose, aspect);
-        addPositionHandles(buffer, pose);
-    }
 
-    public static void addScaleHandles(VertexConsumer buffer, Matrix4f pose, float aspect) {
         for (int i = 0; i < SCALE_HANDLES; i++) {
-            Vector2f corner = corner(i, aspect * 0.5f, 0.5f);
+            Vector2f corner = cornerPosition(i, aspect * 0.5f, 0.5f);
             Matrix4f handlePose = new Matrix4f(pose).translate(corner.x, corner.y, 0);
             if (i == handle) handlePose.scale(1.5f);
             GizmoGeometry.addCube(buffer, handlePose, i == handle ? ACTIVE_COLOR : SCALE_HANDLE_COLOR);
         }
-    }
 
-    public static void addPositionHandles(VertexConsumer buffer, Matrix4f pose) {
         GizmoGeometry.addArrow(buffer, pose, handle == AXIS_X ? ACTIVE_COLOR : X_HANDLE_COLOR);
         GizmoGeometry.addArrow(buffer, new Matrix4f(pose).rotateZ(Mth.HALF_PI), handle == AXIS_Y ? ACTIVE_COLOR : Y_HANDLE_COLOR);
     }

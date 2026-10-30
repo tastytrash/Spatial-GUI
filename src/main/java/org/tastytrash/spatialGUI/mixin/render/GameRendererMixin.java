@@ -30,7 +30,7 @@ import static com.mojang.blaze3d.platform.Lighting.Entry.LEVEL;
 //?}
 
 //? if <26.1.2 {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
  *///?}
 
 //? if neoforge {
@@ -532,9 +532,9 @@ public abstract class GameRendererMixin {
     //? if fabric {
     @ModifyArg(method = "render", at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
     ), index = 0)
-    private GuiGraphics spatialGUI$extractScreenIntoIsolatedState(GuiGraphics graphics) {
+    private GuiGraphicsExtractor spatialGUI$extractScreenIntoIsolatedState(GuiGraphicsExtractor graphics) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null && SpatialGUIClient.isEnabled() && renderer.shouldCapture()) {
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -547,7 +547,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "render", at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
             shift = At.Shift.AFTER
     ))
     private void spatialGUI$afterScreenExtraction(CallbackInfo ci) {
@@ -561,9 +561,9 @@ public abstract class GameRendererMixin {
     //?} else {
     /^@Redirect(method = "render", at = @At(
             value = "INVOKE",
-            target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
     ))
-    private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && screen instanceof AbstractContainerScreen<?> && screen == renderer.getHookedScreen()) {
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -670,10 +670,10 @@ public class GameRendererMixin {
 
     //? if 1.21.1 {
     /^@Inject(method = "render", at = @At(value = "INVOKE",
-    target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
     ^///?} else {
     @Inject(method = "render", at = @At(value = "INVOKE",
-    target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+    target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"))
     //?}
     private void spatialGUI$drawBeforeHud(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
@@ -694,9 +694,9 @@ public class GameRendererMixin {
     //? if fabric {
     @WrapOperation(method = "render", at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
     ))
-    private void spatialGUI$wrapScreenRender(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick, Operation<Void> operation) {
+    private void spatialGUI$wrapScreenRender(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, Operation<Void> operation) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(screen) && screen == renderer.getHookedScreen()) {
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -711,17 +711,17 @@ public class GameRendererMixin {
     /^@Redirect(method = "render", at = @At(
             value = "INVOKE",
             //? if neoforge {
-            /^¹target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            /^¹target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
             ¹^///?} else if forge {
-            /^¹target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+            /^¹target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
             remap = false
             ¹^///?}
     ))
-    private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void spatialGUI$redirectScreenExtraction(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         var renderer = SpatialGUIClient.renderer();
         if (SpatialGUIClient.isEnabled() && SpatialGUIClient.shouldHookScreen(screen) && screen == renderer.getHookedScreen()) {
             Operation<Void> operation = args -> {
-                spatialGUI$drawScreen((Screen) args[0], (GuiGraphics) args[1], (int) args[2], (int) args[3], (float) args[4]);
+                spatialGUI$drawScreen((Screen) args[0], (GuiGraphicsExtractor) args[1], (int) args[2], (int) args[3], (float) args[4]);
                 return null;
             };
             SpatialGUIRenderer.skipWindowOverride = false;
@@ -734,7 +734,7 @@ public class GameRendererMixin {
     }
 
     @Unique
-    private static void spatialGUI$drawScreen(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private static void spatialGUI$drawScreen(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         //? if neoforge {
         /^¹ClientHooks.drawScreen(screen, graphics, mouseX, mouseY, partialTick);
          ¹^///?} else if forge {

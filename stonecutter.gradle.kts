@@ -10,6 +10,8 @@ stonecutter parameters {
         string(current.parsed < "26.2") {
             replace("gameRenderer.mainCamera()", "gameRenderer.getMainCamera()")
             replace("= client.gui.screen()", "= client.screen")
+            replace("(client.gui.screen() !=", "(client.screen !=")
+            replace("client.gui.screen().resize", "client.screen.resize")
             replace("client.setScreenAndShow", "client.setScreen")
             replace("mc.setScreenAndShow", "mc.setScreen")
         }
@@ -34,6 +36,13 @@ stonecutter parameters {
             replace(
                 "me.shedaniel.autoconfig.AutoConfigClient.getConfigScreen",
                 "me.shedaniel.autoconfig.AutoConfig.getConfigScreen"
+            )
+        }
+
+        regex(current.parsed <= "1.21.11") {
+            replace(
+                "\\bGuiGraphicsExtractor\\b", "GuiGraphics",
+                "\\bGuiGraphics\\b", "GuiGraphicsExtractor"
             )
         }
     }

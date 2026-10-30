@@ -53,7 +53,7 @@ public class AbstractRecipeBookScreenMixin {
     }
 }
 //?} else if >1.21.1 {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -80,7 +80,7 @@ public class AbstractRecipeBookScreenMixin {
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void spatialGUI$updateIsRecipeBookOpen(GuiGraphics graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+    private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             renderer.getInventoryRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
@@ -105,7 +105,7 @@ public class AbstractRecipeBookScreenMixin {
     }
 }
 *///?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
@@ -131,7 +131,7 @@ public class AbstractRecipeBookScreenMixin {
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void spatialGUI$updateIsRecipeBookOpen(GuiGraphics graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+    private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;

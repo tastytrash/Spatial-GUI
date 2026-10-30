@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ConfigManager {
-    private static ConfigProfiles profiles = ConfigProfiles.EMPTY;
+    private static ConfigProfiles profiles = ConfigProfiles.empty();
+    private static SpatialGUIConfig editorConfig;
 
     private static final Map<String, SpatialGUIConfig> cache = new HashMap<>();
     private static SpatialGUIConfig lastHooked;
@@ -24,9 +26,31 @@ public final class ConfigManager {
         return SpatialGUIConfig.configDir().resolve("spatial-gui").resolve("profiles.json5");
     }
 
+    public static ConfigProfiles profiles() {
+        return profiles;
+    }
+
+    public static SpatialGUIConfig editorConfig() {
+        return editorConfig;
+    }
+
+    public static void setEditorConfig(SpatialGUIConfig config) {
+        editorConfig = config;
+    }
+
+    public static void saveProfiles() {
+        Path path = profilesPath();
+        try {
+            profiles.save(path);
+        } catch (IOException | RuntimeException e) {
+            SpatialGUI.LOGGER.error("Couldn't write {}: {}", path, e.getMessage());
+        }
+        clearCache();
+    }
+
     public static SpatialGUIConfig config() {
         SpatialGUIConfig global = SpatialGUI.config;
-        if (global == null || profiles.isEmpty()) return global;
+        if (global == null || (profiles.isEmpty() && editorConfig == null && lastHooked == null)) return global;
 
         var renderer = SpatialGUIClient.renderer();
         Screen hooked = renderer != null ? renderer.getHookedScreen() : null;
@@ -48,10 +72,12 @@ public final class ConfigManager {
 
     public static SpatialGUIConfig configFor(Screen screen) {
         SpatialGUIConfig global = SpatialGUI.config;
-        if (screen == null || global == null || profiles.isEmpty()) return global;
+        if (screen == null || global == null) return global;
+        if (screen instanceof EditorScreen) return editorConfig != null ? editorConfig : global;
+        if (profiles.isEmpty()) return global;
 
         return cache.computeIfAbsent(screen.getClass().getName(), id -> {
-            SpatialGUIConfig resolved = profiles.resolve(id, getCategory(screen), global);
+            SpatialGUIConfig resolved = profiles.getProfileForScreen(id, getCategory(screen), global);
             return resolved == null ? global : resolved;
         });
     }
@@ -64,7 +90,9 @@ public final class ConfigManager {
         Path path = profilesPath();
         try {
             ConfigProfiles loaded = ConfigProfiles.load(path);
+            boolean created = loaded.addDefaultIfMissing(SpatialGUI.config);
             profiles = loaded;
+            if (created) saveProfiles();
             clearCache();
             lastHooked = null;
             SpatialGUI.LOGGER.info("Loaded {}", loaded.summary());

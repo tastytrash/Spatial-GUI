@@ -17,6 +17,8 @@ import java.nio.DoubleBuffer;
 //?}
 
 public class MouseHandlerUtil {
+    private MouseHandlerUtil() {}
+
     private static boolean weGrabbedMouse = false;
 
     private static double physicalX = Double.NaN;

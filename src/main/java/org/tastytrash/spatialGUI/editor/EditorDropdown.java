@@ -1,45 +1,32 @@
 package org.tastytrash.spatialGUI.editor;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import org.tastytrash.spatialGUI.util.EditorUtil;
 //? if >1.21.1 {
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 //?}
 
-import java.util.ArrayList;
-import java.util.List;
-
 final class EditorDropdown {
-    private static final int BUTTON_WIDTH = 140;
+    static final int BUTTON_WIDTH = 140;
     private static final int DELETE_WIDTH = 40;
-    private static final int MAX_PROFILES = 8;
 
-    private static final Button header = Button.builder(Component.empty(), b -> {})
-            .bounds(0, 0, BUTTON_WIDTH, EditorScreen.BUTTON_HEIGHT).build();
-    private static final Button addButton = Button.builder(Component.literal("+ Add profile"), b -> {})
-            .bounds(0, 0, BUTTON_WIDTH, EditorScreen.BUTTON_HEIGHT).build();
-    private static final Button deleteButton = Button.builder(Component.empty(), b -> {})
-            .bounds(0, 0, DELETE_WIDTH, EditorScreen.BUTTON_HEIGHT).build();
-    private static final Button[] options = new Button[MAX_PROFILES];
-    private static final List<String> names = new ArrayList<>(List.of("Default"));
-    private static final EditBox input = new EditBox(Minecraft.getInstance().font, 0, 0, BUTTON_WIDTH - DELETE_WIDTH, EditorScreen.BUTTON_HEIGHT, Component.empty());
+    private static final Button header = EditorUtil.button(BUTTON_WIDTH);
+    private static final Button addButton = EditorUtil.button(BUTTON_WIDTH);
+    private static final Button deleteButton = EditorUtil.button(DELETE_WIDTH);
+    private static final Button option = EditorUtil.button(BUTTON_WIDTH);
+    private static final EditBox input = new EditBox(Minecraft.getInstance().font, 0, 0, BUTTON_WIDTH - DELETE_WIDTH, EditorUtil.BUTTON_HEIGHT, Component.empty());
 
     private static boolean open;
-    private static int selected = 0;
     private static int editing = -1;
     private static boolean confirmingDelete;
+    private static int xPos;
 
-    static {
-        for (int i = 0; i < MAX_PROFILES; i++) {
-            options[i] = Button.builder(Component.empty(), b -> {})
-                    .bounds(0, 0, BUTTON_WIDTH, EditorScreen.BUTTON_HEIGHT).build();
-        }
-    }
+    private EditorDropdown() {}
 
     static void close() {
         open = false;
@@ -47,17 +34,12 @@ final class EditorDropdown {
     }
 
     private static String label(int index) {
-        return "(" + (index + 1) + ") " + names.get(index);
-    }
-
-    private static boolean canAdd() {
-        return names.size() < MAX_PROFILES;
+        return "(" + (index + 1) + ") " + EditorProfiles.label(index);
     }
 
     private static void startEditing(int index) {
         editing = index;
-        confirmingDelete = false;
-        input.setValue(names.get(index));
+        input.setValue(EditorProfiles.name(index));
         input.setFocused(true);
     }
 
@@ -68,66 +50,56 @@ final class EditorDropdown {
     }
 
     private static void commitEdit() {
-        String value = input.getValue().strip();
-        if (editing >= 0 && !value.isEmpty()) names.set(editing, value);
+        if (editing >= 0) EditorProfiles.rename(editing, input.getValue());
         stopEditing();
     }
 
-    private static void addProfile() {
-        if (!canAdd()) return;
-        names.add("Profile");
-        startEditing(names.size() - 1);
+    private static int rowAt(double cursorX, double cursorY) {
+        if (cursorX < xPos || cursorX >= xPos + BUTTON_WIDTH) return -2;
+        return (int) Math.floor((cursorY - EditorUtil.SCREEN_MARGIN) / EditorUtil.BUTTON_HEIGHT) - 1;
     }
 
-    private static void deleteProfile(int index) {
-        if (names.size() <= 1) return;
-        names.remove(index);
-        if (selected > index) selected--;
-        selected = Math.min(selected, names.size() - 1);
-        stopEditing();
-    }
+    static void draw(Object g, int guiWidth) {
+        boolean usable = EditorMode.cursorFree();
+        int y = EditorUtil.SCREEN_MARGIN;
+        int selected = EditorProfiles.selected();
+        int count = EditorProfiles.count();
+        xPos = guiWidth - EditorUtil.SCREEN_MARGIN - BUTTON_WIDTH;
 
-    static void draw(Object g, int guiWidth, int cursorX, int cursorY, boolean usable) {
-        int x = guiWidth - EditorScreen.SCREEN_MARGIN - BUTTON_WIDTH;
-        int y = EditorScreen.SCREEN_MARGIN;
-
-        header.setMessage(Component.literal(label(selected) + (open ? " ▲" : " ▼")));
-        header.setPosition(x, y);
-        header.active = usable;
-        EditorScreen.renderWidget(header, g, cursorX, cursorY);
-
+        EditorUtil.drawButton(header, Component.literal(label(selected) + (open ? " ▲" : " ▼")), xPos, y, usable, g);
         if (!open) return;
-        for (int i = 0; i < names.size(); i++) {
-            int rowY = y + (i + 1) * EditorScreen.BUTTON_HEIGHT;
-            if (i == editing) {
-                input.setPosition(x, rowY);
-                EditorScreen.renderWidget(input, g, cursorX, cursorY);
 
-                deleteButton.setMessage(Component.literal(confirmingDelete ? "Sure?" : "×").withStyle(ChatFormatting.RED));
-                deleteButton.setPosition(x + BUTTON_WIDTH - DELETE_WIDTH, rowY);
-                deleteButton.active = usable && names.size() > 1;
-                EditorScreen.renderWidget(deleteButton, g, cursorX, cursorY);
+        for (int i = 0; i < count; i++) {
+            int rowY = y + (i + 1) * EditorUtil.BUTTON_HEIGHT;
+            if (i == editing) {
+                input.setPosition(xPos, rowY);
+                EditorUtil.renderWidget(input, g);
+
+                Component deleteLabel = confirmingDelete
+                        ? Component.translatable("spatial-gui.editor.dropdown.confirm_delete")
+                        : Component.literal("§cx");
+                EditorUtil.drawButton(deleteButton, deleteLabel, xPos + BUTTON_WIDTH - DELETE_WIDTH, rowY, usable && EditorProfiles.canDelete(i), g);
             } else {
-                options[i].setMessage(Component.literal(label(i)));
-                options[i].setPosition(x, rowY);
-                options[i].active = usable && i != selected;
-                EditorScreen.renderWidget(options[i], g, cursorX, cursorY);
+                EditorUtil.drawButton(option, Component.literal(label(i)), xPos, rowY, usable && i != selected, g);
             }
         }
 
-        if (canAdd()) {
-            addButton.setPosition(x, y + (names.size() + 1) * EditorScreen.BUTTON_HEIGHT);
-            addButton.active = usable && editing < 0;
-            EditorScreen.renderWidget(addButton, g, cursorX, cursorY);
+        if (EditorProfiles.canAdd()) {
+            Component addLabel = Component.translatable("spatial-gui.editor.dropdown.add_profile");
+            EditorUtil.drawButton(addButton, addLabel, xPos, y + (count + 1) * EditorUtil.BUTTON_HEIGHT, usable && editing < 0, g);
         }
     }
 
     static boolean click(double cursorX, double cursorY, int mouseButton) {
         if (editing >= 0) {
             if (input.isMouseOver(cursorX, cursorY)) return true;
-            if (deleteButton.active && deleteButton.isMouseOver(cursorX, cursorY)) {
-                if (confirmingDelete) deleteProfile(editing);
-                else confirmingDelete = true;
+            if (EditorProfiles.canDelete(editing) && deleteButton.isMouseOver(cursorX, cursorY)) {
+                if (confirmingDelete) {
+                    EditorProfiles.delete(editing);
+                    stopEditing();
+                } else {
+                    confirmingDelete = true;
+                }
                 return true;
             }
             commitEdit();
@@ -135,27 +107,27 @@ final class EditorDropdown {
         }
 
         boolean left = mouseButton == InputConstants.MOUSE_BUTTON_LEFT;
-        boolean right = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
-
         if (left && header.isMouseOver(cursorX, cursorY)) {
             open = !open;
             return true;
         }
         if (!open) return false;
 
-        for (int i = 0; i < names.size(); i++) {
-            if (!options[i].isMouseOver(cursorX, cursorY)) continue;
+        int row = rowAt(cursorX, cursorY);
+        if (row >= 0 && row < EditorProfiles.count()) {
             if (left) {
-                selected = i;
+                EditorProfiles.select(row);
                 open = false;
-            } else if (right) {
-                startEditing(i);
+            } else if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT) {
+                startEditing(row);
             }
             return true;
         }
-
-        if (canAdd() && addButton.isMouseOver(cursorX, cursorY)) {
-            if (left) addProfile();
+        if (row == EditorProfiles.count() && EditorProfiles.canAdd()) {
+            if (left) {
+                int index = EditorProfiles.add();
+                if (index >= 0) startEditing(index);
+            }
             return true;
         }
 

@@ -19,7 +19,7 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.*;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 //?} else if >1.21.1 {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.*;
 import net.minecraft.client.gui.render.state.GuiRenderState;
@@ -28,7 +28,7 @@ import com.mojang.blaze3d.platform.Window;
 /*import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Matrix4f;
 *///?}
 
@@ -133,11 +133,11 @@ public class ScreenExtractor {
         return new GuiGraphicsExtractor(Minecraft.getInstance(), screenRenderState, mouseX, mouseY);
     }
     //?} else if >1.21.1 {
-    /*public GuiGraphics createIsolatedGraphics() {
+    /*public GuiGraphicsExtractor createIsolatedGraphics() {
         ensureScreenGuiRenderer();
         int mouseX = MouseHandlerUtil.getHoverX();
         int mouseY = MouseHandlerUtil.getHoverY();
-        return new GuiGraphics(Minecraft.getInstance(), screenRenderState, mouseX, mouseY);
+        return new GuiGraphicsExtractor(Minecraft.getInstance(), screenRenderState, mouseX, mouseY);
     }
     *///?}
 
@@ -169,7 +169,7 @@ public class ScreenExtractor {
         /*ControlifyCompat.renderVirtualMouse(graphics);
          *///?}
         //?} else if >1.21.1 {
-        /*GuiGraphics graphics = new GuiGraphics(mc, screenRenderState, mouseX, mouseY);
+        /*GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
         screen.renderWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
         //? if neoforge {
         /^ControlifyCompat.renderVirtualMouse(graphics);
@@ -202,7 +202,7 @@ public class ScreenExtractor {
                 ^///?}
                 RenderSystem.applyModelViewMatrix();
 
-                GuiGraphics graphics = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
+                GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, mc.renderBuffers().bufferSource());
                 if (renderOperation != null) {
                     renderOperation.call(screen, graphics, mouseX, mouseY, partialTick);
                 } else {

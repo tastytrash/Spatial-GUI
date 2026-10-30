@@ -2,7 +2,6 @@ package org.tastytrash.spatialGUI.editor;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.util.Mth;
 //? if >1.21.1 {
@@ -12,11 +11,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 //?}
-//? if >1.21.11 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-//?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
-*///?}
 
 //? if <1.21.11 {
 /*import net.minecraft.resources.ResourceLocation;
@@ -26,7 +21,10 @@ import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
-import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
+import org.tastytrash.spatialGUI.util.EditorUtil;
+import org.tastytrash.spatialGUI.util.GuiScaleUtil;
+
+import java.util.Arrays;
 
 public class EditorScreen extends Screen {
     //? if >=1.21.11 {
@@ -38,76 +36,38 @@ public class EditorScreen extends Screen {
      *///?}
 
     private static final int BUTTON_WIDTH = 90;
-    static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_SPACING = 4;
-    static final int SCREEN_MARGIN = 6;
     private static final Button[] widgets = new Button[EditorMode.BUTTONS.length];
-    private static double pxPerGuiX = 1;
-    private static double pxPerGuiY = 1;
 
     static {
-        for (int i = 0; i < widgets.length; i++) {
-            widgets[i] = Button.builder(Component.translatable(EditorMode.BUTTONS[i].translationKey()), b -> {})
-                    .bounds(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT)
-                    .build();
-        }
+        Arrays.setAll(widgets, i -> EditorUtil.button(BUTTON_WIDTH));
     }
 
     private static void drawButtons(Object g, Minecraft client) {
         var window = client.getWindow();
         int guiWidth = window.getGuiScaledWidth();
         int guiHeight = window.getGuiScaledHeight();
-        pxPerGuiX = window.getScreenWidth() / (double) guiWidth;
-        pxPerGuiY = window.getScreenHeight() / (double) guiHeight;
-        int cursorX = (int) (MouseHandlerUtil.getPhysicalX(-1) / pxPerGuiX);
-        int cursorY = (int) (MouseHandlerUtil.getPhysicalY(-1) / pxPerGuiY);
-
-        int leftCount = 0, rightCount = 0;
-        for (var button : EditorMode.BUTTONS) {
-            if (button.rightSide()) rightCount++;
-            else leftCount++;
-        }
-
-        int leftPlaced = 0, rightPlaced = 0;
         boolean usable = EditorMode.cursorFree();
 
-        for (int i = 0; i < widgets.length; i++) {
+        int leftCount = 0, rightCount = 0;
+        for (int i = widgets.length - 1; i >= 0; i--) {
             var button = EditorMode.BUTTONS[i];
             boolean right = button.rightSide();
-            int count = right ? rightCount : leftCount;
-            int row = right ? rightPlaced++ : leftPlaced++;
-            int x = right ? guiWidth - SCREEN_MARGIN - BUTTON_WIDTH : SCREEN_MARGIN;
-            int y = guiHeight - SCREEN_MARGIN - (count - row) * (BUTTON_HEIGHT + BUTTON_SPACING) + BUTTON_SPACING;
-
-            Button widget = widgets[i];
-            widget.setPosition(x, y);
-
-            if (i == 0 || i == 3) {
-                widget.active = usable && EditorHistory.canUndo();
-            } else if (i == 1) {
-                widget.active = usable && EditorHistory.canRedo();
-            } else {
-                widget.active = usable;
-            }
-
-            renderWidget(widget, g, cursorX, cursorY);
+            int slot = right ? rightCount++ : leftCount++;
+            int x = right ? guiWidth - EditorUtil.SCREEN_MARGIN - BUTTON_WIDTH : EditorUtil.SCREEN_MARGIN;
+            int y = guiHeight - EditorUtil.SCREEN_MARGIN - EditorUtil.BUTTON_HEIGHT - slot * (EditorUtil.BUTTON_HEIGHT + BUTTON_SPACING);
+            EditorUtil.drawButton(widgets[i], button.label().get(), x, y, usable && button.enabled().getAsBoolean(), g);
         }
 
-        EditorDropdown.draw(g, guiWidth, cursorX, cursorY, usable);
-    }
-
-    static void renderWidget(AbstractWidget widget, Object g, int cursorX, int cursorY) {
-        //? if >1.21.11 {
-        widget.extractRenderState((GuiGraphicsExtractor) g, cursorX, cursorY, 0f);
-        //?} else {
-        /*widget.render((GuiGraphics) g, cursorX, cursorY, 0f);
-        *///?}
+        EditorDropdown.draw(g, guiWidth);
+        EditorHelp.draw(g, guiWidth, guiHeight);
     }
 
     private static boolean clickFlatButton(int mouseButton) {
         if (EditorMode.previewing() || !EditorMode.cursorFree()) return false;
-        double cursorX = MouseHandlerUtil.getPhysicalX(-1) / pxPerGuiX;
-        double cursorY = MouseHandlerUtil.getPhysicalY(-1) / pxPerGuiY;
+        double cursorX = EditorUtil.cursorX();
+        double cursorY = EditorUtil.cursorY();
+        if (EditorHelp.clickHelpButton(cursorX, cursorY, mouseButton)) return true;
         if (EditorDropdown.click(cursorX, cursorY, mouseButton)) return true;
         if (mouseButton != InputConstants.MOUSE_BUTTON_LEFT) return false;
         for (int i = 0; i < widgets.length; i++) {
@@ -120,15 +80,17 @@ public class EditorScreen extends Screen {
     }
 
     protected EditorScreen() {
-        super(Component.literal("Spatial GUI Editor"));
+        super(Component.translatable("spatial-gui.editor.title"));
         EditorMode.begin();
+        EditorProfiles.begin();
         EditorHistory.reset();
         EditorDropdown.close();
+        EditorHelp.begin();
     }
 
     @Override
     public boolean isPauseScreen() {
-        return false;
+        return SpatialGUIConfig.get().editorPausesGame;
     }
 
     @Override
@@ -136,6 +98,7 @@ public class EditorScreen extends Screen {
         EditorDropdown.close();
         EditorGizmo.setPressed(false);
         EditorHistory.checkpoint();
+        EditorProfiles.end();
         EditorMode.end();
         SpatialGUIConfig.HANDLER.save();
     }
@@ -144,16 +107,14 @@ public class EditorScreen extends Screen {
     //? if >1.21.11 {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
     //?} else {
-    /*public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
+    /*public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
     *///?}
         if (EditorMode.previewing()) {
             int x = (width - 176) / 2;
             int y = (height - 166) / 2;
-            //? if >=1.21.6 {
+            //? if >1.21.1 {
             g.blit(RenderPipelines.GUI_TEXTURED, INVENTORY_TEXTURE, x, y, 0f, 0f, 176, 166, 256, 256);
-            //?} else if >=1.21.2 {
-            /*g.blit(RenderType::guiTextured, INVENTORY_TEXTURE, x, y, 0f, 0f, 176, 166, 256, 256);
-             *///?} else {
+            //?} else {
             /*g.blit(INVENTORY_TEXTURE, x, y, 0, 0, 176, 166);
              *///?}
             return;
@@ -199,10 +160,11 @@ public class EditorScreen extends Screen {
     //? if >1.20.1 {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-    //?} else {
+        //?} else {
     /*@Override
     public boolean mouseScrolled(double x, double y, double delta) {
     *///?}
+        if (EditorHelp.isOpen()) return true;
         var config = ConfigManager.config();
         //? if >1.20.1 {
         double distanceDelta = scrollY * 0.03;
@@ -220,6 +182,7 @@ public class EditorScreen extends Screen {
     //? if >1.21.1 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (EditorHelp.isOpen()) return EditorHelp.keyPressed(event.key());
         if (EditorDropdown.keyPressed(event)) return true;
         if (handleKeyPress(event.key(), event.hasControlDown(), event.hasShiftDown())) return true;
         return super.keyPressed(event);
@@ -233,6 +196,7 @@ public class EditorScreen extends Screen {
     //?} else {
     /*@Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (EditorHelp.isOpen()) return EditorHelp.keyPressed(keyCode);
         if (EditorDropdown.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (handleKeyPress(keyCode, hasControlDown(), hasShiftDown())) return true;
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -309,20 +273,17 @@ public class EditorScreen extends Screen {
         *///?}
         if (EditorMode.previewing()) return;
 
-        int y = 6;
+        float scale = GuiScaleUtil.overlayScaleRatio(client.getWindow());
+        EditorUtil.pushScale(g, scale);
+
+        int y = EditorUtil.SCREEN_MARGIN;
         for (String key : EditorMode.getHints()) {
-            String line = Component.translatable(key).getString();
-            //? if >=26.1.2 {
-            g.text(client.font, line, 6, y, 0xFFFFFFFF, true);
-            //?} else if >1.21.11 {
-            /*((GuiGraphicsExtractor) g).drawString(client.font, line, 6, y, 0xFFFFFFFF, true);
-            *///?} else {
-            /*((GuiGraphics) g).drawString(client.font, line, 6, y, 0xFFFFFFFF);
-            *///?}
+            EditorUtil.drawTranslatedText(g, key, EditorUtil.SCREEN_MARGIN, y);
             y += 10;
         }
-
         drawButtons(g, client);
+
+        EditorUtil.popScale(g);
     }
 
     //? if >1.21.1 {
@@ -338,11 +299,15 @@ public class EditorScreen extends Screen {
         //? if >1.21.1 {
         int button = event.button();
         //?}
+        if (EditorHelp.isOpen()) {
+            if (button == left && EditorMode.cursorFree()) {
+                EditorHelp.click(EditorUtil.cursorX(), EditorUtil.cursorY());
+            }
+            return true;
+        }
         if ((button == left || button == right) && clickFlatButton(button)) return true;
         if (button == left) EditorGizmo.setPressed(true);
-
-        if (button == left) EditorGizmo.setPressed(true);
-        if (button == right) EditorGizmo.resetHandle();
+        if (button == right) EditorGizmo.resetSelectedHandle();
         if (button == middle) EditorMode.resetScreenDistance();
         //? if >1.21.1 {
         return super.mouseClicked(event, doubleClick);

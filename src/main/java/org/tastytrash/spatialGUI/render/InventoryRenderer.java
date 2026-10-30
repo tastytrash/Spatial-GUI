@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
+import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 //? if >1.21.1 {
@@ -653,6 +654,7 @@ public class InventoryRenderer {
     }
 
     private void drawHandles(Matrix4f pose, float aspect) {
+        if (EditorMode.previewing()) return;
         RenderTarget mainTarget = Minecraft.getInstance().getMainRenderTarget();
         var output = mainTarget.getColorTextureView();
         if (output == null) {
@@ -726,6 +728,7 @@ public class InventoryRenderer {
     }
 
     private void drawHandles(Matrix4f pose, float aspect) {
+        if (EditorMode.previewing()) return;
         //? if 1.21.1 {
         /^BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         ^///?} else {

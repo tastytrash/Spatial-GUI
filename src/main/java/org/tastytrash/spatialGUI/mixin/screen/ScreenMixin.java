@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.client.SpatialGUIKeybinds;
+import org.tastytrash.spatialGUI.editor.ProfilePicker;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -23,7 +24,7 @@ import net.minecraft.client.input.KeyEvent;
 //?}
 
 //? if >1.20.1 && <26.1.2 {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 *///?}
@@ -79,15 +80,15 @@ public class ScreenMixin {
         }
     }
     //?} else if >1.20.1 {
-    /*@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$removeBackground(CallbackInfo ci) {
         if (SpatialGUIClient.renderer() != null && SpatialGUIClient.renderer().shouldCapture() && SpatialGUIClient.isEnabled()) {
             ci.cancel();
         }
     }
 
-    @WrapOperation(method = "renderTransparentBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V"))
-    private void spatialGUI$removeTransparentBackground(GuiGraphics graphics, int x1, int y1, int x2, int y2, int colorFrom, int colorTo, Operation<Void> original) {
+    @WrapOperation(method = "renderTransparentBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fillGradient(IIIIII)V"))
+    private void spatialGUI$removeTransparentBackground(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2, int colorFrom, int colorTo, Operation<Void> original) {
         if (spatialGUI$isHooked()) return;
         original.call(graphics, x1, y1, x2, y2, colorFrom, colorTo);
     }
@@ -99,7 +100,7 @@ public class ScreenMixin {
         }
     }
     *///?} else {
-    /*@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;)V", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$removeBackgroundOverlay(CallbackInfo ci) {
         if (SpatialGUIClient.renderer() != null && SpatialGUIClient.renderer().shouldCapture() && SpatialGUIClient.isEnabled()) {
             if (Minecraft.getInstance().level == null) return;
@@ -111,6 +112,10 @@ public class ScreenMixin {
     //? if >1.21.1 {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$toggleMouseFree(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (spatialGUI$handleProfilePicker(event.key(), SpatialGUIKeybinds.matchesProfilePicker(event))) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (spatialGUI$canToggleMouse() && SpatialGUIKeybinds.matchesToggleMouseFree(event)
                 && SpatialGUIKeybinds.pressToggleMouseFree()) {
             cir.setReturnValue(true);
@@ -119,12 +124,23 @@ public class ScreenMixin {
     //?} else {
     /*@Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$toggleMouseFree(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (spatialGUI$handleProfilePicker(keyCode, SpatialGUIKeybinds.matchesProfilePicker(keyCode, scanCode))) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (spatialGUI$canToggleMouse() && SpatialGUIKeybinds.matchesToggleMouseFree(keyCode, scanCode)
                 && SpatialGUIKeybinds.pressToggleMouseFree()) {
             cir.setReturnValue(true);
         }
     }
     *///?}
+
+    @Unique
+    private boolean spatialGUI$handleProfilePicker(int key, boolean pickerKey) {
+        Screen self = (Screen) (Object) this;
+        if (ProfilePicker.isOpen()) return ProfilePicker.keyPressed(self, key, pickerKey);
+        return pickerKey && spatialGUI$canToggleMouse() && ProfilePicker.open(self);
+    }
 
     @Unique
     private boolean spatialGUI$canToggleMouse() {

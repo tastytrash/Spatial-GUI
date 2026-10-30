@@ -11,14 +11,14 @@ import com.mojang.blaze3d.platform.cursor.CursorType;
 //? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 //?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
  *///?}
 
 
 //? if >=26.1.2 {
 @Mixin(GuiGraphicsExtractor.class)
 //?} else {
-/*@Mixin(GuiGraphics.class)
+/*@Mixin(GuiGraphicsExtractor.class)
 *///?}
 public class GuiGraphicsCursorMixin {
     @Inject(method = "requestCursor", at = @At("HEAD"))
@@ -27,7 +27,7 @@ public class GuiGraphicsCursorMixin {
                 //? if >=26.1.2 {
                 GuiGraphicsExtractor
                         //?} else {
-                        /*GuiGraphics
+                        /*GuiGraphicsExtractor
                          *///?}
                         target && target != (Object) this) {
             target.requestCursor(cursorType);

@@ -2,22 +2,31 @@ package org.tastytrash.spatialGUI.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.config.SpatialGUIConfig.ViewMode;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
 public class EditorMode {
-    public record EditorButton(String translationKey, boolean rightSide, Runnable action) {}
+    public record EditorButton(Supplier<Component> label, boolean rightSide, Runnable action, BooleanSupplier enabled) {}
 
     public static final EditorButton[] BUTTONS = {
-            new EditorButton("spatial-gui.editor.button.undo", false, EditorHistory::undo),
-            new EditorButton("spatial-gui.editor.button.redo", false, EditorHistory::redo),
-            new EditorButton("spatial-gui.editor.button.toggle_view", false, EditorMode::toggleView),
-            new EditorButton("spatial-gui.editor.button.undo_all", true, EditorHistory::undoAll),
-            new EditorButton("spatial-gui.editor.button.save_quit", true, () -> toggle(Minecraft.getInstance()))
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.undo"), false, EditorHistory::undo, EditorHistory::canUndo),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.redo"), false, EditorHistory::redo, EditorHistory::canRedo),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.toggle_view"), false, EditorMode::toggleView, () -> true),
+            new EditorButton(EditorMode::guiScaleLabel, false, EditorMode::cycleGuiScale, () -> true),
+            new EditorButton(EditorMode::curvedScreenLabel, false, EditorMode::toggleCurvedScreen, SpatialGUIClient::getEffectiveFirstPersonMode),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.undo_all"), true, EditorHistory::undoAll, EditorHistory::canUndo),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.set_default"), true, EditorProfiles::setAsDefault, EditorProfiles::canSetDefault),
+            new EditorButton(() -> Component.translatable("spatial-gui.editor.button.save_quit"), true, () -> toggle(Minecraft.getInstance()), () -> true)
     };
 
     private static Boolean viewOverride;
@@ -68,8 +77,59 @@ public class EditorMode {
     }
 
     public static void toggleView() {
-        viewOverride = !SpatialGUIClient.getEffectiveFirstPersonMode();
+        boolean firstPerson = !SpatialGUIClient.getEffectiveFirstPersonMode();
+        viewOverride = firstPerson;
+        ConfigManager.config().viewMode = firstPerson ? ViewMode.FIRST_PERSON : ViewMode.THIRD_PERSON;
         mouseFree = false;
+    }
+
+    private static int maxGuiScale() {
+        var window = Minecraft.getInstance().getWindow();
+        return Mth.clamp(Math.min(window.getWidth() / 320, window.getHeight() / 240), 1, 6);
+    }
+
+    public static void cycleGuiScale() {
+        var config = ConfigManager.config();
+        int max = maxGuiScale();
+        int current = Math.min(config.guiScale, max);
+        if (!config.overrideGuiScale) {
+            config.overrideGuiScale = true;
+            config.guiScale = 1;
+        } else if (current >= max) {
+            config.overrideGuiScale = false;
+        } else {
+            config.guiScale = current + 1;
+        }
+        previewing = false;
+        var client = Minecraft.getInstance();
+        if (client.screen != null) {
+            //? if >1.21.1 {
+            client.screen.resize(client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
+            //?} else {
+            /*client.screen.resize(client, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
+            *///?}
+        }
+    }
+
+    private static void toggleCurvedScreen() {
+        var config = ConfigManager.config();
+        config.curvedScreenEnabled = !config.curvedScreenEnabled;
+    }
+
+    private static Component guiScaleLabel() {
+        var config = ConfigManager.config();
+        Component value = config.overrideGuiScale
+                ? Component.literal(String.valueOf(Math.min(config.guiScale, maxGuiScale())))
+                : Component.translatable("spatial-gui.editor.value.default");
+        return Component.translatable("spatial-gui.editor.button.gui_scale", value);
+    }
+
+    private static Component curvedScreenLabel() {
+        var config = ConfigManager.config();
+        Component value = config.curvedScreenEnabled
+                ? Component.translatable("spatial-gui.editor.value.on")
+                : Component.translatable("spatial-gui.editor.value.off");
+        return Component.translatable("spatial-gui.editor.button.curved_screen", value);
     }
 
     public static boolean previewing() {

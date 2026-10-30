@@ -9,11 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
-//? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-//?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
- *///?}
 //? if >1.20.1 {
 import net.minecraft.client.DeltaTracker;
 //?}
@@ -35,13 +31,13 @@ public abstract class HudMixin {
         if (!spatialGUI$vanillaHidden && !SpatialGUIClient.shouldHideCrosshair()) extractCrosshair(graphics, deltaTracker);
     }
     //?} else if >1.20.1 {
-    /*@Shadow protected abstract void renderCrosshair(GuiGraphics graphics, DeltaTracker deltaTracker);
-    @Unique private void spatialGUI$drawCrosshair(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    /*@Shadow protected abstract void renderCrosshair(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker);
+    @Unique private void spatialGUI$drawCrosshair(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         if (!spatialGUI$vanillaHidden && !SpatialGUIClient.shouldHideCrosshair()) renderCrosshair(graphics, deltaTracker);
     }
     *///?} else {
-    /*@Shadow protected abstract void renderCrosshair(GuiGraphics graphics);
-    @Unique private void spatialGUI$drawCrosshair(GuiGraphics graphics, float deltaTracker) {
+    /*@Shadow protected abstract void renderCrosshair(GuiGraphicsExtractor graphics);
+    @Unique private void spatialGUI$drawCrosshair(GuiGraphicsExtractor graphics, float deltaTracker) {
         if (!spatialGUI$vanillaHidden && !SpatialGUIClient.shouldHideCrosshair()) renderCrosshair(graphics);
     }
     *///?}
@@ -96,7 +92,7 @@ public abstract class HudMixin {
     private void spatialGUI$hideHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     //?} else {
     /^@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private void spatialGUI$hideHud(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void spatialGUI$hideHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     ^///?}
         if (SpatialGUIClient.shouldHideHud()) {
             //? if 1.21.1 {
@@ -129,10 +125,10 @@ public abstract class HudMixin {
     private void spatialGUI$restoreCrosshairWhileHidden(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     //?} else if >1.20.1 {
     /*@Inject(method = "render", at = @At("RETURN"))
-    private void spatialGUI$keepCrosshairWhileHidden(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void spatialGUI$keepCrosshairWhileHidden(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     *///?} else {
     /*@Inject(method = "render", at = @At("RETURN"))
-    private void spatialGUI$keepCrosshairWhileHidden(GuiGraphics graphics, float deltaTracker, CallbackInfo ci) {
+    private void spatialGUI$keepCrosshairWhileHidden(GuiGraphicsExtractor graphics, float deltaTracker, CallbackInfo ci) {
     *///?}
         if (SpatialGUIClient.shouldHideHud()) spatialGUI$drawCrosshair(graphics, deltaTracker);
     }

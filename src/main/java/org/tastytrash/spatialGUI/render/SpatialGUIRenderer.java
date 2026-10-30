@@ -557,7 +557,7 @@ public class SpatialGUIRenderer {
         return screenExtractor.createIsolatedGraphics();
     }
     //?} else if >1.21.1 {
-    /*public net.minecraft.client.gui.GuiGraphics createIsolatedGraphics() {
+    /*public net.minecraft.client.gui.GuiGraphicsExtractor createIsolatedGraphics() {
         return screenExtractor.createIsolatedGraphics();
     }
     *///?}

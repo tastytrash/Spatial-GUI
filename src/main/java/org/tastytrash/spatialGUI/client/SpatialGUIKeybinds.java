@@ -39,12 +39,14 @@ public class SpatialGUIKeybinds {
     private static KeyMapping reloadProfiles;
     private static KeyMapping openEditor;
     private static KeyMapping toggleMouseFree;
+    private static KeyMapping openProfilePicker;
     private static boolean toggleMouseFreeHeld = false;
     private static boolean registered = false;
     private static final String OPEN_CONFIG_KEY = "key.spatial-gui.open_config";
     private static final String RELOAD_PROFILES_KEY = "key.spatial-gui.reload_profiles";
     private static final String OPEN_EDITOR_KEY = "key.spatial-gui.open_editor";
     private static final String TOGGLE_MOUSE_FREE_KEY = "key.spatial-gui.toggle_mouse_free";
+    private static final String OPEN_PROFILE_PICKER_KEY = "key.spatial-gui.open_profile_picker";
 
     //? if fabric && >1.21.1 {
     public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =
@@ -78,6 +80,16 @@ public class SpatialGUIKeybinds {
     //?} else {
     /*public static boolean matchesToggleMouseFree(int keyCode, int scanCode) {
         return toggleMouseFree != null && !toggleMouseFree.isUnbound() && toggleMouseFree.matches(keyCode, scanCode);
+    }
+    *///?}
+
+    //? if >1.21.1 {
+    public static boolean matchesProfilePicker(KeyEvent event) {
+        return openProfilePicker != null && !openProfilePicker.isUnbound() && openProfilePicker.matches(event);
+    }
+    //?} else {
+    /*public static boolean matchesProfilePicker(int keyCode, int scanCode) {
+        return openProfilePicker != null && !openProfilePicker.isUnbound() && openProfilePicker.matches(keyCode, scanCode);
     }
     *///?}
 
@@ -135,7 +147,8 @@ public class SpatialGUIKeybinds {
         reloadProfiles = createKey(RELOAD_PROFILES_KEY);
         openEditor = createKey(OPEN_EDITOR_KEY);
         toggleMouseFree = createKey(TOGGLE_MOUSE_FREE_KEY, InputConstants.KEY_LALT);
-        return new KeyMapping[]{openConfig, reloadProfiles, openEditor, toggleMouseFree};
+        openProfilePicker = createKey(OPEN_PROFILE_PICKER_KEY);
+        return new KeyMapping[]{openConfig, reloadProfiles, openEditor, toggleMouseFree, openProfilePicker};
     }
 
     //? if fabric {

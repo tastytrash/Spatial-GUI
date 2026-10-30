@@ -21,7 +21,7 @@ public class PauseScreenMixin {
     }
     //?} else if >1.20.1 {
     /*@Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
-    private void spatialGUI$removeBlur(net.minecraft.client.gui.GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+    private void spatialGUI$removeBlur(net.minecraft.client.gui.GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (spatialGUI$isHooked()) {
             ci.cancel();
         }

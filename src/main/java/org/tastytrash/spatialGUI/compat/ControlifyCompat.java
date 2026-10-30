@@ -6,11 +6,7 @@ import dev.isxander.controlify.controller.ControllerEntity;
 import dev.isxander.controlify.controller.input.ControllerStateView;
 import dev.isxander.controlify.controller.input.GamepadInputs;
 import dev.isxander.controlify.controller.input.InputComponent;
-//? if >1.21.11 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
- //?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
-*///?}
 //? if fabric {
 import net.fabricmc.loader.api.FabricLoader;
  //?} else {
@@ -99,11 +95,7 @@ public final class ControlifyCompat {
         static void renderVirtualMouse(Object graphics) {
             var handler = Controlify.instance().virtualMouseHandler();
             if (handler == null) return;
-            //? if >1.21.11 {
             handler.renderVirtualMouse((GuiGraphicsExtractor) graphics);
-             //?} else {
-            /*handler.renderVirtualMouse((GuiGraphics) graphics);
-            *///?}
         }
 
         static LookSettings readLookSettings() {

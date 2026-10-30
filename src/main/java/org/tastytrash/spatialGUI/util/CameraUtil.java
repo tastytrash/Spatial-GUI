@@ -15,6 +15,8 @@ import org.tastytrash.spatialGUI.mixin.accessor.CameraAccessor;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public class CameraUtil {
+    private CameraUtil() {}
+
     public static void checkBlockCollision(Entity entity) {
         if (Minecraft.getInstance().level == null || !ConfigManager.config().fallbackToFirstPersonOnBlockCollision) {
             SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);

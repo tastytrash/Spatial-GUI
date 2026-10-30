@@ -4,8 +4,11 @@ import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 public final class GuiScaleUtil {
+    private GuiScaleUtil() {}
+
     public static Screen pendingScreen;
     public static boolean pendingOverride;
 
@@ -31,5 +34,13 @@ public final class GuiScaleUtil {
 
     public static int scaledHeight(Window w, Screen screen) {
         return Mth.ceil(w.getHeight() / (double) effectiveScale(screen));
+    }
+
+    public static float overlayScaleRatio(Window window) {
+        boolean previous = SpatialGUIRenderer.skipWindowOverride;
+        SpatialGUIRenderer.skipWindowOverride = true;
+        double vanillaScale = window.getGuiScale();
+        SpatialGUIRenderer.skipWindowOverride = previous;
+        return (float) (effectiveScale(window) / vanillaScale);
     }
 }

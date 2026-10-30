@@ -251,9 +251,7 @@ public class SpatialGUIClient {
             var client = Minecraft.getInstance();
             return client.options.getCameraType() == net.minecraft.client.CameraType.FIRST_PERSON;
         } else {
-            boolean isInventoryScreen = screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
-                || screen.getClass().getName().contains("InventoryScreen");
-            return (isInventoryScreen ? ConfigManager.config().firstPersonModeInventory : ConfigManager.config().firstPersonModeContainers)
+            return ConfigManager.config().viewMode == SpatialGUIConfig.ViewMode.FIRST_PERSON
                 || switchedToFirstPersonDueToBlock;
         }
     }

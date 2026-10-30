@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.editor.ProfilePicker;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 
@@ -38,6 +39,7 @@ public class GuiMixin {
         SpatialGUIRenderer.skipWindowOverride = false;
         //? if !forge {
         EditorScreen.drawOverlay(graphics);
+        ProfilePicker.drawOverlay(graphics);
         //?}
     }
 
@@ -75,7 +77,7 @@ public class GuiMixin {
     *///? }
 }
  //?} else {
-/*import net.minecraft.client.gui.GuiGraphics;
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 //? if >=1.21.1 {
 import net.minecraft.client.DeltaTracker;
 //?}
@@ -83,27 +85,29 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.editor.ProfilePicker;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
 @Mixin(Gui.class)
 public class GuiMixin {
     @Inject(method = "render", at = @At("HEAD"))
     //? if >=1.21.1 {
-    private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void spatialGUI$beginGuiRender(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     //?} else {
-    /^private void spatialGUI$beginGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    /^private void spatialGUI$beginGuiRender(GuiGraphicsExtractor guiGraphics, float partialTick, CallbackInfo ci) {
     ^///?}
         SpatialGUIRenderer.skipWindowOverride = true;
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     //? if >=1.21.1 {
-    private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void spatialGUI$endGuiRender(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     //?} else {
-    /^private void spatialGUI$endGuiRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    /^private void spatialGUI$endGuiRender(GuiGraphicsExtractor guiGraphics, float partialTick, CallbackInfo ci) {
     ^///?}
         SpatialGUIRenderer.skipWindowOverride = false;
         EditorScreen.drawOverlay(guiGraphics);
+        ProfilePicker.drawOverlay(guiGraphics);
     }
 }
 *///?}

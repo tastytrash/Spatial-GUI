@@ -58,21 +58,26 @@ public class SpatialGUIConfig {
     @TickBox
     public boolean enabled = true;
 
+    @SerialEntry
+    @AutoGen(category = "general")
+    @TickBox
+    public boolean editorPausesGame = false;
+
     // viewMode 
-    @MasterTickBox(value = {"firstPersonModeInventory", "firstPersonModeContainers"}, invert = true)
+    @MasterTickBox(value = {"viewMode"}, invert = true)
     @SerialEntry
     @AutoGen(category = "general", group = "viewMode")
     public boolean autoDetectCameraMode = false;
 
     @SerialEntry
     @AutoGen(category = "general", group = "viewMode")
-    @TickBox
-    public boolean firstPersonModeInventory = false;
+    @EnumCycler
+    public ViewMode viewMode = ViewMode.THIRD_PERSON;
 
-    @SerialEntry
-    @AutoGen(category = "general", group = "viewMode")
-    @TickBox
-    public boolean firstPersonModeContainers = false;
+    public enum ViewMode {
+        FIRST_PERSON,
+        THIRD_PERSON
+    }
 
     @SerialEntry
     @AutoGen(category = "general", group = "viewMode")
@@ -139,6 +144,9 @@ public class SpatialGUIConfig {
     @AutoGen(category = "screens")
     @ListGroup(valueFactory = StringValueFactory.class, controllerFactory = StringControllerFactory.class)
     public List<String> seenScreens = new ArrayList<>();
+
+    @SerialEntry
+    public boolean editorIntroSeen = false;
 
     @SerialEntry
     @AutoGen(category = "screens")
@@ -584,7 +592,7 @@ public class SpatialGUIConfig {
         Minecraft mc = Minecraft.getInstance();
         return mc.getWindow().calculateScale(mc.options.guiScale().get(), mc.isEnforceUnicode());
     }
-    
+
     public static class StringValueFactory implements ListGroup.ValueFactory<String> {
         @Override
         public String provideNewValue() {
