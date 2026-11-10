@@ -2,7 +2,11 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+#192
+
 Compat:
+ - Tooltip Overhaul (#193)
+
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
  - Legacy4J (#164)
@@ -24,6 +28,8 @@ In-game warning to recommend turning on override GUI scale while a
 
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
+
+Tri-Fold option (#185)
 
 Better config, too cluttered/confusing
 

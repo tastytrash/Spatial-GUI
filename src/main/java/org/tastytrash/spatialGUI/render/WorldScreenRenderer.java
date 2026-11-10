@@ -249,7 +249,7 @@ public class WorldScreenRenderer {
         boolean curved = isCurvedScreenActive(isFirstPerson);
         float arcRadians = (float) Math.toRadians(isFirstPerson ? config.curvedScreenArcDegrees : config.thirdPersonCurvedScreenArcDegrees);
         float softness = (float) config.dropShadowSoftness;
-        int taps = !config.dropShadowEnabled ? 0 : softness > 0 ? SHADOW_TAPS : 1;
+        int taps = !config.dropShadowEnabled || passAlpha != 1f ? 0 : softness > 0 ? SHADOW_TAPS : 1;
         int tapAlpha = taps <= 1 ? config.dropShadowAlpha : Math.round(255 * (1 - (float) Math.pow(1 - Math.min(config.dropShadowAlpha / 255.0F, 0.92F), 1.0 / taps)));
 
         for (int i = 0; i < taps; i++) {
