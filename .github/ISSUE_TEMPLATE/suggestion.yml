@@ -5,7 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the suggestion! Before posting, please check existing issues to make sure it hasn't been suggested already.
+        Thanks for the suggestion! 
+        Before posting, please check existing issues to make sure it hasn't been suggested already.
 
   - type: textarea
     id: description

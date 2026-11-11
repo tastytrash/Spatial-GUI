@@ -1,0 +1,95 @@
+name: Compatibility report
+description: Spatial GUI doesn't work correctly with another mod or shader pack
+labels: [compatibility]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a compatibility problem!
+        Please check existing issues first.
+
+  - type: input
+    id: other-mod
+    attributes:
+      label: Other mod or shader pack
+      description: The name and version of the mod or shader pack that conflicts with Spatial GUI, with a Modrinth or CurseForge link if you can.
+      placeholder: e.g. Camera Overhaul 2.1.2
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the problem
+      description: What happens, and what did you expect to happen instead? Screenshots or videos help a lot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Install ...
+        2. Join a world ...
+        3. Open ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: isolated
+    attributes:
+      label: Does it happen with only Spatial GUI and this one mod installed?
+      options:
+        - "Yes"
+        - "No, it needs other mods too"
+        - I haven't tested this
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Spatial GUI version
+    validations:
+      required: true
+
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft version
+    validations:
+      required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      options:
+        - Fabric
+        - Forge
+        - NeoForge
+    validations:
+      required: true
+
+  - type: dropdown
+    id: perspective
+    attributes:
+      label: Camera perspective
+      options:
+        - First person
+        - Third person
+        - Both
+        - Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: logs
+    attributes:
+      label: Latest log
+      description: Upload /minecraft/logs/latest.log to https://mclo.gs and paste the link here.
+      placeholder: Optional
+    validations:
+      required: false

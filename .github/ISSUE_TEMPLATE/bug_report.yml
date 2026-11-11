@@ -62,6 +62,7 @@ body:
         - First person
         - Third person
         - Both
+        - Not applicable
     validations:
       required: false
 
