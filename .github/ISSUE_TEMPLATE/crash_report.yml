@@ -1,0 +1,103 @@
+name: Crash report
+description: The game crashes or fails to launch with Spatial GUI installed
+labels: [crash]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a crash!
+        A log or crash report is required, because crashes can't be investigated without one.
+        Many crashes are caused by other mods and only appear in the stack trace, so please don't skip the log.
+
+  - type: dropdown
+    id: when
+    attributes:
+      label: When does the crash happen?
+      options:
+        - While the game is launching or loading
+        - When joining a world
+        - When opening a screen
+        - When closing a screen
+        - When resizing or focusing the window
+        - When opening the Spatial GUI config or editor
+        - Randomly during gameplay
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: logs
+    attributes:
+      label: Crash report or latest log
+      description: Upload the newest file in /minecraft/crash-reports or /minecraft/logs/latest.log to https://mclo.gs and paste the link here.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: What were you doing right before the crash?
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: without-mod
+    attributes:
+      label: Does it still crash without Spatial GUI?
+      options:
+        - "No, it only crashes with Spatial GUI installed"
+        - "Yes, it also crashes without Spatial GUI"
+        - I haven't tested this
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Spatial GUI version
+    validations:
+      required: true
+
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft version
+    validations:
+      required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      options:
+        - Fabric
+        - Forge
+        - NeoForge
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: mod
+    attributes:
+      label: Mod or modpack link
+      description: A link to the mod causing the crash, or a Modrinth/CurseForge modpack link. Not required if you've provided your logs.
+      placeholder: Optional
+    validations:
+      required: false
