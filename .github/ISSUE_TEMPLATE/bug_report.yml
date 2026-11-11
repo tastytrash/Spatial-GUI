@@ -42,11 +42,14 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: loader-version
+  - type: dropdown
+    id: loader
     attributes:
-      label: Mod loader and version
-      description: e.g. Fabric Loader 0.19.5 or NeoForge 26.3.0.45-beta
+      label: Mod loader
+      options:
+        - Fabric
+        - Forge
+        - NeoForge
     validations:
       required: true
 
