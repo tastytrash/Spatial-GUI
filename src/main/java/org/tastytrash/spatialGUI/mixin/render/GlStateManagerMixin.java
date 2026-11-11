@@ -13,7 +13,7 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 public class GlStateManagerMixin {
     @ModifyVariable(method = "_blendFuncSeparate", at = @At("HEAD"), argsOnly = true, ordinal = 3)
     private static int spatialGUI$preserveDestAlpha(int dstAlpha) {
-        return SpatialGUIRenderer.isExtractingScreen ? GL11.GL_ONE_MINUS_SRC_ALPHA : dstAlpha;
+        return SpatialGUIRenderer.isExtractingScreen && dstAlpha == GL11.GL_ZERO ? GL11.GL_ONE_MINUS_SRC_ALPHA : dstAlpha;
     }
 }
 *///?} else {
