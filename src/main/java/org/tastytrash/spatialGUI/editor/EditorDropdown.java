@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import org.tastytrash.spatialGUI.util.EditorUtil;
+import org.tastytrash.spatialGUI.util.DrawUtil;
 //? if >1.21.1 {
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -15,11 +15,11 @@ final class EditorDropdown {
     static final int BUTTON_WIDTH = 140;
     private static final int DELETE_WIDTH = 40;
 
-    private static final Button header = EditorUtil.button(BUTTON_WIDTH);
-    private static final Button addButton = EditorUtil.button(BUTTON_WIDTH);
-    private static final Button deleteButton = EditorUtil.button(DELETE_WIDTH);
-    private static final Button option = EditorUtil.button(BUTTON_WIDTH);
-    private static final EditBox input = new EditBox(Minecraft.getInstance().font, 0, 0, BUTTON_WIDTH - DELETE_WIDTH, EditorUtil.BUTTON_HEIGHT, Component.empty());
+    private static final Button header = DrawUtil.button(BUTTON_WIDTH);
+    private static final Button addButton = DrawUtil.button(BUTTON_WIDTH);
+    private static final Button deleteButton = DrawUtil.button(DELETE_WIDTH);
+    private static final Button option = DrawUtil.button(BUTTON_WIDTH);
+    private static final EditBox input = new EditBox(Minecraft.getInstance().font, 0, 0, BUTTON_WIDTH - DELETE_WIDTH, DrawUtil.BUTTON_HEIGHT, Component.empty());
 
     private static boolean open;
     private static int editing = -1;
@@ -56,37 +56,37 @@ final class EditorDropdown {
 
     private static int rowAt(double cursorX, double cursorY) {
         if (cursorX < xPos || cursorX >= xPos + BUTTON_WIDTH) return -2;
-        return (int) Math.floor((cursorY - EditorUtil.SCREEN_MARGIN) / EditorUtil.BUTTON_HEIGHT) - 1;
+        return (int) Math.floor((cursorY - DrawUtil.SCREEN_MARGIN) / DrawUtil.BUTTON_HEIGHT) - 1;
     }
 
     static void draw(Object g, int guiWidth) {
         boolean usable = EditorMode.cursorFree();
-        int y = EditorUtil.SCREEN_MARGIN;
+        int y = DrawUtil.SCREEN_MARGIN;
         int selected = EditorProfiles.selected();
         int count = EditorProfiles.count();
-        xPos = guiWidth - EditorUtil.SCREEN_MARGIN - BUTTON_WIDTH;
+        xPos = guiWidth - DrawUtil.SCREEN_MARGIN - BUTTON_WIDTH;
 
-        EditorUtil.drawButton(header, Component.literal(label(selected) + (open ? " ▲" : " ▼")), xPos, y, usable, g);
+        DrawUtil.drawButton(header, Component.literal(label(selected) + (open ? " ▲" : " ▼")), xPos, y, usable, g);
         if (!open) return;
 
         for (int i = 0; i < count; i++) {
-            int rowY = y + (i + 1) * EditorUtil.BUTTON_HEIGHT;
+            int rowY = y + (i + 1) * DrawUtil.BUTTON_HEIGHT;
             if (i == editing) {
                 input.setPosition(xPos, rowY);
-                EditorUtil.renderWidget(input, g);
+                DrawUtil.renderWidget(input, g);
 
                 Component deleteLabel = confirmingDelete
                         ? Component.translatable("spatial-gui.editor.dropdown.confirm_delete")
                         : Component.literal("§cx");
-                EditorUtil.drawButton(deleteButton, deleteLabel, xPos + BUTTON_WIDTH - DELETE_WIDTH, rowY, usable && EditorProfiles.canDelete(i), g);
+                DrawUtil.drawButton(deleteButton, deleteLabel, xPos + BUTTON_WIDTH - DELETE_WIDTH, rowY, usable && EditorProfiles.canDelete(i), g);
             } else {
-                EditorUtil.drawButton(option, Component.literal(label(i)), xPos, rowY, usable && i != selected, g);
+                DrawUtil.drawButton(option, Component.literal(label(i)), xPos, rowY, usable && i != selected, g);
             }
         }
 
         if (EditorProfiles.canAdd()) {
             Component addLabel = Component.translatable("spatial-gui.editor.dropdown.add_profile");
-            EditorUtil.drawButton(addButton, addLabel, xPos, y + (count + 1) * EditorUtil.BUTTON_HEIGHT, usable && editing < 0, g);
+            DrawUtil.drawButton(addButton, addLabel, xPos, y + (count + 1) * DrawUtil.BUTTON_HEIGHT, usable && editing < 0, g);
         }
     }
 

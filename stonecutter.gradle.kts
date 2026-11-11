@@ -10,7 +10,7 @@ stonecutter parameters {
         string(current.parsed < "26.2") {
             replace("gameRenderer.mainCamera()", "gameRenderer.getMainCamera()")
             replace("= client.gui.screen()", "= client.screen")
-            replace("(client.gui.screen() !=", "(client.screen !=")
+            replace("(client.gui.screen()", "(client.screen ")
             replace("client.gui.screen().resize", "client.screen.resize")
             replace("client.setScreenAndShow", "client.setScreen")
             replace("mc.setScreenAndShow", "mc.setScreen")

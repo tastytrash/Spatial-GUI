@@ -6,8 +6,8 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public final class EditorUtil {
-    private EditorUtil() {}
+public final class DrawUtil {
+    private DrawUtil() {}
 
     public static final int BUTTON_HEIGHT = 20;
     public static final int SCREEN_MARGIN = 6;

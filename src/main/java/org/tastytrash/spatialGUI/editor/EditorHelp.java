@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIKeybinds;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
-import org.tastytrash.spatialGUI.util.EditorUtil;
+import org.tastytrash.spatialGUI.util.DrawUtil;
 
 final class EditorHelp {
     private static final int PANEL_WIDTH = 320;
@@ -36,9 +36,9 @@ final class EditorHelp {
         }
     }
 
-    private static final Button helpButton = EditorUtil.button(EditorUtil.BUTTON_HEIGHT);
-    private static final Button closeButton = EditorUtil.button(BUTTON_WIDTH);
-    private static final Button switchButton = EditorUtil.button(BUTTON_WIDTH);
+    private static final Button helpButton = DrawUtil.button(DrawUtil.BUTTON_HEIGHT);
+    private static final Button closeButton = DrawUtil.button(BUTTON_WIDTH);
+    private static final Button switchButton = DrawUtil.button(BUTTON_WIDTH);
 
     private static boolean open;
     private static boolean profileExitPrompt;
@@ -101,11 +101,11 @@ final class EditorHelp {
     }
 
     static void draw(Object g, int guiWidth, int guiHeight) {
-        int helpX = guiWidth - EditorUtil.SCREEN_MARGIN - EditorDropdown.BUTTON_WIDTH - BUTTON_GAP - EditorUtil.BUTTON_HEIGHT;
-        EditorUtil.drawButton(helpButton, Component.literal("?"), helpX, EditorUtil.SCREEN_MARGIN, EditorMode.cursorFree(), g);
+        int helpX = guiWidth - DrawUtil.SCREEN_MARGIN - EditorDropdown.BUTTON_WIDTH - BUTTON_GAP - DrawUtil.BUTTON_HEIGHT;
+        DrawUtil.drawButton(helpButton, Component.literal("?"), helpX, DrawUtil.SCREEN_MARGIN, EditorMode.cursorFree(), g);
         if (!open) return;
 
-        EditorUtil.pushLayer(g);
+        DrawUtil.pushLayer(g);
 
         if (!EditorMode.mouseFree()) EditorMode.toggleMouseFree();
 
@@ -114,13 +114,13 @@ final class EditorHelp {
         String prefix = page == Page.PROFILES && pickerKey == null ? "spatial-gui.editor.help.profile.unbound." : page.prefix;
         int lines = page.lines;
 
-        int height = PADDING + TITLE_HEIGHT + lines * LINE_HEIGHT + PADDING + EditorUtil.BUTTON_HEIGHT + PADDING;
+        int height = PADDING + TITLE_HEIGHT + lines * LINE_HEIGHT + PADDING + DrawUtil.BUTTON_HEIGHT + PADDING;
         int x = (guiWidth - PANEL_WIDTH) / 2;
-        int y = Math.max(EditorUtil.SCREEN_MARGIN, (guiHeight - height) / 2);
+        int y = Math.max(DrawUtil.SCREEN_MARGIN, (guiHeight - height) / 2);
 
-        EditorUtil.fillRect(g, 0, 0, guiWidth, guiHeight, 0xB0000000);
-        EditorUtil.fillRect(g, x - 2, y - 2, x + PANEL_WIDTH + 2, y + height + 2, 0xFF33AAFF);
-        EditorUtil.fillRect(g, x, y, x + PANEL_WIDTH, y + height, 0xFF101010);
+        DrawUtil.fillRect(g, 0, 0, guiWidth, guiHeight, 0xB0000000);
+        DrawUtil.fillRect(g, x - 2, y - 2, x + PANEL_WIDTH + 2, y + height + 2, 0xFF33AAFF);
+        DrawUtil.fillRect(g, x, y, x + PANEL_WIDTH, y + height, 0xFF101010);
 
         int textY = y + PADDING;
         drawLine(g, prefix + "title", keyName, x + PADDING, textY);
@@ -134,19 +134,19 @@ final class EditorHelp {
         boolean usable = EditorMode.cursorFree();
         if (profileExitPrompt) {
             Component doneLabel = Component.translatable("spatial-gui.editor.button.save_quit");
-            EditorUtil.drawButton(closeButton, doneLabel, x + (PANEL_WIDTH - BUTTON_WIDTH) / 2, textY, usable, g);
+            DrawUtil.drawButton(closeButton, doneLabel, x + (PANEL_WIDTH - BUTTON_WIDTH) / 2, textY, usable, g);
         } else {
             int buttonsX = x + (PANEL_WIDTH - 2 * BUTTON_WIDTH - BUTTON_GAP) / 2;
             Component switchLabel = Component.translatable(page.next().label);
             Component closeLabel = Component.translatable(page == Page.INTRO ? "spatial-gui.editor.help.got_it" : "spatial-gui.editor.help.close");
-            EditorUtil.drawButton(switchButton, switchLabel, buttonsX, textY, usable, g);
-            EditorUtil.drawButton(closeButton, closeLabel, buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, usable, g);
+            DrawUtil.drawButton(switchButton, switchLabel, buttonsX, textY, usable, g);
+            DrawUtil.drawButton(closeButton, closeLabel, buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, usable, g);
         }
 
-        EditorUtil.popLayer(g);
+        DrawUtil.popLayer(g);
     }
 
     private static void drawLine(Object g, String key, String keyName, int x, int y) {
-        EditorUtil.drawText(g, Component.translatable(key, keyName).getString(), x, y);
+        DrawUtil.drawText(g, Component.translatable(key, keyName).getString(), x, y);
     }
 }

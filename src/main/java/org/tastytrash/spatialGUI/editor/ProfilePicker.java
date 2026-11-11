@@ -7,13 +7,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
-import org.tastytrash.spatialGUI.util.EditorUtil;
+import org.tastytrash.spatialGUI.util.DrawUtil;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 
 public final class ProfilePicker {
     private static final int WIDTH = 162;
 
-    private static final Button button = EditorUtil.button(WIDTH);
+    private static final Button button = DrawUtil.button(WIDTH);
 
     private static Screen screen;
 
@@ -92,24 +92,24 @@ public final class ProfilePicker {
             return;
         }
 
-        int x = client.getWindow().getGuiScaledWidth() - EditorUtil.SCREEN_MARGIN - WIDTH;
-        int y = EditorUtil.SCREEN_MARGIN;
+        int x = client.getWindow().getGuiScaledWidth() - DrawUtil.SCREEN_MARGIN - WIDTH;
+        int y = DrawUtil.SCREEN_MARGIN;
         int count = EditorProfiles.count();
         int currentProfile = currentIndex();
 
         float scale = GuiScaleUtil.overlayScaleRatio(client.getWindow());
-        EditorUtil.pushScale(g, scale);
+        DrawUtil.pushScale(g, scale);
 
-        EditorUtil.drawTranslatedText(g, "spatial-gui.profile_picker.top", x, y + 6);
+        DrawUtil.drawTranslatedText(g, "spatial-gui.profile_picker.top", x, y + 6);
 
         for (int i = 0; i < count; i++) {
             button.setMessage(Component.literal((i == currentProfile ? "> (" : "(") + (i + 1) + ") " + EditorProfiles.label(i)));
-            button.setPosition(x, y + (i + 1) * EditorUtil.BUTTON_HEIGHT);
-            EditorUtil.renderWidget(button, g, -1, -1);
+            button.setPosition(x, y + (i + 1) * DrawUtil.BUTTON_HEIGHT);
+            DrawUtil.renderWidget(button, g, -1, -1);
         }
 
-        EditorUtil.drawTranslatedText(g, "spatial-gui.profile_picker.bottom", x, y + (count + 1) * EditorUtil.BUTTON_HEIGHT + 6);
+        DrawUtil.drawTranslatedText(g, "spatial-gui.profile_picker.bottom", x, y + (count + 1) * DrawUtil.BUTTON_HEIGHT + 6);
 
-        EditorUtil.popScale(g);
+        DrawUtil.popScale(g);
     }
 }

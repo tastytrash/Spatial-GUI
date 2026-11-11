@@ -25,7 +25,7 @@ import net.minecraft.network.chat.Component;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
-import org.tastytrash.spatialGUI.util.EditorUtil;
+import org.tastytrash.spatialGUI.util.DrawUtil;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class EditorScreen extends Screen {
     private static final Button[] widgets = new Button[EditorMode.BUTTONS.length];
 
     static {
-        Arrays.setAll(widgets, i -> EditorUtil.button(BUTTON_WIDTH));
+        Arrays.setAll(widgets, i -> DrawUtil.button(BUTTON_WIDTH));
     }
 
     private static final EditorSliderButton[] sliderWidgets = new EditorSliderButton[EditorMode.SLIDERS.length];
@@ -70,9 +70,9 @@ public class EditorScreen extends Screen {
             if (!button.visible().getAsBoolean()) continue;
             boolean right = button.rightSide();
             int slot = right ? rightCount++ : leftCount++;
-            int x = right ? guiWidth - EditorUtil.SCREEN_MARGIN - BUTTON_WIDTH : EditorUtil.SCREEN_MARGIN;
-            int y = guiHeight - EditorUtil.SCREEN_MARGIN - EditorUtil.BUTTON_HEIGHT - slot * (EditorUtil.BUTTON_HEIGHT + BUTTON_SPACING);
-            EditorUtil.drawButton(widgets[i], button.label().get(), x, y, usable && button.enabled().getAsBoolean(), g);
+            int x = right ? guiWidth - DrawUtil.SCREEN_MARGIN - BUTTON_WIDTH : DrawUtil.SCREEN_MARGIN;
+            int y = guiHeight - DrawUtil.SCREEN_MARGIN - DrawUtil.BUTTON_HEIGHT - slot * (DrawUtil.BUTTON_HEIGHT + BUTTON_SPACING);
+            DrawUtil.drawButton(widgets[i], button.label().get(), x, y, usable && button.enabled().getAsBoolean(), g);
         }
 
         int sliderSlot = 0;
@@ -88,17 +88,17 @@ public class EditorScreen extends Screen {
 
     private static void drawSlider(EditorSliderButton slider, double actual, int guiWidth, int guiHeight, int row, boolean usable, Object g) {
         slider.setPosition((guiWidth - SLIDER_WIDTH) / 2,
-                guiHeight - EditorUtil.SCREEN_MARGIN - SLIDER_HEIGHT - row * (SLIDER_HEIGHT + BUTTON_SPACING));
-        if (slider.dragging()) slider.dragTo(EditorUtil.cursorX());
+                guiHeight - DrawUtil.SCREEN_MARGIN - SLIDER_HEIGHT - row * (SLIDER_HEIGHT + BUTTON_SPACING));
+        if (slider.dragging()) slider.dragTo(DrawUtil.cursorX());
         else slider.sync(actual);
         slider.active = usable;
-        EditorUtil.renderWidget(slider, g);
+        DrawUtil.renderWidget(slider, g);
     }
 
     private static boolean clickFlatButton(int mouseButton) {
         if (EditorMode.previewing() || !EditorMode.cursorFree()) return false;
-        double cursorX = EditorUtil.cursorX();
-        double cursorY = EditorUtil.cursorY();
+        double cursorX = DrawUtil.cursorX();
+        double cursorY = DrawUtil.cursorY();
         if (EditorHelp.clickHelpButton(cursorX, cursorY, mouseButton)) return true;
         if (EditorDropdown.click(cursorX, cursorY, mouseButton)) return true;
         if (mouseButton != InputConstants.MOUSE_BUTTON_LEFT) return false;
@@ -147,7 +147,7 @@ public class EditorScreen extends Screen {
         //? if <26.2 {
         if (client.screen instanceof EditorScreen screen) screen.onClose();
         //?} else {
-        /*if (client.gui.screen() instanceof EditorScreen screen) screen.onClose();
+        /*if (client.screen  instanceof EditorScreen screen) screen.onClose();
         *///?}
     }
 
@@ -334,19 +334,15 @@ public class EditorScreen extends Screen {
     /*public static void drawOverlay(Object g) {
     *///?}
         var client = Minecraft.getInstance();
-        //? if <26.2 {
         if (!(client.screen instanceof EditorScreen)) return;
-        //?} else {
-        /*if (!(client.gui.screen() instanceof EditorScreen)) return;
-        *///?}
         if (EditorMode.previewing()) return;
 
         float scale = GuiScaleUtil.overlayScaleRatio(client.getWindow());
-        EditorUtil.pushScale(g, scale);
+        DrawUtil.pushScale(g, scale);
 
-        int y = EditorUtil.SCREEN_MARGIN;
+        int y = DrawUtil.SCREEN_MARGIN;
         for (String key : EditorMode.getHints()) {
-            EditorUtil.drawTranslatedText(g, key, EditorUtil.SCREEN_MARGIN, y);
+            DrawUtil.drawTranslatedText(g, key, DrawUtil.SCREEN_MARGIN, y);
             y += 10;
         }
 
@@ -356,7 +352,7 @@ public class EditorScreen extends Screen {
 
         drawButtons(g, client);
 
-        EditorUtil.popScale(g);
+        DrawUtil.popScale(g);
     }
 
     //? if >1.21.1 {
@@ -374,7 +370,7 @@ public class EditorScreen extends Screen {
         //?}
         if (EditorHelp.isOpen()) {
             if (button == left && EditorMode.cursorFree()) {
-                EditorHelp.click(EditorUtil.cursorX(), EditorUtil.cursorY());
+                EditorHelp.click(DrawUtil.cursorX(), DrawUtil.cursorY());
             }
             return true;
         }

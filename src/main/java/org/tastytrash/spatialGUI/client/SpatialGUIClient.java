@@ -175,7 +175,8 @@ public class SpatialGUIClient {
                 || id.contains("WaitingForResponse") || id.contains("JoinMultiplayer")
                 || id.contains("SelectWorld") || id.contains("ErrorScreen")
                 || id.contains("OutOfMemory") || id.contains("DatapackLoadFailure")
-                || id.contains("WinScreen") || id.contains("FileFixer"))
+                || id.contains("WinScreen") || id.contains("FileFixer")
+                || id.contains("ScreenManagerScreen"))
             return false;
 
         if (!id.contains("$") && !ConfigManager.config().seenScreens.contains(id)) {

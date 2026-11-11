@@ -5,17 +5,13 @@ __________ FIXES _________________
 #192
 
 Compat:
- - Tooltip Overhaul (#193)
-
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
  - Legacy4J (#164)
 
 -------- MID PRIORITY ---------------
 
-Shaders in 26.4
-
-Something is up with tooltips in 26.4 (Mojang's fault)
+Shaders in 26.4, shaders in older versions?
 
 Change third person default config
 
@@ -36,6 +32,26 @@ Better config, too cluttered/confusing
 Refresh rate?
 
 Compat with zoom mods
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Screen Manager
+ - Three columns, unsorted, enabled, disabled
+ - Buttons to move them around, or drag
+ - Only show the top level of their ID
+   - Could be ambiguous
+ - Manually add screen classes
+ - Dropdown beside enabled screens for profiles
+ - Search function
+ - Different sorting, name, id, timestamp?
+ - Show full id as tooltip?
+   - Toggle to show tooltip
+
+High priority:
+ - Add keybind
+ - Don't reset mouse to centre on open from YACL screen
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 /////////////////////////////////////
 Visual editor

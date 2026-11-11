@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.compat.RecipeViewerCompat;
+import org.tastytrash.spatialGUI.screenmanager.ScreenManagerScreen;
 //? if fabric {
 import net.fabricmc.loader.api.FabricLoader;
 //?} else if neoforge {
@@ -715,6 +716,24 @@ public class SpatialGUIConfig {
          *///?}
     }
 
+    private static ConfigCategory.Builder copyCategory(ConfigCategory source, Option<?> first) {
+        ConfigCategory.Builder builder = ConfigCategory.createBuilder()
+                .name(source.name())
+                .tooltip(source.tooltip());
+
+        if (first != null) {
+            builder.option(first);
+        }
+        for (OptionGroup group : source.groups()) {
+            if (group.isRoot()) {
+                builder.options(group.options());
+            } else {
+                builder.group(group);
+            }
+        }
+        return builder;
+    }
+
     public static Screen createScreen(Screen parent) {
         YetAnotherConfigLib generated = HANDLER.generateGui();
 
@@ -729,20 +748,19 @@ public class SpatialGUIConfig {
                 })
                 .build();
 
+        ButtonOption openScreenManager = ButtonOption.createBuilder()
+                .name(Component.translatable("spatial-gui.screen_manager.title"))
+                .description(OptionDescription.of(Component.translatable("yacl3.spatial-gui.config.screen_manager.description")))
+                .text(Component.translatable("yacl3.spatial-gui.config.screen_manager.button"))
+                .action((screen, option) -> {
+                    screen.finishOrSave();
+                    Minecraft.getInstance().setScreen(new ScreenManagerScreen(parent));
+                })
+                .build();
+
         List<ConfigCategory> categories = new ArrayList<>(generated.categories());
-        ConfigCategory general = categories.get(0);
 
-        ConfigCategory.Builder builder = ConfigCategory.createBuilder()
-                .name(general.name())
-                .tooltip(general.tooltip());
-
-        for (OptionGroup group : general.groups()) {
-            if (group.isRoot()) {
-                builder.options(group.options());
-            } else {
-                builder.group(group);
-            }
-        }
+        ConfigCategory.Builder builder = copyCategory(categories.get(0), null);
         builder.option(openEditor);
 
         if (RecipeViewerCompat.isRecipeViewerLoaded()) {
@@ -755,6 +773,10 @@ public class SpatialGUIConfig {
         }
 
         categories.set(0, builder.build());
+        if (categories.size() > 1) {
+            categories.set(1, copyCategory(categories.get(1), openScreenManager).build());
+        }
+
         return YetAnotherConfigLib.createBuilder()
                 .title(generated.title())
                 .categories(categories)
