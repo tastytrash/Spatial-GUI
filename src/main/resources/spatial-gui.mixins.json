@@ -34,6 +34,8 @@
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererMixin",
+    "render.GlStateManagerMixin",
+    "render.ItemColorsMixin",
     "render.LevelRendererMixin",
     "render.RenderTargetMixin",
     "screen.AbstractRecipeBookScreenMixin",

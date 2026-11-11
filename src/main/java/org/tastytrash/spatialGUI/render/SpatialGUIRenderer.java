@@ -75,6 +75,12 @@ public class SpatialGUIRenderer {
         this.screenExtractor = new ScreenExtractor();
         this.worldScreen = new WorldScreenRenderer(screenTexture);
 
+        //? if fabric {
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen == hookedScreen) registerScreenEvents(screen);
+        });
+        //?}
+
         //? if neoforge {
         /*NeoForge.EVENT_BUS.addListener(this::onScreenRenderPre);
         NeoForge.EVENT_BUS.addListener(this::onScreenClosing);
@@ -151,7 +157,9 @@ public class SpatialGUIRenderer {
         if (!isFirstPerson) {
             screenTexture.prepareTarget();
         }
+    }
 
+    private void registerScreenEvents(Screen screen) {
         //? if fabric && >=26.4 {
         /*ScreenEvents.afterExtract(screen).register((screenArg, extractor) -> prepareTarget());
         *///?} else if fabric && >=26.1.2 {

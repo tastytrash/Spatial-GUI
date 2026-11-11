@@ -91,8 +91,8 @@ public class ScreenTexture {
             /*target.resize(width, height, Minecraft.ON_OSX);
             *///?} else {
             target.resize(width, height);
+            //?}
             clearTarget();
-             //?}
         }
     }
 

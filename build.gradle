@@ -24,7 +24,7 @@ def dependencyVersions = [
         "26.3-fabric":     [minecraft: "26.3", minecraft_dependency: "26.3", fabric: "0.160.5+26.3", yacl: "3.9.7+26.3-fabric", modmenu: "21.0.0-beta.1", java: 25],
         "26.2-neoforge":   [minecraft: "26.2", minecraft_dependency: "26.2", neoforge: "26.2.0.60", yacl: "3.9.7+26.2-neoforge", java: 25],
         "26.3-neoforge":   [minecraft: "26.3", minecraft_dependency: "26.3", neoforge: "26.3.0.10-beta", yacl: "3.9.7+26.3-neoforge", java: 25],
-        "26.4-fabric":     [minecraft: "26.4-snapshot-7", minecraft_dependency: ">26.3", fabric: "0.165.4+26.4", yacl: "3.9.10+26.4-fabric", modmenu: "22.0.0-alpha.3", java: 25],
+        "26.4-fabric":     [minecraft: "26.4-snapshot-8", minecraft_dependency: ">26.3", fabric: "0.165.4+26.4", yacl: "3.9.10+26.4-fabric", modmenu: "22.0.0-alpha.3", java: 25],
 ]
 
 def nodeName = stonecutter.current.project
@@ -342,6 +342,6 @@ if (project.hasProperty('stonecutter')) {
             }
         }
 
-        dryRun = true
+        dryRun = false
     }
 }
