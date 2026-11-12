@@ -64,7 +64,7 @@ body:
         - Both
         - Not applicable
     validations:
-      required: false
+      required: true
 
   - type: input
     id: logs

@@ -1,11 +1,8 @@
 package org.tastytrash.spatialGUI.config;
 
 import dev.isxander.yacl3.api.*;
-import dev.isxander.yacl3.api.controller.ControllerBuilder;
 import dev.isxander.yacl3.api.controller.DoubleSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
-import dev.isxander.yacl3.config.v2.api.ConfigField;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
@@ -113,49 +110,43 @@ public class SpatialGUIConfig {
     // screens
     // ========
     @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "screenTypes")
     @TickBox
     public boolean inventory = true;
 
     @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "screenTypes")
     @TickBox
     public boolean containers = true;
 
     @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "screenTypes")
     @TickBox
     public boolean pauseScreen = false;
 
     @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "screenTypes")
     @TickBox
     public boolean allScreens = false;
 
     @SerialEntry
-    @AutoGen(category = "screens")
-    @ListGroup(valueFactory = StringValueFactory.class, controllerFactory = StringControllerFactory.class)
-    public List<String> enabledScreens = defaultEnabledScreens();
-
-    @SerialEntry
-    @AutoGen(category = "screens")
-    @ListGroup(valueFactory = StringValueFactory.class, controllerFactory = StringControllerFactory.class)
-    public List<String> disabledScreens = new ArrayList<>();
-
-    @SerialEntry
-    @AutoGen(category = "screens")
-    @ListGroup(valueFactory = StringValueFactory.class, controllerFactory = StringControllerFactory.class)
-    public List<String> seenScreens = new ArrayList<>();
-
-    @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "cameraMode")
     @TickBox
     public boolean disableFirstPerson = false;
 
     @SerialEntry
-    @AutoGen(category = "screens")
+    @AutoGen(category = "screens", group = "cameraMode")
     @TickBox
     public boolean disableThirdPerson = false;
+
+    @SerialEntry
+    public List<String> enabledScreens = defaultEnabledScreens();
+
+    @SerialEntry
+    public List<String> disabledScreens = new ArrayList<>();
+
+    @SerialEntry
+    public List<String> seenScreens = new ArrayList<>();
 
     // ==========
     // appearance
@@ -669,19 +660,6 @@ public class SpatialGUIConfig {
         return mc.getWindow().calculateScale(mc.options.guiScale().get(), mc.isEnforceUnicode());
     }
 
-    public static class StringValueFactory implements ListGroup.ValueFactory<String> {
-        @Override
-        public String provideNewValue() {
-            return "";
-        }
-    }
-
-    public static class StringControllerFactory implements ListGroup.ControllerFactory<String> {
-        @Override
-        public ControllerBuilder<String> createController(ListGroup annotation, ConfigField<List<String>> field, OptionAccess storage, Option<String> option) {
-            return StringControllerBuilder.create(option);
-        }
-    }
 
     private static List<String> defaultEnabledScreens() {
         String pkg = "net.minecraft.client.gui.screens.inventory.";

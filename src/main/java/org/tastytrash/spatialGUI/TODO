@@ -36,20 +36,17 @@ Compat with zoom mods
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Screen Manager
- - Three columns, unsorted, enabled, disabled
  - Buttons to move them around, or drag
- - Only show the top level of their ID
-   - Could be ambiguous
  - Manually add screen classes
  - Dropdown beside enabled screens for profiles
+   - Right-click instead?
  - Search function
- - Different sorting, name, id, timestamp?
- - Show full id as tooltip?
-   - Toggle to show tooltip
 
 High priority:
  - Add keybind
  - Don't reset mouse to centre on open from YACL screen
+ - Keyboard controls
+ - Make closing go back to Screens tab
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -85,6 +85,14 @@ public final class DrawUtil {
         drawText(g, Component.translatable(key).getString(), x, y);
     }
 
+    public static String fitText(String text, int maxWidth) {
+        var font = Minecraft.getInstance().font;
+        if (font.width(text) <= maxWidth) return text;
+        int length = text.length();
+        while (length > 0 && font.width(text.substring(0, length) + "...") > maxWidth) length--;
+        return text.substring(0, length) + "...";
+    }
+
     public static void fillRect(Object g, int x1, int y1, int x2, int y2, int color) {
         ((net.minecraft.client.gui.GuiGraphicsExtractor) g).fill(x1, y1, x2, y2, color);
     }

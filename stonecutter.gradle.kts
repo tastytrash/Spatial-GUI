@@ -13,6 +13,7 @@ stonecutter parameters {
             replace("(client.gui.screen()", "(client.screen ")
             replace("client.gui.screen().resize", "client.screen.resize")
             replace("client.setScreenAndShow", "client.setScreen")
+            replace("Minecraft.getInstance().setScreenAndShow", "Minecraft.getInstance().setScreen")
             replace("mc.setScreenAndShow", "mc.setScreen")
         }
 
@@ -34,9 +35,7 @@ stonecutter parameters {
 
         string(current.parsed < "1.21.11") {
             replace(
-                "me.shedaniel.autoconfig.AutoConfigClient.getConfigScreen",
-                "me.shedaniel.autoconfig.AutoConfig.getConfigScreen"
-            )
+                "me.shedaniel.autoconfig.AutoConfigClient.getConfigScreen", "me.shedaniel.autoconfig.AutoConfig.getConfigScreen")
         }
 
         string(current.parsed > "26.3") {
