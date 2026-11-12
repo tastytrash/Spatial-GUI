@@ -95,7 +95,7 @@ public class SpatialGUIClient {
         ModLoadingContext.get().registerExtensionPoint(
         ConfigScreenHandler.ConfigScreenFactory.class,
         () -> new ConfigScreenHandler.ConfigScreenFactory(
-                (mc, parent) -> SpatialGUIConfig.HANDLER.generateGui().generateScreen(parent))
+                (mc, parent) -> SpatialGUIConfig.createScreen(parent))
         );
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

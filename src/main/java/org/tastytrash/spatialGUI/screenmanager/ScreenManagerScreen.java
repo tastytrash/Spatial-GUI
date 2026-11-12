@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.screenmanager;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.isxander.yacl3.gui.YACLScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -22,9 +23,10 @@ public class ScreenManagerScreen extends Screen {
     private static final int VERTICAL_MARGIN = MARGIN + DrawUtil.BUTTON_HEIGHT + GAP;
     private static final int HEADER = 18;
     private static final int ROW_HEIGHT = 20;
-    private static final int SAVE_QUIT_WIDTH = 80;
-    private static final int MOVE_WIDTH = 30;
     private static final int ADVANCED_WIDTH = 90;
+    private static final int CLOSE_WIDTH = 50;
+    private static final int HELP_WIDTH = 20;
+    private static final int MOVE_WIDTH = 30;
     private static final int SORT_WIDTH = 70;
     private static final String[] COLUMNS = {"unsorted", "enabled", "disabled"};
 
@@ -32,11 +34,12 @@ public class ScreenManagerScreen extends Screen {
     private final ScreenManagerData data = new ScreenManagerData();
     private final int[] scrollOffsets = new int[ScreenManagerData.COLUMN_COUNT];
 
-    private final Button saveQuitButton = DrawUtil.button(SAVE_QUIT_WIDTH);
     private final Button advancedModeButton = DrawUtil.button(ADVANCED_WIDTH);
-    private final Button sortButton = DrawUtil.button(SORT_WIDTH);
+    private final Button closeButton = DrawUtil.button(CLOSE_WIDTH);
+    private final Button helpButton = DrawUtil.button(HELP_WIDTH);
     private final Button moveLeftButton = DrawUtil.button(MOVE_WIDTH);
     private final Button moveRightButton = DrawUtil.button(MOVE_WIDTH);
+    private final Button sortButton = DrawUtil.button(SORT_WIDTH);
 
     public ScreenManagerScreen(Screen parent) {
         super(Component.translatable("spatial-gui.screen_manager.title"));
@@ -45,7 +48,11 @@ public class ScreenManagerScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(SpatialGUIConfig.createScreen(parent));
+        data.save();
+        Minecraft mc = Minecraft.getInstance();
+        Screen screen = SpatialGUIConfig.createScreen(parent);
+        mc.setScreen(screen);
+        if (screen instanceof YACLScreen yacl) yacl.tabNavigationBar.selectTab(1, false);
     }
 
     @Override
@@ -83,13 +90,14 @@ public class ScreenManagerScreen extends Screen {
 
     private void drawTopButtons(Object g) {
         int right = width - MARGIN;
-        right = drawTopButton(g, saveQuitButton, right, Component.translatable("spatial-gui.editor.button.save_quit"));
+        right = drawTopButton(g, closeButton, right, Component.translatable("spatial-gui.screen_manager.close"));
         right = drawTopButton(g, advancedModeButton, right, Component.translatable(
                 "spatial-gui.screen_manager.advanced_mode",
                 Component.translatable(data.isAdvancedMode() ? "options.on" : "options.off")));
-        drawTopButton(g, sortButton, right, Component.translatable(
+        right = drawTopButton(g, sortButton, right, Component.translatable(
                 "spatial-gui.screen_manager.sort",
                 Component.translatable(data.isSortById() ? "spatial-gui.screen_manager.sort.id" : "spatial-gui.screen_manager.sort.name")));
+        drawTopButton(g, helpButton, right, Component.literal("?"));
     }
 
     private int drawTopButton(Object g, Button button, int right, Component label) {
@@ -218,8 +226,7 @@ public class ScreenManagerScreen extends Screen {
         double y = event.y();
         //?}
         if (button == InputConstants.MOUSE_BUTTON_LEFT) {
-            if (saveQuitButton.isMouseOver(x, y)) {
-                data.save();
+            if (closeButton.isMouseOver(x, y)) {
                 onClose();
                 return true;
             }
@@ -229,6 +236,9 @@ public class ScreenManagerScreen extends Screen {
             }
             if (sortButton.isMouseOver(x, y)) {
                 data.toggleSortById();
+                return true;
+            }
+            if (helpButton.isMouseOver(x, y)){
                 return true;
             }
             if (moveLeftButton.isMouseOver(x, y)) {
@@ -266,12 +276,14 @@ public class ScreenManagerScreen extends Screen {
     @Override
     public boolean keyPressed(KeyEvent event) {
         if (copySelected(event.key(), event.hasControlDown())) return true;
+        if (moveByKey(event.key())) return true;
         return super.keyPressed(event);
     }
     //?} else {
     /*@Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (copySelected(keyCode, hasControlDown())) return true;
+        if (moveByKey(keyCode)) return true;
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     *///?}
@@ -281,5 +293,22 @@ public class ScreenManagerScreen extends Screen {
         if (keyCode != InputConstants.KEY_C || !control || id == null) return false;
         Minecraft.getInstance().keyboardHandler.setClipboard(id);
         return true;
+    }
+
+    private boolean moveByKey(int keyCode) {
+        if (keyCode == InputConstants.KEY_LEFT && data.canMove(-1)) {
+            move(-1);
+            return true;
+        }
+        if (keyCode == InputConstants.KEY_RIGHT && data.canMove(1)) {
+            move(1);
+            return true;
+        }
+        if (keyCode == InputConstants.KEY_UP || keyCode == InputConstants.KEY_DOWN) {
+            if (!data.moveSelection(keyCode == InputConstants.KEY_UP ? -1 : 1)) return false;
+            scrollToSelected();
+            return true;
+        }
+        return false;
     }
 }

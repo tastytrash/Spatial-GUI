@@ -33,20 +33,20 @@ Refresh rate?
 
 Compat with zoom mods
 
+Images in yacl?
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Screen Manager
- - Buttons to move them around, or drag
- - Manually add screen classes
- - Dropdown beside enabled screens for profiles
-   - Right-click instead?
- - Search function
+ - Drag to move?
+ - Add keybind?
+ - Manually add screen classes?
 
 High priority:
- - Add keybind
  - Don't reset mouse to centre on open from YACL screen
- - Keyboard controls
- - Make closing go back to Screens tab
+ - Help screen
+ - Dropdown (well actually a dropup) at the bottom of the screen to choose the profile for the selected screen
+ - Search function (bottom left)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

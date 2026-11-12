@@ -42,11 +42,12 @@ public class SpatialGUIKeybinds {
     private static KeyMapping openProfilePicker;
     private static boolean toggleMouseFreeHeld = false;
     private static boolean registered = false;
+
     private static final String OPEN_CONFIG_KEY = "key.spatial-gui.open_config";
-    private static final String RELOAD_PROFILES_KEY = "key.spatial-gui.reload_profiles";
     private static final String OPEN_EDITOR_KEY = "key.spatial-gui.open_editor";
-    private static final String TOGGLE_MOUSE_FREE_KEY = "key.spatial-gui.toggle_mouse_free";
     private static final String OPEN_PROFILE_PICKER_KEY = "key.spatial-gui.open_profile_picker";
+    private static final String RELOAD_PROFILES_KEY = "key.spatial-gui.reload_profiles";
+    private static final String TOGGLE_MOUSE_FREE_KEY = "key.spatial-gui.toggle_mouse_free";
 
     //? if fabric && >1.21.1 {
     public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =

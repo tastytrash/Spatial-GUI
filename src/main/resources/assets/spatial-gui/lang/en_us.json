@@ -252,6 +252,7 @@
   "yacl3.spatial-gui.config.screen_manager.description": "Open the screen manager to enable or disable Spatial GUI for individual screens.",
   "yacl3.spatial-gui.config.screen_manager.button": "Open",
   "spatial-gui.screen_manager.title": "Screen Manager",
+  "spatial-gui.screen_manager.close": "Close",
   "spatial-gui.screen_manager.unsorted": "Unsorted",
   "spatial-gui.screen_manager.enabled": "Enabled",
   "spatial-gui.screen_manager.disabled": "Disabled",

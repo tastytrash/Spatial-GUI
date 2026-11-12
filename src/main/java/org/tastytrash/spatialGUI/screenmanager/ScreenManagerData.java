@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.screenmanager;
 
+import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
@@ -98,6 +99,15 @@ public class ScreenManagerData {
         columns.get(target).add(selectedId);
         sort(columns.get(target));
         selectedColumn = target;
+    }
+
+    public boolean moveSelection(int direction) {
+        if (selectedId == null) return false;
+        List<String> ids = columns.get(selectedColumn);
+        int index = ids.indexOf(selectedId);
+        if (index < 0) return false;
+        selectedId = ids.get(Mth.clamp(index + direction, 0, ids.size() - 1));
+        return true;
     }
 
     public void save() {
