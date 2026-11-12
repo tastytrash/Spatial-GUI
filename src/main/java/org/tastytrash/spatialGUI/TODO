@@ -2,6 +2,8 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+Body not hiding behind terrain underwater
+
 #192
 
 Compat:
@@ -43,10 +45,7 @@ Screen Manager
  - Manually add screen classes?
 
 High priority:
- - Don't reset mouse to centre on open from YACL screen
- - Help screen
- - Dropdown (well actually a dropup) at the bottom of the screen to choose the profile for the selected screen
- - Search function (bottom left)
+ - Don't reset mouse to centre on open from YACL screen (1.21.1)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

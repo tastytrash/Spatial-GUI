@@ -5,8 +5,10 @@ import dev.isxander.yacl3.gui.YACLScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 //? if >1.21.1 {
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 //?}
@@ -14,8 +16,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.util.DrawUtil;
+import org.tastytrash.spatialGUI.util.UiColors;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ScreenManagerScreen extends Screen {
     private static final int MARGIN = DrawUtil.SCREEN_MARGIN;
@@ -28,11 +32,13 @@ public class ScreenManagerScreen extends Screen {
     private static final int HELP_WIDTH = 20;
     private static final int MOVE_WIDTH = 30;
     private static final int SORT_WIDTH = 70;
+    private static final int SEARCH_WIDTH = 150;
     private static final String[] COLUMNS = {"unsorted", "enabled", "disabled"};
 
     private final Screen parent;
     private final ScreenManagerData data = new ScreenManagerData();
     private final int[] scrollOffsets = new int[ScreenManagerData.COLUMN_COUNT];
+    private final EditBox searchBox = new EditBox(Minecraft.getInstance().font, 0, 0, SEARCH_WIDTH, DrawUtil.BUTTON_HEIGHT, Component.empty());
 
     private final Button advancedModeButton = DrawUtil.button(ADVANCED_WIDTH);
     private final Button closeButton = DrawUtil.button(CLOSE_WIDTH);
@@ -44,10 +50,13 @@ public class ScreenManagerScreen extends Screen {
     public ScreenManagerScreen(Screen parent) {
         super(Component.translatable("spatial-gui.screen_manager.title"));
         this.parent = parent;
+        searchBox.setMaxLength(50);
+        searchBox.setHint(Component.translatable("spatial-gui.screen_manager.search"));
     }
 
     @Override
     public void onClose() {
+        ScreenManagerDropdown.close();
         data.save();
         Minecraft mc = Minecraft.getInstance();
         Screen screen = SpatialGUIConfig.createScreen(parent);
@@ -65,17 +74,20 @@ public class ScreenManagerScreen extends Screen {
         //?} else {
         /*public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
          *///?}
-        DrawUtil.fillRect(g, 0, 0, width, height, 0xD0101010);
+        DrawUtil.fillRect(g, 0, 0, width, height, UiColors.NEAR_BLACK_80);
 
         drawTitle(g);
         drawColumns(g);
         drawTopButtons(g);
+        drawSearchBox(g);
 
         int footerY = height - MARGIN - DrawUtil.BUTTON_HEIGHT;
         DrawUtil.drawButton(moveLeftButton, Component.literal("<"), width / 2 - MOVE_WIDTH - 4, footerY, data.canMove(-1), g);
         DrawUtil.drawButton(moveRightButton, Component.literal(">"), width / 2 + 4, footerY, data.canMove(1), g);
 
         drawIdTooltip(g, mouseX, mouseY);
+        ScreenManagerHelp.draw(g, width, height);
+        ScreenManagerDropdown.draw(g, width, height, data);
     }
 
     private void drawTitle(Object g) {
@@ -85,7 +97,7 @@ public class ScreenManagerScreen extends Screen {
         DrawUtil.pushScale(g, titleScale);
         DrawUtil.drawText(g, title, (int) (MARGIN / titleScale), (int) ((MARGIN + 3) / titleScale));
         DrawUtil.popScale(g);
-        DrawUtil.fillRect(g, MARGIN, MARGIN + DrawUtil.BUTTON_HEIGHT - 2, MARGIN + titleWidth, MARGIN + DrawUtil.BUTTON_HEIGHT, 0xFF33AAFF);
+        DrawUtil.fillRect(g, MARGIN, MARGIN + DrawUtil.BUTTON_HEIGHT - 2, MARGIN + titleWidth, MARGIN + DrawUtil.BUTTON_HEIGHT, UiColors.SKY_BLUE);
     }
 
     private void drawTopButtons(Object g) {
@@ -110,9 +122,10 @@ public class ScreenManagerScreen extends Screen {
         int columnWidth = columnWidth();
         for (int i = 0; i < COLUMNS.length; i++) {
             int x = columnX(i);
-            List<String> ids = data.ids(i);
-            DrawUtil.fillRect(g, x, VERTICAL_MARGIN, x + columnWidth, VERTICAL_MARGIN + columnHeight(), 0xFF1E1E1E);
-            DrawUtil.fillRect(g, x, VERTICAL_MARGIN, x + columnWidth, VERTICAL_MARGIN + HEADER, 0xFF2C2C2C);
+            clampScroll(i);
+            List<String> ids = filterIds(data.ids(i));
+            DrawUtil.fillRect(g, x, VERTICAL_MARGIN, x + columnWidth, VERTICAL_MARGIN + columnHeight(), UiColors.DARKEST_GRAY);
+            DrawUtil.fillRect(g, x, VERTICAL_MARGIN, x + columnWidth, VERTICAL_MARGIN + HEADER, UiColors.DARKER_GRAY);
             String header = Component.translatable("spatial-gui.screen_manager." + COLUMNS[i]).getString();
             DrawUtil.drawText(g, header + " (" + ids.size() + ")", x + 6, VERTICAL_MARGIN + 5);
 
@@ -120,12 +133,26 @@ public class ScreenManagerScreen extends Screen {
                 String id = ids.get(row + scrollOffsets[i]);
                 int y = rowY(row);
                 if (data.isSelected(i, id)) {
-                    DrawUtil.fillRect(g, x + 1, y, x + columnWidth - 1, y + ROW_HEIGHT, 0x4033AAFF);
+                    DrawUtil.fillRect(g, x + 1, y, x + columnWidth - 1, y + ROW_HEIGHT, UiColors.SKY_BLUE_25);
                 }
                 DrawUtil.drawText(g, DrawUtil.fitText(data.displayName(id), columnWidth - 12), x + 6, y + 6);
             }
-            g.outline(x, VERTICAL_MARGIN, columnWidth, columnHeight(), 0xFF4A4A4A);
+            drawScrollbar(g, x, i);
+            g.outline(x, VERTICAL_MARGIN, columnWidth, columnHeight(), UiColors.DARK_GRAY);
         }
+    }
+
+    private void drawScrollbar(GuiGraphicsExtractor g, int columnX, int column) {
+        int totalRows = data.ids(column).size();
+        int visible = visibleRows();
+        int scrollableArea = columnHeight() - HEADER;
+        
+        if (totalRows <= visible) return;
+        
+        int barHeight = Math.max(4, (scrollableArea * visible / totalRows));
+        int barY = VERTICAL_MARGIN + HEADER + (int) ((float) scrollOffsets[column] / (totalRows - visible) * (scrollableArea - barHeight));
+        
+        DrawUtil.fillRect(g, columnX + columnWidth() - 4, barY, columnX + columnWidth(), barY + barHeight, UiColors.LIGHT_GRAY);
     }
 
     private void drawIdTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
@@ -139,9 +166,23 @@ public class ScreenManagerScreen extends Screen {
         int x = Mth.clamp(mouseX + 8, 0, width - boxWidth);
         int y = Mth.clamp(mouseY + 8, 0, height - boxHeight);
 
-        DrawUtil.fillRect(g, x, y, x + boxWidth, y + boxHeight, 0xF0101010);
-        g.outline(x, y, boxWidth, boxHeight, 0xFF33AAFF);
+        DrawUtil.pushLayer(g);
+        DrawUtil.fillRect(g, x, y, x + boxWidth, y + boxHeight, UiColors.NEAR_BLACK_95);
+        g.outline(x, y, boxWidth, boxHeight, UiColors.SKY_BLUE);
         DrawUtil.drawText(g, text, x + 4, y + 4);
+        DrawUtil.popLayer(g);
+    }
+
+    private void drawSearchBox(GuiGraphicsExtractor g) {
+        int right = width / 2 - MOVE_WIDTH - 4 - GAP;
+        searchBox.setWidth(Mth.clamp(right - MARGIN, 40, SEARCH_WIDTH));
+        searchBox.setPosition(MARGIN, height - MARGIN - DrawUtil.BUTTON_HEIGHT);
+        DrawUtil.renderWidget(searchBox, g);
+    }
+
+    private List<String> filterIds(List<String> ids) {
+        String query = searchBox.getValue().trim().toLowerCase(Locale.ROOT);
+        return ids.stream().filter(id -> id.toLowerCase(Locale.ROOT).contains(query)).toList();
     }
 
     private int columnWidth() {
@@ -173,13 +214,12 @@ public class ScreenManagerScreen extends Screen {
 
     private String idAt(double mouseX, double mouseY) {
         int column = columnAt(mouseX);
-        double relative = mouseY - rowY(0);
-        if (column < 0 || relative < 0) return null;
-        int row = (int) (relative / ROW_HEIGHT);
+        int row = (int) ((mouseY - rowY(0)) / ROW_HEIGHT);
+        if (column < 0 || row < 0 || row >= visibleRows()) return null;
+
+        List<String> ids = filterIds(data.ids(column));
         int index = row + scrollOffsets[column];
-        List<String> ids = data.ids(column);
-        if (row >= visibleRows() || index >= ids.size()) return null;
-        return ids.get(index);
+        return index < ids.size() ? ids.get(index) : null;
     }
 
     private boolean selectRow(double mouseX, double mouseY) {
@@ -197,10 +237,9 @@ public class ScreenManagerScreen extends Screen {
 
     private void scrollToSelected() {
         int column = data.getSelectedColumn();
-        String id = data.getSelectedId();
-        if (column < 0 || id == null) return;
+        if (column < 0) return;
 
-        int index = data.ids(column).indexOf(id);
+        int index = filterIds(data.ids(column)).indexOf(data.getSelectedId());
         if (index < 0) return;
 
         int rows = Math.max(1, visibleRows());
@@ -209,7 +248,8 @@ public class ScreenManagerScreen extends Screen {
     }
 
     private void clampScroll(int column) {
-        int max = Math.max(0, data.ids(column).size() - visibleRows());
+        List<String> ids = filterIds(data.ids(column));
+        int max = Math.max(0, ids.size() - visibleRows());
         scrollOffsets[column] = Mth.clamp(scrollOffsets[column], 0, max);
     }
 
@@ -225,7 +265,18 @@ public class ScreenManagerScreen extends Screen {
         double x = event.x();
         double y = event.y();
         //?}
+        if (ScreenManagerHelp.isOpen()) {
+            if (button == InputConstants.MOUSE_BUTTON_LEFT) ScreenManagerHelp.click(x, y);
+            return true;
+        }
+        if (ScreenManagerDropdown.click(x, y, button, height, data)) return true;
         if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+            if (searchBox.isMouseOver(x, y)) {
+                searchBox.setFocused(true);
+                return true;
+            } else {
+                searchBox.setFocused(false);
+            }
             if (closeButton.isMouseOver(x, y)) {
                 onClose();
                 return true;
@@ -238,7 +289,8 @@ public class ScreenManagerScreen extends Screen {
                 data.toggleSortById();
                 return true;
             }
-            if (helpButton.isMouseOver(x, y)){
+            if (helpButton.isMouseOver(x, y)) {
+                ScreenManagerHelp.open();
                 return true;
             }
             if (moveLeftButton.isMouseOver(x, y)) {
@@ -265,8 +317,11 @@ public class ScreenManagerScreen extends Screen {
     /*@Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
     *///?}
+        if (ScreenManagerHelp.isOpen()) return true;
         int column = columnAt(mouseX);
         if (column < 0) return false;
+        List<String> ids = filterIds(data.ids(column));
+        if (ids.isEmpty()) return false;
         scrollOffsets[column] += (int) -Math.signum(scrollY);
         clampScroll(column);
         return true;
@@ -275,6 +330,12 @@ public class ScreenManagerScreen extends Screen {
     //? if >1.21.1 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (ScreenManagerHelp.isOpen()) return ScreenManagerHelp.keyPressed(event.key());
+        if (searchBox.isFocused()) {
+            if (event.key() == InputConstants.KEY_ESCAPE) searchBox.setFocused(false);
+            else searchBox.keyPressed(event);
+            return true;
+        }
         if (copySelected(event.key(), event.hasControlDown())) return true;
         if (moveByKey(event.key())) return true;
         return super.keyPressed(event);
@@ -282,9 +343,37 @@ public class ScreenManagerScreen extends Screen {
     //?} else {
     /*@Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (ScreenManagerHelp.isOpen()) return ScreenManagerHelp.keyPressed(keyCode);
+        if (searchBox.isFocused()) {
+            if (keyCode == InputConstants.KEY_ESCAPE) searchBox.setFocused(false);
+            else searchBox.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
         if (copySelected(keyCode, hasControlDown())) return true;
         if (moveByKey(keyCode)) return true;
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+    *///?}
+
+    //? if >1.21.1 {
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (ScreenManagerHelp.isOpen()) return true;
+        if (searchBox.isFocused()) {
+            searchBox.charTyped(event);
+            return true;
+        }
+        return super.charTyped(event);
+    }
+    //?} else {
+    /*@Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (ScreenManagerHelp.isOpen()) return true;
+        if (searchBox.isFocused()) {
+            searchBox.charTyped(codePoint, modifiers);
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
     }
     *///?}
 
@@ -296,16 +385,15 @@ public class ScreenManagerScreen extends Screen {
     }
 
     private boolean moveByKey(int keyCode) {
-        if (keyCode == InputConstants.KEY_LEFT && data.canMove(-1)) {
-            move(-1);
-            return true;
-        }
-        if (keyCode == InputConstants.KEY_RIGHT && data.canMove(1)) {
-            move(1);
+        if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
+            int direction = keyCode == InputConstants.KEY_LEFT ? -1 : 1;
+            if (!data.canMove(direction)) return false;
+            move(direction);
             return true;
         }
         if (keyCode == InputConstants.KEY_UP || keyCode == InputConstants.KEY_DOWN) {
-            if (!data.moveSelection(keyCode == InputConstants.KEY_UP ? -1 : 1)) return false;
+            int direction = keyCode == InputConstants.KEY_UP ? -1 : 1;
+            if (!data.moveSelection(direction)) return false;
             scrollToSelected();
             return true;
         }

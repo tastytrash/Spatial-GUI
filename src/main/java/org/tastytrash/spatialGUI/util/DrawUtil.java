@@ -73,11 +73,11 @@ public final class DrawUtil {
     public static void drawText(Object g, String text, int x, int y) {
         var font = Minecraft.getInstance().font;
         //? if >=26.1.2 {
-        ((net.minecraft.client.gui.GuiGraphicsExtractor) g).text(font, text, x, y, 0xFFFFFFFF, true);
+        ((net.minecraft.client.gui.GuiGraphicsExtractor) g).text(font, text, x, y, UiColors.WHITE, true);
         //?} else if >1.21.11 {
-        /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, 0xFFFFFFFF, true);
+        /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, UiColors.WHITE, true);
          *///?} else {
-        /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, 0xFFFFFFFF);
+        /*((net.minecraft.client.gui.GuiGraphicsExtractor) g).drawString(font, text, x, y, UiColors.WHITE);
          *///?}
     }
 

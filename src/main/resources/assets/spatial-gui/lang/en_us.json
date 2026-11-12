@@ -258,6 +258,7 @@
   "spatial-gui.screen_manager.disabled": "Disabled",
   "spatial-gui.screen_manager.advanced_mode": "Advanced: %s",
   "spatial-gui.screen_manager.sort": "Sort: %s",
+  "spatial-gui.screen_manager.search": "Search...",
   "spatial-gui.screen_manager.sort.name": "Name",
   "spatial-gui.screen_manager.sort.id": "ID",
 
@@ -357,5 +358,24 @@
   "spatial-gui.editor.dropdown.add_profile": "+ Add profile",
   "spatial-gui.editor.dropdown.confirm_delete": "§cSure?",
   "spatial-gui.profile_picker.top": "Select a profile for this screen",
-  "spatial-gui.profile_picker.bottom": "Press a number, Esc to close"
+  "spatial-gui.profile_picker.bottom": "Press a number, Esc to close",
+
+  "spatial-gui.screen_manager.help.show_basics": "How it works",
+  "spatial-gui.screen_manager.help.show_shortcuts": "Shortcuts",
+  "spatial-gui.screen_manager.help.basics.title": "§6§lHow it works",
+  "spatial-gui.screen_manager.help.basics.1": "§8|§f Click a screen to select it.",
+  "spatial-gui.screen_manager.help.basics.2": "§7|§f Use §e<§f and §e>§f to move it to another column.",
+  "spatial-gui.screen_manager.help.basics.3": "§8|§f Enabled: shown in 3D by Spatial GUI.",
+  "spatial-gui.screen_manager.help.basics.4": "§7|§f Disabled: never touched by Spatial GUI.",
+  "spatial-gui.screen_manager.help.basics.5": "§8|§f Unsorted: previously seen screens.",
+  "spatial-gui.screen_manager.help.basics.6": "§8|§f  - If §oAll Screens§r is enabled, so are these.",
+  "spatial-gui.screen_manager.help.basics.7": "§7|§f Dropdown: choose a profile for the selected screen.",
+  "spatial-gui.screen_manager.help.basics.8": "§8|§f Changes are saved when you close this menu.",
+  "spatial-gui.screen_manager.help.shortcuts.title": "§6§lShortcuts",
+  "spatial-gui.screen_manager.help.shortcuts.1": "§8|§f Up / Down: select the previous or next screen.",
+  "spatial-gui.screen_manager.help.shortcuts.2": "§7|§f Left / Right: move the screen between columns.",
+  "spatial-gui.screen_manager.help.shortcuts.3": "§8|§f Ctrl + C: copy the full class name.",
+  "spatial-gui.screen_manager.help.shortcuts.4": "§7|§f Mouse wheel: scroll the column under the cursor.",
+  "spatial-gui.screen_manager.help.shortcuts.5": "§8|§f Advanced: full names, plus a class name tooltip.",
+  "spatial-gui.screen_manager.help.shortcuts.6": "§7|§f Sort: order columns by name or by class name."
 }

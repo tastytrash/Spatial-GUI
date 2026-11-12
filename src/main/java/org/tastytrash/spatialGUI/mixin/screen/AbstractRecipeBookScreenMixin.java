@@ -22,7 +22,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "init", at = @At("TAIL"))
     private void spatialGUI$syncRecipeBookOnInit(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
@@ -34,7 +34,7 @@ public class AbstractRecipeBookScreenMixin {
     /*private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, CallbackInfo ci) {
     *///?}
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
@@ -42,7 +42,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "mouseClicked", at = @At("TAIL"))
     private void spatialGUI$onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
         if (!this.recipeBookComponent.isVisible()) {
@@ -78,7 +78,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "init", at = @At("TAIL"))
     private void spatialGUI$syncRecipeBookOnInit(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
@@ -86,7 +86,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
     }
@@ -94,7 +94,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "mouseClicked", at = @At("TAIL"))
     private void spatialGUI$onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             renderer.getWorldScreenRenderer().setRecipeBookOpen(this.recipeBookComponent.isVisible());
         }
         if (!this.recipeBookComponent.isVisible()) {
@@ -128,7 +128,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "init", at = @At("TAIL"))
     private void spatialGUI$syncRecipeBookOnInit(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
             renderer.getWorldScreenRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
         }
@@ -137,7 +137,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void spatialGUI$updateIsRecipeBookOpen(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
             renderer.getWorldScreenRenderer().setRecipeBookOpen(listener.getRecipeBookComponent().isVisible());
         }
@@ -146,7 +146,7 @@ public class AbstractRecipeBookScreenMixin {
     @Inject(method = "mouseClicked", at = @At("TAIL"))
     private void spatialGUI$onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         var renderer = SpatialGUIClient.renderer();
-        if (renderer != null) {
+        if (renderer != null && renderer.getHookedScreen() == (Object) this) {
             RecipeUpdateListener listener = (RecipeUpdateListener) (Object) this;
             boolean visible = listener.getRecipeBookComponent().isVisible();
             renderer.getWorldScreenRenderer().setRecipeBookOpen(visible);

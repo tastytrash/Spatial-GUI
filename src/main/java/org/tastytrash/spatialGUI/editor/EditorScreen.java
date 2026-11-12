@@ -27,6 +27,7 @@ import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.util.DrawUtil;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
+import org.tastytrash.spatialGUI.util.UiColors;
 
 import java.util.Arrays;
 
@@ -188,9 +189,6 @@ public class EditorScreen extends Screen {
         }
 
         int gridSize = 18;
-        int gray = 0x4A4A4A4A;
-        int light_blue = 0xFF33AAFF;
-        int red = 0xFFFF2B2B;
 
         int invWidth = 180;
         int invHeight = 162;
@@ -202,20 +200,20 @@ public class EditorScreen extends Screen {
 
         // grid
         for (int x = startX; x <= width; x += gridSize) {
-            g.verticalLine(x, 0, height, gray);
+            g.verticalLine(x, 0, height, UiColors.DARK_GRAY_30);
         }
         for (int y = startY; y <= height; y += gridSize) {
-            g.horizontalLine(0, width, y, gray);
+            g.horizontalLine(0, width, y, UiColors.DARK_GRAY_30);
         }
 
         // inventory border
         for (int i = 0; i < 4; i++) {
-            g.outline(invX + i, invY + i, invWidth - i * 2, invHeight - i * 2, light_blue);
+            g.outline(invX + i, invY + i, invWidth - i * 2, invHeight - i * 2, UiColors.SKY_BLUE);
         }
 
         // outer border
         for (int i = 0; i < 2; i++) {
-            g.outline(i, i, width - i * 2, height - i * 2, red);
+            g.outline(i, i, width - i * 2, height - i * 2, UiColors.RED);
         }
     }
 

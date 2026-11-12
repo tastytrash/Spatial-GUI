@@ -7,6 +7,7 @@ import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.client.SpatialGUIKeybinds;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.util.DrawUtil;
+import org.tastytrash.spatialGUI.util.UiColors;
 
 final class EditorHelp {
     private static final int PANEL_WIDTH = 320;
@@ -118,9 +119,9 @@ final class EditorHelp {
         int x = (guiWidth - PANEL_WIDTH) / 2;
         int y = Math.max(DrawUtil.SCREEN_MARGIN, (guiHeight - height) / 2);
 
-        DrawUtil.fillRect(g, 0, 0, guiWidth, guiHeight, 0xB0000000);
-        DrawUtil.fillRect(g, x - 2, y - 2, x + PANEL_WIDTH + 2, y + height + 2, 0xFF33AAFF);
-        DrawUtil.fillRect(g, x, y, x + PANEL_WIDTH, y + height, 0xFF101010);
+        DrawUtil.fillRect(g, 0, 0, guiWidth, guiHeight, UiColors.BLACK_70);
+        DrawUtil.fillRect(g, x - 2, y - 2, x + PANEL_WIDTH + 2, y + height + 2, UiColors.SKY_BLUE);
+        DrawUtil.fillRect(g, x, y, x + PANEL_WIDTH, y + height, UiColors.NEAR_BLACK);
 
         int textY = y + PADDING;
         drawLine(g, prefix + "title", keyName, x + PADDING, textY);

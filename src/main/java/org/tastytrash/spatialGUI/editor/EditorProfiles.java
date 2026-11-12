@@ -5,14 +5,14 @@ import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.ConfigProfiles;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 
-final class EditorProfiles {
+public final class EditorProfiles {
     static final int MAX_ENTRIES = 8;
 
     private static int selected = 0;
 
     private EditorProfiles() {}
 
-    static int count() {
+    public static int count() {
         return ConfigManager.profiles().names().size();
     }
 
@@ -20,11 +20,11 @@ final class EditorProfiles {
         return count() < MAX_ENTRIES;
     }
 
-    static int selected() {
+    public static int selected() {
         return selected;
     }
 
-    static String name(int slot) {
+    public static String name(int slot) {
         return ConfigManager.profiles().names().get(slot);
     }
 
@@ -39,7 +39,7 @@ final class EditorProfiles {
         ConfigManager.setEditorConfig(null);
     }
 
-    static void select(int slot) {
+    public static void select(int slot) {
         if (slot == selected || slot < 0 || slot >= count()) return;
 
         EditorHistory.checkpoint();
@@ -56,13 +56,13 @@ final class EditorProfiles {
         EditorHistory.reset();
     }
 
-    static int getDefaultSlot() {
+    public static int getDefaultSlot() {
         String linked = ConfigManager.profiles().linked();
         int slot = linked == null ? -1 : ConfigManager.profiles().names().indexOf(linked);
         return Math.max(slot, 0);
     }
 
-    static String label(int slot) {
+    public static String label(int slot) {
         return (slot == getDefaultSlot() ? "§e★ §r" : "") + name(slot);
     }
 
