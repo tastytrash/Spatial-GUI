@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import net.minecraft.client.Minecraft;
@@ -44,7 +45,7 @@ public class SpatialGUIRenderer {
     }
     public static boolean isExtractingScreen = false;
     public static boolean skipWindowOverride = false;
-    public static Object cursorTarget = null;
+    public static GuiGraphicsExtractor cursorTarget = null;
     public static boolean renderingLevel = false;
 
     private final ScreenTexture screenTexture;

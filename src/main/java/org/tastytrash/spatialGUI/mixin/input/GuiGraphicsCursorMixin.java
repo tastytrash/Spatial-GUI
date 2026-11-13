@@ -1,35 +1,21 @@
 package org.tastytrash.spatialGUI.mixin.input;
 
 import org.spongepowered.asm.mixin.Mixin;
+
+//? if >=1.21.11 {
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 
-//? if >=1.21.11 {
-import com.mojang.blaze3d.platform.cursor.CursorType;
-//? if >=26.1.2 {
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-//?} else {
-/*import net.minecraft.client.gui.GuiGraphicsExtractor;
- *///?}
-
-
-//? if >=26.1.2 {
 @Mixin(GuiGraphicsExtractor.class)
-//?} else {
-/*@Mixin(GuiGraphicsExtractor.class)
-*///?}
 public class GuiGraphicsCursorMixin {
     @Inject(method = "requestCursor", at = @At("HEAD"))
     private void spatialGUI$relayCursor(CursorType cursorType, CallbackInfo ci) {
-        if (SpatialGUIRenderer.cursorTarget instanceof
-                //? if >=26.1.2 {
-                GuiGraphicsExtractor
-                        //?} else {
-                        /*GuiGraphicsExtractor
-                         *///?}
-                        target && target != (Object) this) {
+        GuiGraphicsExtractor target = SpatialGUIRenderer.cursorTarget;
+        if (target != null && target != (Object) this) {
             target.requestCursor(cursorType);
         }
     }
