@@ -1,17 +1,18 @@
 package org.tastytrash.spatialGUI.render;
 
-import org.tastytrash.spatialGUI.config.ConfigManager;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
-import org.tastytrash.spatialGUI.mixin.accessor.GuiRendererAccessor;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.mixin.accessor.GameRendererAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.GuiRendererAccessor;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
-import org.tastytrash.spatialGUI.util.RenderUtil;
-import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
+import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
+import org.tastytrash.spatialGUI.util.RenderUtil;
 
 //? if >=26.1.2 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -46,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ScreenExtractor {
+    public static RenderTarget captureTarget;
+
     //? if >1.21.1 {
     private GuiRenderState screenRenderState;
     private GuiRenderer screenGuiRenderer;
@@ -181,6 +184,7 @@ public class ScreenExtractor {
         *///?} else {
         /*var target = screenTexture.prepareAndGetTarget();
         if (target != null) {
+            captureTarget = target;
             Window window = mc.getWindow();
             float guiWidth = (float) (window.getWidth() / window.getGuiScale());
             float guiHeight = (float) (window.getHeight() / window.getGuiScale());
@@ -220,6 +224,8 @@ public class ScreenExtractor {
                 modelView.popMatrix();
                 RenderSystem.applyModelViewMatrix();
                 RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
+                SpatialGUIRenderer.isExtractingScreen = false;
+                captureTarget = null;
                 mc.getMainRenderTarget().bindWrite(true);
             }
         }
