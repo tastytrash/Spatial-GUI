@@ -1,7 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
 import net.minecraft.world.phys.Vec3;
-import org.lwjgl.opengl.GL12;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -77,6 +76,7 @@ import org.tastytrash.spatialGUI.util.AnimationUtil;
 import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 
+/** Draws the open screen as a flat or curved quad in the world, with open and close animations. */
 public class WorldScreenRenderer {
     private static final PoseStack WORLD_POSE_STACK = new PoseStack();
     //? if >1.21.1 {
@@ -112,11 +112,14 @@ public class WorldScreenRenderer {
     private CylinderBasis cylinderBasis;
     private long basisFrame = -1;
     private int meshQuadCount = 1;
+    /** Quads the curved screen is split into. */
     private static final int CURVED_SEGMENTS = 32;
     private static final int SHADOW_TAPS = 12;
-    private long screenOpenTime = 0;
+    private long screenOpenTimeMs = 0;
     private float passAlpha = 1f;
     private static boolean isRecipeBookOpen = false;
+    /** -2 while the recipe book is open, then counts up to 0 after it closes.
+     * Prevents a scale flicker.*/
     private static int recipeBookCloseDelay = 0;
 
     //? if >1.21.1 {
@@ -127,12 +130,12 @@ public class WorldScreenRenderer {
     private VertexSorting capturedVertexSorting;
     *///?}
     private final PoseStack capturedPoseStack = new PoseStack();
-    private boolean hasCapturedPerspective = false;
+    private boolean hasCapturedCamera = false;
     private boolean hasDrawnThisFrame = false;
 
     private boolean closing = false;
-    private long closeStartTime = 0;
-    private long closeStartElapsed = 0;
+    private long closeStartTimeMs = 0;
+    private long closeStartElapsedMs = 0;
     private long closeDurationMs = 0;
     private boolean closeFirstPerson = false;
     private float closeYaw;
@@ -144,6 +147,8 @@ public class WorldScreenRenderer {
         this.screenTexture = screenTexture;
     }
 
+    /** Calculates the brightness tint from the light at the player's eyes, smoothed over time.
+     * @return a lightness value from 0 to 255, where 255 is untinted */
     private int computeLightingTint() {
         var mc = Minecraft.getInstance();
         if (!ConfigManager.config().enableWorldLightingTint || mc.level == null || mc.player == null) return 255;
@@ -155,14 +160,18 @@ public class WorldScreenRenderer {
         return Math.round(smoothedLight);
     }
 
+    /** Scale and width-to-height ratio of the screen's texture. */
     private record ScreenPose(float scale, float aspect) {}
 
+    /** Recomputes where the screen is in the world. */
     public void updateQuadBasis() {
         if (Minecraft.getInstance().player == null) return;
         boolean isFirstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
         updateScreenBases(computeScreenPose(null, isFirstPerson), isFirstPerson);
     }
 
+    /** Builds the screen's world pose and stores it in the shared pose stack, and applies it to the given matrices.
+     * @return the screen's scale and aspect ratio */
     private ScreenPose computeScreenPose(PoseStack matrices, boolean isFirstPerson) {
         var renderer = SpatialGUIClient.renderer();
         float yaw = closing ? closeYaw : renderer.anchoredYaw() + CameraUtil.orbitYaw(isFirstPerson);
@@ -204,6 +213,7 @@ public class WorldScreenRenderer {
         return new ScreenPose(scale, aspect);
     }
 
+    /** Stores the flat basis, and the curved one if enabled, from the current pose. */
     private void updateScreenBases(ScreenPose pose, boolean isFirstPerson) {
         Matrix4f worldPose = WORLD_POSE_STACK.last().pose();
         quadBasis = RenderUtil.computeQuadBasis(worldPose, pose.aspect(), pose.scale());
@@ -216,11 +226,13 @@ public class WorldScreenRenderer {
         }
     }
 
+    /** @return the flat screen's position and axes in the world, recomputed if stale. */
     public QuadBasis getQuadBasis() {
         refreshBasisIfStale();
         return quadBasis;
     }
 
+    /** @return the curved screen's position and axes in the world, recomputed if stale. */
     public CylinderBasis getCylinderBasis() {
         refreshBasisIfStale();
         return cylinderBasis;
@@ -274,8 +286,9 @@ public class WorldScreenRenderer {
         meshQuadCount = (taps + 1) * (curved ? CURVED_SEGMENTS : 1);
     }
 
+    /** Saves the projection and camera pose from the world render. */
     //? if >1.21.1 {
-    public void capturePerspectiveState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, PoseStack poseStack) {
+    public void captureCameraState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, PoseStack poseStack) {
         this.capturedProjectionBuffer = buffer;
         this.capturedProjectionType = type;
         this.capturedPoseStack.setIdentity();
@@ -283,7 +296,7 @@ public class WorldScreenRenderer {
             this.capturedPoseStack.last().pose().set(poseStack.last().pose());
             this.capturedPoseStack.last().normal().set(poseStack.last().normal());
         }
-        this.hasCapturedPerspective = true;
+        this.hasCapturedCamera = true;
     }
 
     public GpuBufferSlice getCapturedProjectionBuffer() {
@@ -298,7 +311,7 @@ public class WorldScreenRenderer {
         return capturedProjectionType;
     }
     //?} else {
-    /*public void capturePerspectiveState(Matrix4f projectionMatrix, VertexSorting vertexSorting, PoseStack poseStack) {
+    /*public void captureCameraState(Matrix4f projectionMatrix, VertexSorting vertexSorting, PoseStack poseStack) {
         if (projectionMatrix != null) {
             this.capturedProjectionMatrix.set(projectionMatrix);
         }
@@ -308,7 +321,7 @@ public class WorldScreenRenderer {
             this.capturedPoseStack.last().pose().set(poseStack.last().pose());
             this.capturedPoseStack.last().normal().set(poseStack.last().normal());
         }
-        this.hasCapturedPerspective = true;
+        this.hasCapturedCamera = true;
     }
     *///?}
 
@@ -341,7 +354,7 @@ public class WorldScreenRenderer {
         var player = this.deferredPlayer;
         this.deferredPlayer = null;
         Minecraft client = Minecraft.getInstance();
-        if (player == null || !hasCapturedPerspective || client.level == null) {
+        if (player == null || !hasCapturedCamera || client.level == null) {
             return;
         }
 
@@ -389,12 +402,12 @@ public class WorldScreenRenderer {
 
     public boolean beginClosing() {
         var player = Minecraft.getInstance().player;
-        if (!hasCapturedPerspective || player == null || screenTexture.getTarget() == null) {
+        if (!hasCapturedCamera || player == null || screenTexture.getTarget() == null) {
             return false;
         }
         long now = System.currentTimeMillis();
         boolean firstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
-        long animationMs = Math.min(animationTotalMs(), Math.max(0L, now - screenOpenTime));
+        long animationMs = Math.min(animationTotalMs(), Math.max(0L, now - screenOpenTimeMs));
 
         boolean cameraMoves = !firstPerson || SpatialGUIClient.getWasThirdPersonCamera();
         long cameraMs = cameraMoves ? Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f)) : 0L;
@@ -403,8 +416,8 @@ public class WorldScreenRenderer {
             return false;
         }
         closing = true;
-        closeStartTime = now;
-        closeStartElapsed = animationMs;
+        closeStartTimeMs = now;
+        closeStartElapsedMs = animationMs;
         closeDurationMs = duration;
         closeFirstPerson = firstPerson;
         var renderer = SpatialGUIClient.renderer();
@@ -419,7 +432,7 @@ public class WorldScreenRenderer {
     }
 
     public long getCloseElapsedMs() {
-        return Math.max(0L, System.currentTimeMillis() - closeStartTime);
+        return Math.max(0L, System.currentTimeMillis() - closeStartTimeMs);
     }
 
     private boolean isFirstPersonNow() {
@@ -435,23 +448,24 @@ public class WorldScreenRenderer {
     }
 
     public boolean isCloseFinished() {
-        return System.currentTimeMillis() - closeStartTime >= closeDurationMs;
+        return System.currentTimeMillis() - closeStartTimeMs >= closeDurationMs;
     }
 
     public void endClosing() {
         closing = false;
     }
 
-    private boolean canDraw() {
+    private boolean shouldRender() {
         return closing ? getAnimationElapsedMs() > 0L : SpatialGUIClient.renderer().shouldCapture();
     }
 
+    /** Counts up while opening, down while closing */
     private long getAnimationElapsedMs() {
         long now = System.currentTimeMillis();
         if (!closing) {
-            return now - screenOpenTime;
+            return now - screenOpenTimeMs;
         }
-        return Math.max(0L, closeStartElapsed - (now - closeStartTime));
+        return Math.max(0L, closeStartElapsedMs - (now - closeStartTimeMs));
     }
 
     private float getFadeAlpha() {
@@ -461,8 +475,8 @@ public class WorldScreenRenderer {
         return Math.min(1.0F, getAnimationElapsedMs() / (float) Math.max(1, ConfigManager.config().fadeDurationMs));
     }
 
-    public void resetPerspectiveState() {
-        this.hasCapturedPerspective = false;
+    public void resetCameraState() {
+        this.hasCapturedCamera = false;
         this.hasDrawnThisFrame = false;
     }
 
@@ -470,8 +484,8 @@ public class WorldScreenRenderer {
         this.hasDrawnThisFrame = false;
     }
 
-    public void setScreenOpenTime(long time) {
-        this.screenOpenTime = time;
+    public void setScreenOpenTimeMs(long time) {
+        this.screenOpenTimeMs = time;
     }
 
     public void setRecipeBookOpen(boolean open) {
@@ -498,10 +512,11 @@ public class WorldScreenRenderer {
          *///?}
     }
 
+    /** Draws the screen into the world using the given pose, as well as the editor handles when active. */
     public void renderInWorld(PoseStack matrices) {
         Minecraft client = Minecraft.getInstance();
 
-        if (!hasTexture() || !canDraw() || client.player == null) {
+        if (!hasTexture() || !shouldRender() || client.player == null) {
             return;
         }
 
@@ -586,9 +601,10 @@ public class WorldScreenRenderer {
         //?}
     }
 
+    /** Draws the screen once per frame after the world has rendered. */
     public void renderInWorldPost() {
         Minecraft client = Minecraft.getInstance();
-        if (!hasCapturedPerspective || hasDrawnThisFrame || !hasTexture() || client.player == null) {
+        if (!hasCapturedCamera || hasDrawnThisFrame || !hasTexture() || client.player == null) {
             return;
         }
 
@@ -596,9 +612,10 @@ public class WorldScreenRenderer {
         drawQuadPass();
     }
 
+    /** Draws a second, translucent copy of the screen over the player. */
     public void renderScreenOverPlayer() {
         float alpha = Math.min(ConfigManager.config().screenOverPlayerAlpha / 255.0f, 0.999f);
-        if (alpha <= 0f || !hasCapturedPerspective || !hasDrawnThisFrame || !hasTexture() || getFadeAlpha() < 1f) {
+        if (alpha <= 0f || !hasCapturedCamera || !hasDrawnThisFrame || !hasTexture() || getFadeAlpha() < 1f) {
             return;
         }
 
@@ -802,6 +819,7 @@ public class WorldScreenRenderer {
         }
     }
 
+    /** Renders the editor mode handles. */
     private void drawHandles(Matrix4f pose, float aspect) {
         if (EditorMode.previewing()) return;
         RenderTarget mainTarget = Minecraft.getInstance().getMainRenderTarget();

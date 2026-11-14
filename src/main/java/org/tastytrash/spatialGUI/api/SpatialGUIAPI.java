@@ -8,59 +8,70 @@ import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 public final class SpatialGUIAPI {
     private SpatialGUIAPI() {}
 
-    // Returns true if Spatial GUI is enabled and showing a screen in 3D
+    /** Checks if Spatial GUI is enabled and showing a screen in 3D.
+     * @return {@code true} if Spatial GUI is enabled and showing a screen in 3D */
     public static boolean isActive() {
         return SpatialGUIClient.isEnabled()
                 && renderer() != null
                 && renderer().getHookedScreen() != null;
     }
 
-    // Gets the screen currently shown in 3D, or null if none
+    /** Gets the screen currently shown in 3D.
+     * @return the screen currently shown in 3D, or null if none */
     public static Screen getCurrentScreen() {
         return renderer() != null ? renderer().getHookedScreen() : null;
     }
 
-    // Returns true if in first person mode
+    /** Checks if Spatial GUI is in first person mode.
+     * @return {@code true} if in first person mode */
     public static boolean isFirstPersonMode() {
         return isActive() && SpatialGUIClient.getEffectiveFirstPersonMode();
     }
 
-    // Returns true if in third person mode
+    /** Checks if Spatial GUI is in third person mode.
+     * @return {@code true} if in third person mode */
     public static boolean isThirdPersonMode() {
         return isActive() && !SpatialGUIClient.getEffectiveFirstPersonMode();
     }
 
-    // Returns true if the HUD is being hidden
+    /** Checks if the HUD is being hidden.
+     * @return {@code true} if the HUD is being hidden */
     public static boolean shouldHideHud() {
         return SpatialGUIClient.shouldHideHud();
     }
 
-    // Returns true if the hotbar is being hidden
+    /** Checks if the hotbar is being hidden.
+     * @return {@code true} if the hotbar is being hidden */
     public static boolean shouldHideHotbar() {
         return SpatialGUIClient.shouldHideHotbar();
     }
 
-    // Returns true if the mouse is over the 3D screen
+    /** Checks if the mouse is over the 3D screen.
+     * @return {@code true} if the mouse is over the 3D screen */
     public static boolean isMouseOverScreen() {
         return renderer() != null && renderer().isMouseOverScreen();
     }
 
-    // Returns true if a screen is currently opening (playing opening animation)
+    /** Checks if a screen is currently opening.
+     * @return {@code true} if a screen is playing its opening animation */
     public static boolean isOpeningScreen() {
         return renderer() != null && renderer().getWorldScreenRenderer().isOpening();
     }
 
-    // Returns true if a screen is currently closing (playing closing animation)
+    /** Checks if a screen is currently closing.
+     * @return {@code true} if a screen is playing its closing animation */
     public static boolean isClosingScreen() {
         return renderer() != null && renderer().isClosing();
     }
 
-    // Gets the camera position Spatial GUI is using
+    /** Gets the camera position Spatial GUI is using.
+     * @return the camera position Spatial GUI is using */
     public static Vec3 getCameraPosition() {
         return SpatialGUIClient.getCameraPosition();
     }
 
-    // Returns true if crosshair mode is on (using crosshair for mouse in first person)
+    /** Checks if crosshair mode is on, where the crosshair acts as the mouse in first person.
+     * @return {@code true} if crosshair mode is on */
     public static boolean isCrosshairModeActive() {
         return SpatialGUIRenderer.isCrosshairModeActive();
     }

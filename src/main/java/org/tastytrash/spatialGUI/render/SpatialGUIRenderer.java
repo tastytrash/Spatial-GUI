@@ -137,7 +137,7 @@ public class SpatialGUIRenderer {
         if (swapping) {
             poseStarted = prevPoseStarted;
         } else {
-            worldScreen.setScreenOpenTime(System.currentTimeMillis());
+            worldScreen.setScreenOpenTimeMs(System.currentTimeMillis());
         }
 
         var player = client.player;
@@ -227,7 +227,7 @@ public class SpatialGUIRenderer {
                 && worldScreen.beginClosing();
         if (!startClosing) {
             worldScreen.resetRecipeBookState();
-            worldScreen.resetPerspectiveState();
+            worldScreen.resetCameraState();
             releaseRotationAnchor();
         }
         hookedScreen = null;
@@ -281,7 +281,7 @@ public class SpatialGUIRenderer {
         if (!worldScreen.isClosing()) return;
         worldScreen.endClosing();
         worldScreen.resetRecipeBookState();
-        worldScreen.resetPerspectiveState();
+        worldScreen.resetCameraState();
         screenTexture.clearTarget();
         releaseRotationAnchor();
     }
@@ -459,12 +459,12 @@ public class SpatialGUIRenderer {
     }
 
     //? if >1.21.1 {
-    public void capturePerspectiveState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        worldScreen.capturePerspectiveState(buffer, type, poseStack);
+    public void captureCameraState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, com.mojang.blaze3d.vertex.PoseStack poseStack) {
+        worldScreen.captureCameraState(buffer, type, poseStack);
     }
     //?} else {
-    /*public void capturePerspectiveState(org.joml.Matrix4f projectionMatrix, com.mojang.blaze3d.vertex.VertexSorting vertexSorting, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        worldScreen.capturePerspectiveState(projectionMatrix, vertexSorting, poseStack);
+    /*public void captureCameraState(org.joml.Matrix4f projectionMatrix, com.mojang.blaze3d.vertex.VertexSorting vertexSorting, com.mojang.blaze3d.vertex.PoseStack poseStack) {
+        worldScreen.captureCameraState(projectionMatrix, vertexSorting, poseStack);
     }
     *///?}
 

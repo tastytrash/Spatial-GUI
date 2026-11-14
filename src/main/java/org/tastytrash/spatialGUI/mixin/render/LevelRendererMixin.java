@@ -71,13 +71,13 @@ public class LevelRendererMixin {
         *///?}
 
         //? if >1.21.1 {
-        renderer.capturePerspectiveState(
+        renderer.captureCameraState(
                 RenderSystem.getProjectionMatrixBuffer(),
                 RenderSystem.getProjectionType(),
                 poseStack
         );
         //?} else {
-        /*renderer.capturePerspectiveState(
+        /*renderer.captureCameraState(
                 RenderSystem.getProjectionMatrix(),
                 RenderSystem.getVertexSorting(),
                 poseStack

@@ -70,8 +70,8 @@ public final class AnimationUtil {
         };
     }
 
-    public static float calculateAnimatedScale(float baseScale, long screenOpenTime, boolean isRecipeBookOpen, int recipeBookCloseDelay) {
-        return scaleForElapsed(baseScale, System.currentTimeMillis() - screenOpenTime, isRecipeBookOpen, recipeBookCloseDelay);
+    public static float calculateAnimatedScale(float baseScale, long screenOpenTimeMs, boolean isRecipeBookOpen, int recipeBookCloseDelay) {
+        return scaleForElapsed(baseScale, System.currentTimeMillis() - screenOpenTimeMs, isRecipeBookOpen, recipeBookCloseDelay);
     }
 
     public static float scaleForElapsed(float baseScale, long elapsedMs, boolean isRecipeBookOpen, int recipeBookCloseDelay) {
