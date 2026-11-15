@@ -337,7 +337,7 @@ public class SpatialGUIRenderer {
 
     public boolean isClosingWithCameraTransition() {
         return worldScreen.isClosing()
-                && (!worldScreen.isClosingFirstPerson() || SpatialGUIClient.getWasThirdPersonCamera());
+                && WorldScreenRenderer.shouldTransitionCameraOnClose(worldScreen.isClosingFirstPerson());
     }
 
     public long getCloseElapsedMs() {

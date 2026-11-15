@@ -142,7 +142,8 @@ public abstract class CameraMixin {
             float easedProgress = renderer.getCloseBlend();
 
             Vec3 screenCameraPos = MathUtil.lerpEntityPosition(this.entity, partialTicks).add(lastOffset);
-            boolean toFirstPerson = renderer.isClosingThirdToFirstPerson();
+            boolean toFirstPerson = renderer.isClosingThirdToFirstPerson()
+                    || (renderer.isClosingFirstPerson() && !SpatialGUIClient.getWasThirdPersonCamera());
             Vec3 normalPos = toFirstPerson ? MathUtil.lerpEntityPosition(this.entity, partialTicks).add(0.0, this.entity.getEyeHeight(), 0.0) : position;
             float normalYRot = toFirstPerson ? this.entity.getYRot() : yRot;
             float normalXRot = toFirstPerson ? this.entity.getXRot() : xRot;
@@ -150,8 +151,8 @@ public abstract class CameraMixin {
             position = new Vec3(MathUtil.lerp(screenCameraPos.x, normalPos.x, easedProgress), MathUtil.lerp(screenCameraPos.y, normalPos.y, easedProgress), MathUtil.lerp(screenCameraPos.z, normalPos.z, easedProgress));
             SpatialGUIClient.setScreenAnchorDelta(screenCameraPos.subtract(position));
             yRot = MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
-            boolean fromFirstPerson = renderer.isClosingFirstPerson();
-            xRot = (toFirstPerson || fromFirstPerson || (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera())) ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
+            boolean lerpPitch = renderer.isClosingFirstPerson() || ConfigManager.config().lerpCameraPitch;
+            xRot = lerpPitch ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
             this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
             spatialGUI$updateLookVectors();
             SpatialGUIClient.setCameraPosition(position);
@@ -334,7 +335,7 @@ public abstract class CameraMixin {
 
             position = new Vec3(MathUtil.lerp(startPos.x, newTargetPos.x, easedProgress), MathUtil.lerp(startPos.y, newTargetPos.y, easedProgress), MathUtil.lerp(startPos.z, newTargetPos.z, easedProgress));
             yRot = MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
-            xRot = (ConfigManager.config().lerpCameraPitch && SpatialGUIClient.getWasThirdPersonCamera() && progress < 1.0f) ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
+            xRot = ConfigManager.config().lerpCameraPitch && progress < 1.0f ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
         }
         SpatialGUIClient.setCameraPosition(position);
     }

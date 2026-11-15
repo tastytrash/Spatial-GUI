@@ -187,7 +187,7 @@
   "yacl3.config.spatial-gui:config.elytraFlyingHeightOffset": "Elytra Height Offset",
   "yacl3.config.spatial-gui:config.elytraFlyingHeightOffset.desc": "Additional height offset when elytra flying, also affects the camera height offset the same amount",
   "yacl3.config.spatial-gui:config.lerpCameraPitch": "Lerp Camera Pitch",
-  "yacl3.config.spatial-gui:config.lerpCameraPitch.desc": "Lerp the camera pitch.\nOnly when opening from Minecraft's third person perspective",
+  "yacl3.config.spatial-gui:config.lerpCameraPitch.desc": "Lerp the camera pitch during transitions",
   "yacl3.config.spatial-gui:config.firstPersonScreenDistance": "Screen Distance",
   "yacl3.config.spatial-gui:config.firstPersonScreenDistance.desc": "Screen distance from the camera",
   "yacl3.config.spatial-gui:config.firstPersonScreenSideOffset": "Screen Side Offset",

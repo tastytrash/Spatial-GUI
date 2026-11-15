@@ -2,6 +2,10 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+Avatar appearing too bright with shaders
+
+Avatar disappears sometimes for a frame after closing (Fabric 26.2, )
+
 Body not hiding behind terrain underwater
 
 #192

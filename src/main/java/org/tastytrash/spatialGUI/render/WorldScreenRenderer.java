@@ -400,6 +400,12 @@ public class WorldScreenRenderer {
         return total;
     }
 
+    public static boolean shouldTransitionCameraOnClose(boolean firstPerson) {
+        return !firstPerson
+                || SpatialGUIClient.getWasThirdPersonCamera()
+                || !ConfigManager.config().keepFirstPersonCameraAngle;
+    }
+
     public boolean beginClosing() {
         var player = Minecraft.getInstance().player;
         if (!hasCapturedCamera || player == null || screenTexture.getTarget() == null) {
@@ -407,10 +413,10 @@ public class WorldScreenRenderer {
         }
         long now = System.currentTimeMillis();
         boolean firstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
-        long animationMs = Math.min(animationTotalMs(), Math.max(0L, now - screenOpenTimeMs));
+        long animationMs = Mth.clamp(now - screenOpenTimeMs, 0L, animationTotalMs());
 
-        boolean cameraMoves = !firstPerson || SpatialGUIClient.getWasThirdPersonCamera();
-        long cameraMs = cameraMoves ? Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f)) : 0L;
+        boolean cameraTransitions = shouldTransitionCameraOnClose(firstPerson);
+        long cameraMs = cameraTransitions ? Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f)) : 0L;
         long duration = Math.max(animationMs, cameraMs);
         if (duration <= 0L) {
             return false;
