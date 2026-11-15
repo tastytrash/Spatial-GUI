@@ -2,6 +2,8 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+Change JEI default alignment to LEFT (#75)
+
 Avatar appearing too bright with shaders
 
 Body not hiding behind terrain underwater

@@ -649,6 +649,9 @@ public class SpatialGUIConfig {
     @SerialEntry
     public boolean profilePickerTipSeen = false;
 
+    @SerialEntry
+    public boolean jeiAlignmentChecked = false;
+
 
     public int getEffectiveGuiScale() {
         if (overrideGuiScale) {

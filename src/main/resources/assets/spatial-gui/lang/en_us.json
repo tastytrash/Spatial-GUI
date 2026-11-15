@@ -377,5 +377,6 @@
   "spatial-gui.screen_manager.help.shortcuts.3": "§8|§f Ctrl + C: copy the full class name.",
   "spatial-gui.screen_manager.help.shortcuts.4": "§7|§f Mouse wheel: scroll the column under the cursor.",
   "spatial-gui.screen_manager.help.shortcuts.5": "§8|§f Advanced: full names, plus a class name tooltip.",
-  "spatial-gui.screen_manager.help.shortcuts.6": "§7|§f Sort: order columns by name or by class name."
+  "spatial-gui.screen_manager.help.shortcuts.6": "§7|§f Sort: order columns by name or by class name.",
+  "spatial-gui.jei.alignment_moved": "JEI's recipe and bookmark list were repositioned to better fit Spatial GUI's layout. You can change them back in JEI's settings."
 }

@@ -5,6 +5,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.tastytrash.spatialGUI.compat.JeiCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.editor.EditorMode;
@@ -124,6 +125,7 @@ public class SpatialGUIKeybinds {
     }
 
     private static void tick(Minecraft mc) {
+        JeiCompat.tick(mc);
         if (toggleMouseFreeHeld && !isToggleMouseFreeDown(mc)) toggleMouseFreeHeld = false;
         while (reloadProfiles.consumeClick()) {
             String message = ConfigManager.reload();
