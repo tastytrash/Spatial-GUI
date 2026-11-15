@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.config.ConfigManager;
+import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
@@ -27,11 +28,13 @@ public class MinecraftMixin {
             index = 0
     )
     private boolean spatialGUI$renderWorldInForcedFrame(boolean original) {
-        var renderer = SpatialGUIClient.renderer();
-        if (renderer != null && ConfigManager.config().enabled && renderer.shouldCapture()) {
-            return true;
+        var screen = SpatialGUIRenderer.currentScreen();
+        if (original || screen == null || Minecraft.getInstance().level == null
+                || ConfigManager.config() == null || !ConfigManager.config().enabled) {
+            return original;
         }
-        return original;
+        String id = screen.getClass().getName();
+        return !id.contains("LevelLoading") && !id.contains("ReceivingLevel");
     }
 
     @Inject(method = "pick", at = @At("TAIL"))

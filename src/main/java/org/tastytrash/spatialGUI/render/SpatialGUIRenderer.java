@@ -395,7 +395,7 @@ public class SpatialGUIRenderer {
         return cameraStartXRot;
     }
 
-    private static Screen currentScreen() {
+    public static Screen currentScreen() {
         //? if >=26.2 {
         /*return Minecraft.getInstance().gui.screen();
          *///?} else {

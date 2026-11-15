@@ -4,11 +4,7 @@ __________ FIXES _________________
 
 Avatar appearing too bright with shaders
 
-Avatar disappears sometimes for a frame after closing (Fabric 26.2, )
-
 Body not hiding behind terrain underwater
-
-#192
 
 Compat:
  - Real Camera (#25) (May not be possible)
