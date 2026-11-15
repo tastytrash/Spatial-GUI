@@ -77,7 +77,7 @@ public abstract class CameraMixin {
     private float spatialGUI$overrideFov(float original) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer == null) return original;
-        float factor = renderer.getFovOverrideFactor();
+        float factor = renderer.getFovOverrideBlend();
         if (factor <= 0f) return original;
         return MathUtil.lerp(original, ConfigManager.config().targetFov, factor);
     }

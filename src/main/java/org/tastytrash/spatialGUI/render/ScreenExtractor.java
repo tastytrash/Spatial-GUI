@@ -1,38 +1,37 @@
 package org.tastytrash.spatialGUI.render;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import org.joml.Vector2d;
-import org.tastytrash.spatialGUI.SpatialGUI;
-import org.tastytrash.spatialGUI.compat.ControlifyCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
-import org.tastytrash.spatialGUI.mixin.accessor.GameRendererAccessor;
-import org.tastytrash.spatialGUI.mixin.accessor.GuiRendererAccessor;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
 import org.tastytrash.spatialGUI.util.RenderUtil.CylinderBasis;
 import org.tastytrash.spatialGUI.util.RenderUtil.QuadBasis;
-import org.tastytrash.spatialGUI.util.RenderUtil;
 
-//? if >=26.1.2 {
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+//? if >1.21.1 {
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.*;
+//?}
+//? if >=26.1.2 {
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 //?} else if >1.21.1 {
-/*import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.pip.*;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import com.mojang.blaze3d.platform.Window;
-*///?} else {
+/*import net.minecraft.client.gui.render.state.GuiRenderState;
+ *///?} else {
 /*import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Matrix4f;
 *///?}
 
+//? if fabric && >1.21.1 {
+import org.tastytrash.spatialGUI.mixin.accessor.GameRendererAccessor;
+import org.tastytrash.spatialGUI.mixin.accessor.GuiRendererAccessor;
+//?}
+//? if neoforge {
+/*import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+ *///?}
 //? if neoforge && >=26.1.2 {
 /*import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.minecraft.client.renderer.state.gui.pip.*;
@@ -40,11 +39,11 @@ import net.minecraft.client.renderer.state.gui.pip.*;
 /*import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.minecraft.client.gui.render.state.pip.*;
 *///?}
+//? if fabric && >=26.2 {
+/*import java.util.ArrayList;
+ *///?}
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ScreenExtractor {
     public static RenderTarget captureTarget;
@@ -52,9 +51,57 @@ public class ScreenExtractor {
     //? if >1.21.1 {
     private GuiRenderState screenRenderState;
     private GuiRenderer screenGuiRenderer;
+    //? if neoforge {
+    /*public static List<PictureInPictureRendererRegistration<?>> capturedPipRegistrations;
+     *///?}
+    //?}
 
-    //? if fabric {
-    private static List<PictureInPictureRenderer<?>> vanillaPipRenderers(Minecraft mc) {
+    private void ensureScreenGuiRenderer() {
+        //? if >1.21.1 {
+        if (screenGuiRenderer != null) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        screenRenderState = new GuiRenderState();
+        //? if fabric && >=26.2 {
+        /*screenGuiRenderer = new GuiRenderer(
+                screenRenderState,
+                mc.gameRenderer.featureRenderDispatcher(),
+                vanillaPipRenderers(mc)
+        );
+        *///?} else if neoforge && >=26.2 {
+        /*screenGuiRenderer = new GuiRenderer(
+                screenRenderState,
+                mc.gameRenderer.featureRenderDispatcher(),
+                capturedPipRegistrations == null ? List.of() : capturedPipRegistrations.stream()
+                        .filter(r -> r.stateClass().getName().startsWith("net.minecraft."))
+                        .toList()
+        );
+        *///?} else if fabric {
+        screenGuiRenderer = new GuiRenderer(
+                screenRenderState,
+                mc.renderBuffers().bufferSource(),
+                mc.gameRenderer.getSubmitNodeStorage(),
+                mc.gameRenderer.getFeatureRenderDispatcher(),
+                List.of()
+        );
+
+        GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
+        ((GuiRendererAccessor) screenGuiRenderer)
+                .spatialGUI$setPictureInPictureRenderers(((GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers());
+        //?} else if neoforge {
+        /*screenGuiRenderer = new GuiRenderer(
+                screenRenderState,
+                mc.renderBuffers().bufferSource(),
+                mc.gameRenderer.getSubmitNodeStorage(),
+                mc.gameRenderer.getFeatureRenderDispatcher(),
+                capturedPipRegistrations == null ? List.of() : capturedPipRegistrations
+        );
+        *///?}
+        //?}
+    }
+
+    //? if fabric && >=26.2 {
+    /*private static List<PictureInPictureRenderer<?>> vanillaPipRenderers(Minecraft mc) {
         GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
         List<PictureInPictureRenderer<?>> out = new ArrayList<>();
         for (PictureInPictureRenderer<?> r : ((GuiRendererAccessor) main).spatialGUI$getPictureInPictureRenderers().values()) {
@@ -62,85 +109,23 @@ public class ScreenExtractor {
         }
         return out;
     }
-    //?}
-    //? if neoforge {
-    /*public static List<PictureInPictureRendererRegistration<?>> capturedPipRegistrations;
-     *///?}
-    //?}
-
-    public void ensureScreenGuiRenderer() {
-        //? if >1.21.1 {
-
-        if (screenGuiRenderer == null) {
-            Minecraft mc = Minecraft.getInstance();
-            screenRenderState = new GuiRenderState();
-            //? if fabric && >=26.2 {
-            /*screenGuiRenderer = new GuiRenderer(
-                    screenRenderState,
-                    mc.gameRenderer.featureRenderDispatcher(),
-                    vanillaPipRenderers(mc)
-            );
-            *///?} else if neoforge && >=26.2 {
-            /*screenGuiRenderer = new GuiRenderer(
-                    screenRenderState,
-                    mc.gameRenderer.featureRenderDispatcher(),
-                    capturedPipRegistrations == null ? List.of() : capturedPipRegistrations.stream()
-                            .filter(r -> r.stateClass().getName().startsWith("net.minecraft."))
-                            .toList()
-            );
-            *///?} else if fabric {
-            screenGuiRenderer = new GuiRenderer(
-                    screenRenderState,
-                    mc.renderBuffers().bufferSource(),
-                    mc.gameRenderer.getSubmitNodeStorage(),
-                    mc.gameRenderer.getFeatureRenderDispatcher(),
-                    List.of()
-            );
-
-            GuiRenderer main = ((GameRendererAccessor) mc.gameRenderer).spatialGUI$getGuiRenderer();
-
-            ((GuiRendererAccessor) screenGuiRenderer)
-                    .spatialGUI$setPictureInPictureRenderers(((GuiRendererAccessor) main)
-                            .spatialGUI$getPictureInPictureRenderers());
-
-            //?} else if neoforge {
-            /*screenGuiRenderer = new GuiRenderer(
-                    screenRenderState,
-                    mc.renderBuffers().bufferSource(),
-                    mc.gameRenderer.getSubmitNodeStorage(),
-                    mc.gameRenderer.getFeatureRenderDispatcher(),
-                    capturedPipRegistrations == null ? List.of() : capturedPipRegistrations
-            );
-            *///?}
-        }
-        //?}
-    }
+    *///?}
 
     //? if >1.21.1 {
     public GuiRenderer getScreenGuiRenderer() {
         ensureScreenGuiRenderer();
         return screenGuiRenderer;
     }
-    //? if <26.1.2 {
-    /*public GuiRenderState getScreenRenderState() {
-        return screenRenderState;
-    }
-    *///?}
-    //?}
 
-    //? if >=26.1.2 {
     public GuiGraphicsExtractor createIsolatedGraphics() {
         ensureScreenGuiRenderer();
-        int mouseX = MouseHandlerUtil.getHoverX();
-        int mouseY = MouseHandlerUtil.getHoverY();
-        return new GuiGraphicsExtractor(Minecraft.getInstance(), screenRenderState, mouseX, mouseY);
+        return new GuiGraphicsExtractor(Minecraft.getInstance(), screenRenderState, MouseHandlerUtil.getHoverX(), MouseHandlerUtil.getHoverY());
     }
-    //?} else if >1.21.1 {
-    /*public GuiGraphicsExtractor createIsolatedGraphics() {
-        ensureScreenGuiRenderer();
-        int mouseX = MouseHandlerUtil.getHoverX();
-        int mouseY = MouseHandlerUtil.getHoverY();
-        return new GuiGraphicsExtractor(Minecraft.getInstance(), screenRenderState, mouseX, mouseY);
+    //?}
+
+    //? if >1.21.1 && <26.1.2 {
+    /*public GuiRenderState getScreenRenderState() {
+        return screenRenderState;
     }
     *///?}
 
@@ -148,7 +133,7 @@ public class ScreenExtractor {
         extractIsolatedScreen(screen, partialTick, quadBasis, cylinderBasis, screenTexture, null);
     }
 
-    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, ScreenTexture screenTexture, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> renderOperation) {
+    public void extractIsolatedScreen(Screen screen, float partialTick, QuadBasis quadBasis, CylinderBasis cylinderBasis, ScreenTexture screenTexture, Operation<Void> renderOperation) {
         ensureScreenGuiRenderer();
         Minecraft mc = Minecraft.getInstance();
         double guiScale = ConfigManager.config().getEffectiveGuiScale();
@@ -165,23 +150,19 @@ public class ScreenExtractor {
         int mouseY = MouseHandlerUtil.getHoverY();
 
         SpatialGUIRenderer.isExtractingScreen = true;
-        //? if >=26.1.2 {
+        //? if >1.21.1 {
         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
         //? if >=26.4 {
         /*screen.extractRenderStateWithTooltipAndSubtitles(graphics);
-        *///?} else {
+         *///?} else if >=26.1.2 {
         screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
-        //?}
+        //?} else {
+        /*screen.renderWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
+         *///?}
         //? if neoforge {
         /*ControlifyCompat.renderVirtualMouse(graphics);
          *///?}
-        //?} else if >1.21.1 {
-        /*GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, screenRenderState, mouseX, mouseY);
-        screen.renderWithTooltipAndSubtitles(graphics, mouseX, mouseY, partialTick);
-        //? if neoforge {
-        /^ControlifyCompat.renderVirtualMouse(graphics);
-        ^///?}
-        *///?} else {
+        //?} else {
         /*var target = screenTexture.prepareAndGetTarget();
         if (target != null) {
             captureTarget = target;

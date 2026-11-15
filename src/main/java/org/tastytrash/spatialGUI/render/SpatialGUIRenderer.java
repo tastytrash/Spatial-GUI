@@ -1,24 +1,25 @@
 package org.tastytrash.spatialGUI.render;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.util.Mth;
-import org.tastytrash.spatialGUI.config.ConfigManager;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.editor.EditorMode;
-import org.tastytrash.spatialGUI.editor.EditorScreen;
-import org.tastytrash.spatialGUI.editor.ProfilePicker;
+import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
+import org.tastytrash.spatialGUI.util.AnimationUtil;
+import org.tastytrash.spatialGUI.util.CameraUtil;
 import org.tastytrash.spatialGUI.util.GuiScaleUtil;
 import org.tastytrash.spatialGUI.util.MouseHandlerUtil;
-import org.tastytrash.spatialGUI.util.CameraUtil;
-import org.tastytrash.spatialGUI.mixin.accessor.MouseHandlerAccessor;
 import org.tastytrash.spatialGUI.util.RenderUtil;
 
 //? if fabric {
@@ -29,21 +30,32 @@ import net.neoforged.neoforge.common.NeoForge;
 *///? } else if forge {
 /*import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import org.tastytrash.spatialGUI.editor.EditorScreen;
+import org.tastytrash.spatialGUI.editor.ProfilePicker;
 *///?}
 //? if >26.2 {
 /*import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
  *///?} else if >1.21.1 {
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 //?}
+//? if >1.21.1 {
+import com.mojang.blaze3d.ProjectionType;
+import net.minecraft.client.gui.render.GuiRenderer;
+//?}
+//? if >1.21.1 && <26.1.2 {
+/*import net.minecraft.client.gui.render.state.GuiRenderState;
+ *///?}
+//? if <=1.21.1 {
+/*import com.mojang.blaze3d.vertex.VertexSorting;
+import org.joml.Matrix4f;
+*///?}
 
+/** Manages the hooked screen's hooking and removal, animation state, rotation anchoring, and mouse mapping. */
 public class SpatialGUIRenderer {
-
     private static long frameCounter;
 
-    public static long frameCounter() {
-        return frameCounter;
-    }
     public static boolean isExtractingScreen = false;
+    /** When true, the window reports its vanilla gui scale/size instead of the override. */
     public static boolean skipWindowOverride = false;
     public static GuiGraphicsExtractor cursorTarget = null;
     public static boolean renderingLevel = false;
@@ -54,22 +66,26 @@ public class SpatialGUIRenderer {
 
     private Screen hookedScreen;
     private static boolean isInventoryScreen;
+    /** Frame the last screen was removed on, to detect a screen swap within a frame. */
+    private long removedFrame = -1;
+    public boolean poseStarted = false;
+    private boolean prevPoseStarted;
+    /** Whether {@link #shouldCapture()} was true on the previous call, to detect the first captured frame. */
+    private boolean wasCapturing;
+
     private Vec3 cameraStartPos;
     private float cameraStartYRot;
     private float cameraStartXRot;
-    private static boolean wasTrue;
-    public boolean poseStarted = false;
-    private long removedFrame = -1;
-    private boolean prevPoseStarted;
-    private float fovProgress = 0f;
-    private long lastFovUpdateNano = 0L;
-    private long lastBobNano = 0L;
-
-    private float[] preSnapState;
 
     private boolean rotationAnchored;
     private float anchoredYaw;
     private float anchoredPitch;
+    /** Player rotation saved before snapping to the camera angle on close (first-person only), restored if swapping. */
+    private float[] preSnapState;
+
+    private float fovProgress = 0f;
+    private long lastFovUpdateNano = 0L;
+    private long lastBobNano = 0L;
 
     public SpatialGUIRenderer() {
         this.screenTexture = new ScreenTexture();
@@ -95,11 +111,7 @@ public class SpatialGUIRenderer {
     public void hookScreen(Screen screen) {
         if (hookedScreen == screen) return;
         if (!SpatialGUIClient.isEnabled()) return;
-        //? if >=26.2 {
-        /*if (screen != Minecraft.getInstance().gui.screen()) return;
-         *///?} else {
-        if (screen != Minecraft.getInstance().screen) return;
-        //?}
+        if (screen != currentScreen()) return;
 
         ConfigManager.clearCache();
 
@@ -113,11 +125,7 @@ public class SpatialGUIRenderer {
         }
 
         var client = Minecraft.getInstance();
-        //? if >=26.2 {
-        /*if (screen != client.screen) return;
-         *///?} else {
-        if (screen != client.screen) return;
-        //?}
+        if (screen != currentScreen()) return;
 
         if (worldScreen.isClosing()) {
             if (swapping) {
@@ -214,6 +222,7 @@ public class SpatialGUIRenderer {
         onScreenRemoved(true);
     }
 
+    /** @param animate whether to start the close animation */
     private void onScreenRemoved(boolean animate) {
         if (hookedScreen == null) return;
         skipWindowOverride = false;
@@ -237,22 +246,39 @@ public class SpatialGUIRenderer {
         poseStarted = false;
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
 
-        var mc = Minecraft.getInstance();
         preSnapState = null;
         if (wasEffectiveFirstPerson && ConfigManager.config().keepFirstPersonCameraAngle && player != null) {
-            //? if >=26.2 {
-            /*float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
-            float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
-            *///?} else if >=1.21.11 {
-                    float cameraYaw = mc.gameRenderer.getMainCamera().yRot();
-                    float cameraPitch = mc.gameRenderer.getMainCamera().xRot();
-                    //?} else {
-            /*float cameraYaw = mc.gameRenderer.getMainCamera().getYRot();
-            float cameraPitch = mc.gameRenderer.getMainCamera().getXRot();
-            *///?}
             preSnapState = captureRotation(player);
-            applyCameraSnap(player, cameraYaw, cameraPitch);
+            applyCameraSnap(player, cameraYaw(), cameraPitch());
         }
+    }
+
+    private void finishClosing() {
+        if (!worldScreen.isClosing()) return;
+        worldScreen.endClosing();
+        worldScreen.resetRecipeBookState();
+        worldScreen.resetCameraState();
+        screenTexture.clearTarget();
+        releaseRotationAnchor();
+    }
+
+    /** Runs each frame. */
+    public void updateFrame() {
+        frameCounter++;
+        var mc = Minecraft.getInstance();
+        if (hookedScreen != null && currentScreen() != hookedScreen) onScreenRemoved();
+        if (worldScreen.isClosing() && (mc.level == null || worldScreen.isCloseFinished())) {
+            finishClosing();
+        }
+        MouseHandlerUtil.syncCursorGrab();
+        ControlifyCompat.handleFreeLook(isCrosshairModeActive());
+        updateFovProgress();
+        updatePausedHandBob();
+        EditorGizmo.update();
+    }
+
+    public static long frameCounter() {
+        return frameCounter;
     }
 
     private static float[] captureRotation(LocalPlayer player) {
@@ -270,20 +296,28 @@ public class SpatialGUIRenderer {
         player.xBobO = s[7];
     }
 
-    private static void applyCameraSnap(net.minecraft.client.player.LocalPlayer player, float cameraYaw, float cameraPitch) {
+    private static void applyCameraSnap(LocalPlayer player, float cameraYaw, float cameraPitch) {
         player.setYRot(cameraYaw);
         player.setXRot(cameraPitch);
         player.yRotO = cameraYaw;
         player.xRotO = cameraPitch;
     }
 
-    private void finishClosing() {
-        if (!worldScreen.isClosing()) return;
-        worldScreen.endClosing();
-        worldScreen.resetRecipeBookState();
-        worldScreen.resetCameraState();
-        screenTexture.clearTarget();
-        releaseRotationAnchor();
+    private void releaseRotationAnchor() {
+        rotationAnchored = false;
+    }
+
+    /** @return the anchored rotation, or the player's current rotation if not anchored */
+    public float anchoredYaw() {
+        if (rotationAnchored) return anchoredYaw;
+        var player = Minecraft.getInstance().player;
+        return player != null ? player.getYRot() : 0f;
+    }
+
+    public float anchoredPitch() {
+        if (rotationAnchored) return anchoredPitch;
+        var player = Minecraft.getInstance().player;
+        return player != null ? player.getXRot() : 0f;
     }
 
     public boolean isClosing() {
@@ -310,28 +344,93 @@ public class SpatialGUIRenderer {
         return worldScreen.getCloseElapsedMs();
     }
 
-    public boolean isCloseCameraFinished() {
+    public boolean isCameraClosingFinished() {
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
         float cameraMs = Math.max(1, ConfigManager.config().transitionDurationMs) * (1.0f - skipFraction);
         return worldScreen.getCloseElapsedMs() >= cameraMs;
     }
 
     public float getCloseBlend() {
-        if (isCloseCameraFinished()) return 1.0f;
+        if (isCameraClosingFinished()) return 1.0f;
         float duration = Math.max(1, ConfigManager.config().transitionDurationMs);
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
         float openProgress = Math.max(skipFraction, 1.0f - worldScreen.getCloseElapsedMs() / duration);
-        return 1.0f - org.tastytrash.spatialGUI.util.AnimationUtil.easeInOutSine(openProgress);
+        return 1.0f - AnimationUtil.easeInOutSine(openProgress);
     }
 
-    public void clearTarget() {
-        screenTexture.clearTarget();
+    /** @return true when the player should draw after the screen. */
+    public boolean shouldDeferPlayer() {
+        return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront
+                && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson() && !isCameraClosingFinished());
     }
 
-    public void prepareTarget() {
-        screenTexture.prepareTarget();
+    /** @return true while the hooked screen is the open screen and renders in the world. */
+    public boolean shouldCapture() {
+        boolean hooked = SpatialGUIClient.shouldHookScreen(hookedScreen) && hookedScreen == currentScreen();
+        if (!hooked) {
+            wasCapturing = false;
+            cameraStartPos = null;
+            return false;
+        }
+
+        if (!wasCapturing) {
+            cameraStartPos = cameraPos();
+            cameraStartYRot = cameraYaw();
+            cameraStartXRot = cameraPitch();
+            wasCapturing = true;
+        }
+
+        return true;
     }
 
+    public Vec3 getCameraStartPos() {
+        return cameraStartPos;
+    }
+
+    public float getCameraStartYRot() {
+        return cameraStartYRot;
+    }
+
+    public float getCameraStartXRot() {
+        return cameraStartXRot;
+    }
+
+    private static Screen currentScreen() {
+        //? if >=26.2 {
+        /*return Minecraft.getInstance().gui.screen();
+         *///?} else {
+        return Minecraft.getInstance().screen;
+        //?}
+    }
+
+    private static Vec3 cameraPos() {
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        //? if >=1.21.11 {
+        return camera.position();
+        //?} else {
+        /*return camera.getPosition();
+         *///?}
+    }
+
+    private static float cameraYaw() {
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        //? if >=1.21.11 {
+        return camera.yRot();
+        //?} else {
+        /*return camera.getYRot();
+         *///?}
+    }
+
+    private static float cameraPitch() {
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        //? if >=1.21.11 {
+        return camera.xRot();
+        //?} else {
+        /*return camera.getXRot();
+         *///?}
+    }
+
+    /** Maps the real mouse to the screen each frame and writes it to the mouse handler. */
     public void updateMousePosition() {
         if (!shouldCapture() || MouseHandlerUtil.usesRawMouse(hookedScreen)) return;
 
@@ -351,6 +450,7 @@ public class SpatialGUIRenderer {
         }
     }
 
+    /** @return the mouse position in window pixels after mapping onto the screen, or null if the mapping fails */
     public Vector2d updateMousePosition(double sourceX, double sourceY) {
         Minecraft client = Minecraft.getInstance();
         RenderUtil.QuadBasis quadBasis = worldScreen.getQuadBasis();
@@ -380,70 +480,11 @@ public class SpatialGUIRenderer {
         return new Vector2d(mappedX, mappedY);
     }
 
-    public boolean shouldCapture() {
-        Minecraft client = Minecraft.getInstance();
-        //? if >=26.2 {
-        /*boolean bool = SpatialGUIClient.shouldHookScreen(hookedScreen) && hookedScreen == client.screen;
-         *///?} else {
-        boolean bool = SpatialGUIClient.shouldHookScreen(hookedScreen) && hookedScreen == client.screen;
-        //?}
-        if (!bool) {
-            wasTrue = false;
-            cameraStartPos = null;
-            return false;
-        }
-
-        if (!wasTrue) {
-            var mc = Minecraft.getInstance();
-            //? if >=26.2 {
-            /*cameraStartPos = mc.gameRenderer.getMainCamera().position();
-            cameraStartYRot = mc.gameRenderer.getMainCamera().yRot();
-            cameraStartXRot = mc.gameRenderer.getMainCamera().xRot();
-            *///?} else if >=1.21.11 {
-            cameraStartPos = mc.gameRenderer.getMainCamera().position();
-            cameraStartYRot = mc.gameRenderer.getMainCamera().yRot();
-            cameraStartXRot = mc.gameRenderer.getMainCamera().xRot();
-            //?} else {
-            /*cameraStartPos = mc.gameRenderer.getMainCamera().getPosition();
-            cameraStartYRot = mc.gameRenderer.getMainCamera().getYRot();
-            cameraStartXRot = mc.gameRenderer.getMainCamera().getXRot();
-            *///?}
-            wasTrue = true;
-        }
-
-        return true;
-    }
-
-    public Vec3 getCameraStartPos() {
-        return cameraStartPos;
-    }
-
-    public float getCameraStartYRot() {
-        return cameraStartYRot;
-    }
-
-    public float getCameraStartXRot() {
-        return cameraStartXRot;
-    }
-
-    public float getFovOverrideFactor() {
-        return fovProgress;
-    }
-
-    public static boolean isInventoryScreen() {
-        return isInventoryScreen;
-    }
-
-    public Screen getHookedScreen() {
-        return hookedScreen;
-    }
-
-    public ScreenTexture getScreenTexture() {
-        return screenTexture;
-    }
-
-    public WorldScreenRenderer getWorldScreenRenderer() {
-        return worldScreen;
+    public boolean isMouseOverScreen() {
+        if (hookedScreen == null) return false;
+        return RenderUtil.isMouseOver(
+                MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY(),
+                worldScreen.getQuadBasis(), worldScreen.getCylinderBasis());
     }
 
     public static boolean isCrosshairModeActive() {
@@ -454,48 +495,6 @@ public class SpatialGUIRenderer {
                 && SpatialGUIClient.renderer().getHookedScreen() != null;
     }
 
-    public void renderInWorld(com.mojang.blaze3d.vertex.PoseStack matrices) {
-        worldScreen.renderInWorld(matrices);
-    }
-
-    //? if >1.21.1 {
-    public void captureCameraState(GpuBufferSlice buffer, com.mojang.blaze3d.ProjectionType type, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        worldScreen.captureCameraState(buffer, type, poseStack);
-    }
-    //?} else {
-    /*public void captureCameraState(org.joml.Matrix4f projectionMatrix, com.mojang.blaze3d.vertex.VertexSorting vertexSorting, com.mojang.blaze3d.vertex.PoseStack poseStack) {
-        worldScreen.captureCameraState(projectionMatrix, vertexSorting, poseStack);
-    }
-    *///?}
-
-    public void renderInWorldPost() {
-        worldScreen.renderInWorldPost();
-    }
-
-    public void onFrameStart() {
-        GuiScaleUtil.pendingScreen = null;
-        worldScreen.onFrameStart();
-    }
-
-    public void updateFrame() {
-        frameCounter++;
-        var mc = Minecraft.getInstance();
-        //? if >=26.2 {
-        /*Screen screen = mc.gui.screen();
-         *///?} else {
-        Screen screen = mc.screen;
-        //?}
-        if (hookedScreen != null && screen != hookedScreen) onScreenRemoved();
-        if (worldScreen.isClosing() && (mc.level == null || worldScreen.isCloseFinished())) {
-            finishClosing();
-        }
-        MouseHandlerUtil.syncCursorGrab();
-        ControlifyCompat.handleFreeLook(isCrosshairModeActive());
-        updateFovProgress();
-        updatePausedHandBob();
-        EditorGizmo.update();
-    }
-
     public void updateFovProgress() {
         var mc = Minecraft.getInstance();
         if (mc.level == null) {
@@ -504,11 +503,7 @@ public class SpatialGUIRenderer {
             return;
         }
 
-        //? if >=26.2 {
-        /*Screen current = mc.gui.screen();
-         *///?} else {
-        Screen current = mc.screen;
-        //?}
+        Screen current = currentScreen();
 
         boolean active = current != null && current == hookedScreen && SpatialGUIClient.shouldHookScreen(current);
         float target = (active && ConfigManager.config().overrideFov) ? 1f : 0f;
@@ -530,6 +525,10 @@ public class SpatialGUIRenderer {
         if (Math.abs(target - fovProgress) < 0.001f) fovProgress = target;
     }
 
+    public float getFovOverrideBlend() {
+        return fovProgress;
+    }
+
     public boolean bobSwayActive() {
         return SpatialGUIClient.isEnabled()
                 && SpatialGUIClient.getEffectiveFirstPersonMode()
@@ -537,6 +536,7 @@ public class SpatialGUIRenderer {
                 && !ConfigManager.config().hideHandsInFirstPerson;
     }
 
+    /** Keeps the hand bob running while the game is paused. */
     private void updatePausedHandBob() {
         long now = System.nanoTime();
         float dt = lastBobNano == 0L ? 0f : Math.min((now - lastBobNano) / 1_000_000_000f, 0.1f);
@@ -557,12 +557,34 @@ public class SpatialGUIRenderer {
     }
 
     //? if >1.21.1 {
-    public net.minecraft.client.gui.render.GuiRenderer getScreenGuiRenderer() {
-        return screenExtractor.getScreenGuiRenderer();
+    public void captureCameraState(GpuBufferSlice buffer, ProjectionType type, PoseStack poseStack) {
+        worldScreen.captureCameraState(buffer, type, poseStack);
+    }
+    //?} else {
+    /*public void captureCameraState(Matrix4f projectionMatrix, VertexSorting vertexSorting, PoseStack poseStack) {
+        worldScreen.captureCameraState(projectionMatrix, vertexSorting, poseStack);
+    }
+    *///?}
+
+    public void renderInWorld(PoseStack matrices) {
+        worldScreen.renderInWorld(matrices);
     }
 
+    public void renderInWorldPost() {
+        worldScreen.renderInWorldPost();
+    }
+
+    public void onFrameStart() {
+        GuiScaleUtil.pendingScreen = null;
+        worldScreen.onFrameStart();
+    }
+
+    //? if >1.21.1 {
+    public GuiRenderer getScreenGuiRenderer() {
+        return screenExtractor.getScreenGuiRenderer();
+    }
     //? if <26.1.2 {
-    /*public net.minecraft.client.gui.render.state.GuiRenderState getScreenRenderState() {
+    /*public GuiRenderState getScreenRenderState() {
         return screenExtractor.getScreenRenderState();
     }
     *///?}
@@ -571,54 +593,46 @@ public class SpatialGUIRenderer {
         return worldScreen.getCapturedProjectionBuffer();
     }
 
-    public com.mojang.blaze3d.ProjectionType getCapturedProjectionType() {
+    public ProjectionType getCapturedProjectionType() {
         return worldScreen.getCapturedProjectionType();
     }
     //?}
 
-    //? if >=26.1.2 {
-    public net.minecraft.client.gui.GuiGraphicsExtractor createIsolatedGraphics() {
+    //? if >1.21.1 {
+    public GuiGraphicsExtractor createIsolatedGraphics() {
         return screenExtractor.createIsolatedGraphics();
     }
-    //?} else if >1.21.1 {
-    /*public net.minecraft.client.gui.GuiGraphicsExtractor createIsolatedGraphics() {
-        return screenExtractor.createIsolatedGraphics();
-    }
-    *///?}
+    //?}
 
     public void extractIsolatedScreen(Screen screen, float partialTick) {
         screenExtractor.extractIsolatedScreen(screen, partialTick, worldScreen.getQuadBasis(), worldScreen.getCylinderBasis(), screenTexture);
     }
 
-    public void extractIsolatedScreen(Screen screen, float partialTick, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> operation) {
+    public void extractIsolatedScreen(Screen screen, float partialTick, Operation<Void> operation) {
         screenExtractor.extractIsolatedScreen(screen, partialTick, worldScreen.getQuadBasis(), worldScreen.getCylinderBasis(), screenTexture, operation);
     }
 
-    public float anchoredYaw() {
-        if (rotationAnchored) return anchoredYaw;
-        var player = Minecraft.getInstance().player;
-        return player != null ? player.getYRot() : 0f;
+    public void clearTarget() {
+        screenTexture.clearTarget();
     }
 
-    public float anchoredPitch() {
-        if (rotationAnchored) return anchoredPitch;
-        var player = Minecraft.getInstance().player;
-        return player != null ? player.getXRot() : 0f;
+    public void prepareTarget() {
+        screenTexture.prepareTarget();
     }
 
-    private void releaseRotationAnchor() {
-        rotationAnchored = false;
+    public Screen getHookedScreen() {
+        return hookedScreen;
     }
 
-    public boolean isMouseOverScreen() {
-        if (hookedScreen == null) return false;
-        return RenderUtil.isMouseOver(
-                MouseHandlerUtil.getSourceX(), MouseHandlerUtil.getSourceY(),
-                worldScreen.getQuadBasis(), worldScreen.getCylinderBasis());
+    public static boolean isInventoryScreen() {
+        return isInventoryScreen;
     }
 
-    public boolean shouldDeferPlayer() {
-        return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront
-                && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson() && !isCloseCameraFinished());
+    public ScreenTexture getScreenTexture() {
+        return screenTexture;
+    }
+
+    public WorldScreenRenderer getWorldScreenRenderer() {
+        return worldScreen;
     }
 }

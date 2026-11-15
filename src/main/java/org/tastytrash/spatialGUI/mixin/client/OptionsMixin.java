@@ -36,7 +36,7 @@ public abstract class OptionsMixin {
             } else {
                 cir.setReturnValue(CameraType.THIRD_PERSON_BACK);
             }
-        } else if (renderer.isClosingThirdToFirstPerson() && !renderer.isCloseCameraFinished() && SpatialGUIClient.isEnabled()) {
+        } else if (renderer.isClosingThirdToFirstPerson() && !renderer.isCameraClosingFinished() && SpatialGUIClient.isEnabled()) {
             cir.setReturnValue(CameraType.THIRD_PERSON_BACK);
         }
     }

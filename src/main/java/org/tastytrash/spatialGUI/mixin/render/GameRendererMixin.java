@@ -417,7 +417,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (ConfigManager.config().renderPlayerInFront && !renderer.isCloseCameraFinished()) {
+            if (ConfigManager.config().renderPlayerInFront && !renderer.isCameraClosingFinished()) {
                 spatialGUI$renderPlayerInFront();
             }
 
@@ -501,7 +501,7 @@ public abstract class GameRendererMixin {
                 ci.cancel();
             }
         }
-        if (renderer.isClosing() && (renderer.isClosingFirstPerson() || playerInFront) && !renderer.isCloseCameraFinished()) {
+        if (renderer.isClosing() && (renderer.isClosingFirstPerson() || playerInFront) && !renderer.isCameraClosingFinished()) {
             ci.cancel();
         }
     }
@@ -671,7 +671,7 @@ public abstract class GameRendererMixin {
         } else if (renderer != null && renderer.isClosing() && SpatialGUIClient.isEnabled()) {
             renderer.renderInWorldPost();
 
-            if (ConfigManager.config().renderPlayerInFront && !renderer.isCloseCameraFinished()) {
+            if (ConfigManager.config().renderPlayerInFront && !renderer.isCameraClosingFinished()) {
                 spatialGUI$renderPlayerInFront();
             }
 
@@ -732,10 +732,10 @@ public abstract class GameRendererMixin {
         var renderer = SpatialGUIClient.renderer();
         if (renderer == null) return original;
 
-        float factor = renderer.getFovOverrideFactor();
-        if (factor <= 0f) return original;
+        float blend = renderer.getFovOverrideBlend();
+        if (blend <= 0f) return original;
 
-        return Mth.lerp(factor, original, (float) ConfigManager.config().targetFov);
+        return Mth.lerp(blend, original, (float) ConfigManager.config().targetFov);
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -794,10 +794,10 @@ public class GameRendererMixin {
         var renderer = SpatialGUIClient.renderer();
         if (renderer == null) return original;
 
-        float factor = renderer.getFovOverrideFactor();
-        if (factor <= 0f) return original;
+        float blend = renderer.getFovOverrideBlend();
+        if (blend <= 0f) return original;
 
-        return Mth.lerp(factor, original, ConfigManager.config().targetFov);
+        return Mth.lerp(blend, original, ConfigManager.config().targetFov);
     }
 
     @Inject(method = "render", at = @At("HEAD"))
