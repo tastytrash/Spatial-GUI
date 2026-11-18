@@ -1,5 +1,6 @@
 package org.tastytrash.spatialGUI.mixin.player;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,12 +56,14 @@ public class PlayerModelMixin {
     //? if >1.21.1 {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At("TAIL"))
     private void spatialGUI$hideHeadWhenCameraIsClose(AvatarRenderState state, CallbackInfo ci) {
+        if (state.id != Minecraft.getInstance().player.getId()) return;
         PlayerModel model = (PlayerModel) (Object) this;
         spatialGUI$hideHead(model.head, model.hat, state.x, state.y, state.z, state.eyeHeight);
     }
     //?} else {
     /*@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void spatialGUI$hideHeadWhenCameraIsClose(LivingEntity entity, float f, float g, float h, float i, float j, CallbackInfo ci) {
+        if (entity != Minecraft.getInstance().player) return;
         PlayerModel<?> model = (PlayerModel<?>) (Object) this;
         spatialGUI$hideHead(model.head, model.hat, entity.getX(), entity.getY(), entity.getZ(), entity.getEyeHeight());
     }

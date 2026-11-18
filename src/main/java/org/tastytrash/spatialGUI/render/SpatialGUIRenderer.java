@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2d;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 import org.tastytrash.spatialGUI.compat.ControlifyCompat;
+import org.tastytrash.spatialGUI.compat.ShaderCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.editor.EditorGizmo;
 import org.tastytrash.spatialGUI.editor.EditorMode;
@@ -360,7 +361,7 @@ public class SpatialGUIRenderer {
 
     /** @return true when the player should draw after the screen. */
     public boolean shouldDeferPlayer() {
-        return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront
+        return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront && !ShaderCompat.shaderPackActive()
                 && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson() && !isCameraClosingFinished());
     }
 

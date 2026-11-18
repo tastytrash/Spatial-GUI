@@ -2,9 +2,9 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Change JEI default alignment to LEFT (#75)
+Transition from third to first person
 
-Avatar appearing too bright with shaders
+JEI rendering in the wrong location (1.20.1 Fabric)
 
 Body not hiding behind terrain underwater
 

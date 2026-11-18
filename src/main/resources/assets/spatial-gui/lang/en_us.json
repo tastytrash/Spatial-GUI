@@ -112,7 +112,7 @@
   "yacl3.config.spatial-gui:config.renderScalePercent.desc": "Resolution scale for the GUI (25-100%).\nLower values improve performance, but look worse visually.",
   "yacl3.config.spatial-gui:config.screenAlpha": "Screen Alpha",
   "yacl3.config.spatial-gui:config.screenAlpha.desc": "Transparency of the inventory screen (0-255)",
-  "yacl3.config.spatial-gui:config.renderPlayerInFront": "Player In Front of Screen",
+  "yacl3.config.spatial-gui:config.renderPlayerInFront": "Player in Front of Screen",
   "yacl3.config.spatial-gui:config.renderPlayerInFront.desc": "Renders the player model in front of the spatial screen in third person.",
   "yacl3.config.spatial-gui:config.screenOverPlayerAlpha": "Screen Over Player Alpha",
   "yacl3.config.spatial-gui:config.screenOverPlayerAlpha.desc": "How visible the screen is over the player in front of it. 0 turns it off. (0-255)",

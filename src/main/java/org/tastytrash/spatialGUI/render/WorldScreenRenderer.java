@@ -1,6 +1,7 @@
 package org.tastytrash.spatialGUI.render;
 
 import net.minecraft.world.phys.Vec3;
+import org.tastytrash.spatialGUI.compat.ShaderCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -413,7 +414,7 @@ public class WorldScreenRenderer {
         }
         long now = System.currentTimeMillis();
         boolean firstPerson = SpatialGUIClient.getEffectiveFirstPersonMode();
-        long animationMs = Mth.clamp(now - screenOpenTimeMs, 0L, animationTotalMs());
+        long animationMs = (long) Mth.clamp(now - screenOpenTimeMs, 0L, animationTotalMs());
 
         boolean cameraTransitions = shouldTransitionCameraOnClose(firstPerson);
         long cameraMs = cameraTransitions ? Math.round(Math.max(0, ConfigManager.config().transitionDurationMs) * (1.0f - ConfigManager.config().transitionSkipPercentage / 100.0f)) : 0L;
@@ -621,7 +622,7 @@ public class WorldScreenRenderer {
     /** Draws a second, translucent copy of the screen over the player. */
     public void renderScreenOverPlayer() {
         float alpha = Math.min(ConfigManager.config().screenOverPlayerAlpha / 255.0f, 0.999f);
-        if (alpha <= 0f || !hasCapturedCamera || !hasDrawnThisFrame || !hasTexture() || getFadeAlpha() < 1f) {
+        if (!ConfigManager.config().renderPlayerInFront || ShaderCompat.shaderPackActive() || alpha <= 0f || !hasCapturedCamera || !hasDrawnThisFrame || !hasTexture() || getFadeAlpha() < 1f) {
             return;
         }
 

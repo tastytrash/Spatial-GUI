@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
+import org.tastytrash.spatialGUI.compat.ShaderCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
 import org.tastytrash.spatialGUI.render.WorldBlurRenderer;
@@ -81,7 +82,7 @@ public class EntityRenderDispatcherMixin {
         }
 
         var renderer = SpatialGUIClient.renderer();
-        if (renderer == null || !ConfigManager.config().enabled || !(ConfigManager.config().blurWorldBackground || ConfigManager.config().renderPlayerInFront)) {
+        if (renderer == null || !ConfigManager.config().enabled || ShaderCompat.shaderPackActive() || !(ConfigManager.config().blurWorldBackground || ConfigManager.config().renderPlayerInFront)) {
             WorldBlurRenderer.setDeferredPlayerRenderState(null);
             return;
         }

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.tastytrash.spatialGUI.compat.RecipeViewerCompat;
+import org.tastytrash.spatialGUI.compat.ShaderCompat;
 import org.tastytrash.spatialGUI.screenmanager.ScreenManagerScreen;
 //? if fabric {
 import net.fabricmc.loader.api.FabricLoader;
@@ -168,9 +169,9 @@ public class SpatialGUIConfig {
     @IntSlider(min = 0, max = 255, step = 1)
     public int screenAlpha = 255;
 
+    @MasterTickBox(value = {"screenOverPlayerAlpha"})
     @SerialEntry
     @AutoGen(category = "appearance", group = "texture")
-    @TickBox
     public boolean renderPlayerInFront = true;
 
     @SerialEntry
@@ -718,6 +719,18 @@ public class SpatialGUIConfig {
     public static Screen createScreen(Screen parent) {
         YetAnotherConfigLib generated = HANDLER.generateGui();
 
+        if (ShaderCompat.shaderPackActive()) {
+            String player = Component.translatable("yacl3.config.spatial-gui:config.renderPlayerInFront").getString();
+            String alpha = Component.translatable("yacl3.config.spatial-gui:config.screenOverPlayerAlpha").getString();
+            for (ConfigCategory category : generated.categories()) {
+                for (OptionGroup group : category.groups()) {
+                    for (Option<?> option : group.options()) {
+                        String name = option.name().getString();
+                        if (name.equals(player) || name.equals(alpha)) option.setAvailable(false);
+                    }
+                }
+            }
+        }
         ButtonOption openEditor = ButtonOption.createBuilder()
                 .name(Component.translatable("yacl3.spatial-gui.config.open_editor"))
                 .description(OptionDescription.of(Component.translatable("yacl3.spatial-gui.config.open_editor.description")))
