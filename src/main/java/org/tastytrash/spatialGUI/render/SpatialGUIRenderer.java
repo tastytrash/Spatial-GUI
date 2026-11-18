@@ -182,7 +182,10 @@ public class SpatialGUIRenderer {
         /*var afterRenderEvent = ScreenEvents.afterRender(screen);
         var lateFlushPhase = new net.minecraft.resources.ResourceLocation("spatial_gui", "late_flush");
         afterRenderEvent.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, lateFlushPhase);
-        afterRenderEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> graphics.flush());
+        afterRenderEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> {
+            graphics.flush();
+            Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
+        });
         *///?}
 
         //? if fabric {

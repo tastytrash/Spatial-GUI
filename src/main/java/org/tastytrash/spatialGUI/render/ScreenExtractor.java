@@ -207,7 +207,9 @@ public class ScreenExtractor {
                 RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
                 SpatialGUIRenderer.isExtractingScreen = false;
                 captureTarget = null;
+                //? if !fabric || >1.20.1 {
                 mc.getMainRenderTarget().bindWrite(true);
+                //?}
             }
         }
         *///?}

@@ -2,12 +2,6 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
-Transition from third to first person
-
-JEI rendering in the wrong location (1.20.1 Fabric)
-
-Body not hiding behind terrain underwater
-
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)
@@ -17,14 +11,12 @@ Compat:
 
 Shaders in 26.4, shaders in older versions?
 
-Change third person default config
-
 Body half submerged doesn't render water tint with player over screen
 
 -------- LOW PRIORITY ---------------
 
 In-game warning to recommend turning on override GUI scale while a
-  recipe viewer is installed, and your GUI scale is 2 or less
+  recipe viewer is installed, and your GUI scale is 2 or less ?
 
 __________ SUGGESTIONS/FEATURES _________________
 ================================================
@@ -32,6 +24,7 @@ __________ SUGGESTIONS/FEATURES _________________
 Tri-Fold option (#185)
 
 Better config, too cluttered/confusing
+ - Hide disabled options?
 
 Refresh rate?
 
@@ -45,9 +38,6 @@ Screen Manager
  - Drag to move?
  - Add keybind?
  - Manually add screen classes?
-
-High priority:
- - Don't reset mouse to centre on open from YACL screen (1.21.1)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

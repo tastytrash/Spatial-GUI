@@ -50,6 +50,7 @@ public class SpatialGUIClient {
     private static boolean effectiveFirstPersonMode = false;
     private static boolean switchedToFirstPersonDueToBlock = false;
     private static boolean wasThirdPersonCamera = false;
+    private static boolean openTransitionFinished;
     private static CameraType originalCameraType;
     private static boolean capturingPanorama = false;
     private static Vec3 cameraPosition;
@@ -247,6 +248,14 @@ public class SpatialGUIClient {
 
     public static boolean getWasThirdPersonCamera() {
         return wasThirdPersonCamera;
+    }
+
+    public static void setOpenTransitionFinished(boolean value) {
+        openTransitionFinished = value;
+    }
+
+    public static boolean isOpeningFromThirdPerson() {
+        return wasThirdPersonCamera && !switchedToFirstPersonDueToBlock && !openTransitionFinished;
     }
 
     public static void setWasThirdPersonCamera(boolean value) {

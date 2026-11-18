@@ -322,7 +322,7 @@ public abstract class CameraMixin {
 
     @Unique
     private void applyCameraUpdate(Vec3 newTargetPos, float newTargetYRot, float newTargetXRot, boolean isFirstPerson) {
-        if (isFirstPerson) {
+        if (isFirstPerson && (!SpatialGUIClient.getWasThirdPersonCamera() || SpatialGUIClient.getSwitchedToFirstPersonDueToBlock())) {
             position = newTargetPos;
             yRot = newTargetYRot;
             xRot = newTargetXRot;
@@ -332,10 +332,11 @@ public abstract class CameraMixin {
             float adjustedElapsed = elapsed + (skipFraction * TRANSITION_DURATION_MS);
             float progress = Math.min(adjustedElapsed / TRANSITION_DURATION_MS, 1.0f);
             float easedProgress = AnimationUtil.easeInOutSine(progress);
+            if (isFirstPerson) SpatialGUIClient.setOpenTransitionFinished(progress >= 1.0f);
 
             position = new Vec3(MathUtil.lerp(startPos.x, newTargetPos.x, easedProgress), MathUtil.lerp(startPos.y, newTargetPos.y, easedProgress), MathUtil.lerp(startPos.z, newTargetPos.z, easedProgress));
             yRot = MathUtil.rotLerp(startYRot, newTargetYRot, easedProgress);
-            xRot = ConfigManager.config().lerpCameraPitch && progress < 1.0f ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
+            xRot = (isFirstPerson || ConfigManager.config().lerpCameraPitch) && progress < 1.0f ? MathUtil.lerp(startXRot, newTargetXRot, easedProgress) : newTargetXRot;
         }
         SpatialGUIClient.setCameraPosition(position);
     }
@@ -357,6 +358,7 @@ public abstract class CameraMixin {
         baseXRot = 0f;
         wasCrosshairMode = false;
         SpatialGUIClient.setWasThirdPersonCamera(false);
+        SpatialGUIClient.setOpenTransitionFinished(false);
         SpatialGUIClient.setOriginalCameraType(null);
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
         SpatialGUIClient.setEffectiveFirstPersonMode(false);

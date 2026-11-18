@@ -381,6 +381,11 @@ public class WorldScreenRenderer {
             SpatialGUIRenderer.renderingLevel = true;
             drawingDeferredPlayer = true;
 
+            boolean cameraInWater = client.level.getFluidState(BlockPos.containing(client.gameRenderer.getMainCamera().getPosition())).is(net.minecraft.tags.FluidTags.WATER);
+            if (player.isInWater() && !cameraInWater) {
+                RenderSystem.clear(256, Minecraft.ON_OSX);
+            }
+
             var bufferSource = client.renderBuffers().bufferSource();
             client.getEntityRenderDispatcher().render(player, deferredX, deferredY, deferredZ, deferredYaw, deferredPartialTick, poseStack, bufferSource, deferredLight);
             bufferSource.endBatch();

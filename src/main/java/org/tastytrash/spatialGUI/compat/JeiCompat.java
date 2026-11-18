@@ -44,7 +44,7 @@ public final class JeiCompat {
         Class<?> clientConfigsClass = Class.forName("mezz.jei.common.config.IClientConfigs");
         boolean changed = false;
 
-        // Align lists to RIGHT and CENTER
+        // Align lists to LEFT/RIGHT and CENTER
         try {
             Object ingredientConfig = clientConfigsClass.getMethod("getIngredientListConfig").invoke(config);
             if (setAlignment(ingredientConfig, "horizontalAlignment", HORIZONTAL, "LEFT")) changed = true;

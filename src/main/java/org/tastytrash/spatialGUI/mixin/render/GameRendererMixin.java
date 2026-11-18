@@ -9,6 +9,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.tastytrash.spatialGUI.config.ConfigManager;
@@ -262,7 +263,8 @@ public abstract class GameRendererMixin {
             var camPos = cameraRenderState.pos;
             WorldBlurRenderer.setDeferredPlayerRenderState(null);
             deferredState.shadowPieces.clear();
-            if (mc.player != null && mc.player.isInWater()) {
+            boolean cameraInWater = mc.level != null && mc.level.getFluidState(BlockPos.containing(camPos)).is(net.minecraft.tags.FluidTags.WATER);
+            if (mc.player != null && mc.player.isInWater() && !cameraInWater) {
                 spatialGUI$clearDepth();
             }
             mc.getEntityRenderDispatcher().submit(deferredState, cameraRenderState,
@@ -405,6 +407,10 @@ public abstract class GameRendererMixin {
 
             if (SpatialGUIClient.getEffectiveFirstPersonMode() && !ConfigManager.config().hideHandsInFirstPerson
                     && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+                spatialGUI$renderHandsInFront();
+            }
+
+            if (playerInFront && !SpatialGUIClient.getEffectiveFirstPersonMode() && Minecraft.getInstance().player != null && Minecraft.getInstance().player.isUnderWater()) {
                 spatialGUI$renderHandsInFront();
             }
 

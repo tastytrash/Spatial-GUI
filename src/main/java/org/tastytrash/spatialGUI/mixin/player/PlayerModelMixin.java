@@ -36,7 +36,7 @@ public class PlayerModelMixin {
 
         var renderer = SpatialGUIClient.renderer();
         Vec3 cameraPos = SpatialGUIClient.getCameraPosition();
-        if (renderer == null || cameraPos == null || !SpatialGUIClient.isEnabled() || SpatialGUIClient.getEffectiveFirstPersonMode()) {
+        if (renderer == null || cameraPos == null || !SpatialGUIClient.isEnabled() || (SpatialGUIClient.getEffectiveFirstPersonMode() && !SpatialGUIClient.getWasThirdPersonCamera())) {
             return;
         }
         if (!renderer.shouldCapture() && !renderer.isClosing() && !SpatialGUIClient.getWasClosing()) {

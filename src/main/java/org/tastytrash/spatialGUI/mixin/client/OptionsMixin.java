@@ -31,7 +31,7 @@ public abstract class OptionsMixin {
                 return;
             }
             boolean isFirstPerson = SpatialGUIClient.shouldUseFirstPersonMode(hooked);
-            if (isFirstPerson) {
+            if (isFirstPerson && !SpatialGUIClient.isOpeningFromThirdPerson()) {
                 cir.setReturnValue(CameraType.FIRST_PERSON);
             } else {
                 cir.setReturnValue(CameraType.THIRD_PERSON_BACK);
