@@ -62,7 +62,7 @@ final class ScreenManagerHelp {
         return true;
     }
 
-    static void draw(Object g, int guiWidth, int guiHeight) {
+    static void draw(Object g, int guiWidth, int guiHeight, int mouseX, int mouseY) {
         if (!open) return;
 
         DrawUtil.pushLayer(g);
@@ -85,8 +85,8 @@ final class ScreenManagerHelp {
         textY += PADDING;
 
         int buttonsX = x + (PANEL_WIDTH - 2 * BUTTON_WIDTH - BUTTON_GAP) / 2;
-        DrawUtil.drawButton(switchButton, Component.translatable(page.next().label), buttonsX, textY, true, g);
-        DrawUtil.drawButton(closeButton, Component.translatable("spatial-gui.screen_manager.close"), buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, true, g);
+        DrawUtil.drawButton(switchButton, Component.translatable(page.next().label), buttonsX, textY, true, g, mouseX, mouseY);
+        DrawUtil.drawButton(closeButton, Component.translatable("spatial-gui.screen_manager.close"), buttonsX + BUTTON_WIDTH + BUTTON_GAP, textY, true, g, mouseX, mouseY);
 
         DrawUtil.popLayer(g);
     }

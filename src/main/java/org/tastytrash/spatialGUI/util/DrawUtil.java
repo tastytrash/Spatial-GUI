@@ -27,10 +27,14 @@ public final class DrawUtil {
     }
 
     public static void drawButton(Button button, Component label, int x, int y, boolean active, Object g) {
+        drawButton(button, label, x, y, active, g, (int) cursorX(), (int) cursorY());
+    }
+
+    public static void drawButton(Button button, Component label, int x, int y, boolean active, Object g, int mouseX, int mouseY) {
         button.setMessage(label);
         button.setPosition(x, y);
         button.active = active;
-        renderWidget(button, g);
+        renderWidget(button, g, mouseX, mouseY);
     }
 
     public static void renderWidget(AbstractWidget widget, Object g) {

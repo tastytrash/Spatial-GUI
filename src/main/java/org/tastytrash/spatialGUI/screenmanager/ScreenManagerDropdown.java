@@ -45,7 +45,7 @@ final class ScreenManagerDropdown {
         return (int) Math.floor((cursorY - topY) / DrawUtil.BUTTON_HEIGHT);
     }
 
-    static void draw(Object g, int guiWidth, int guiHeight, ScreenManagerData data) {
+    static void draw(Object g, int guiWidth, int guiHeight, ScreenManagerData data, int mouseX, int mouseY) {
         String selectedId = data.getSelectedId();
         if (selectedId == null) {
             close();
@@ -58,12 +58,12 @@ final class ScreenManagerDropdown {
         int topY = headerY - count * DrawUtil.BUTTON_HEIGHT;
         xPos = guiWidth - DrawUtil.SCREEN_MARGIN - BUTTON_WIDTH;
 
-        DrawUtil.drawButton(header, Component.literal(label(currentProfile) + (open ? " ▼" : " ▲")), xPos, headerY, true, g);
+        DrawUtil.drawButton(header, Component.literal(label(currentProfile) + (open ? " ▼" : " ▲")), xPos, headerY, true, g, mouseX, mouseY);
         if (!open) return;
 
         for (int i = 0; i < count; i++) {
             int rowY = topY + i * DrawUtil.BUTTON_HEIGHT;
-            DrawUtil.drawButton(option, Component.literal(label(i)), xPos, rowY, i != currentProfile, g);
+            DrawUtil.drawButton(option, Component.literal(label(i)), xPos, rowY, i != currentProfile, g, mouseX, mouseY);
         }
     }
 

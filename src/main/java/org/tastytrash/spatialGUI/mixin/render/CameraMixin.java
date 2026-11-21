@@ -37,6 +37,8 @@ public abstract class CameraMixin {
     @Shadow private Vec3 position;
     @Shadow private float xRot;
     @Shadow private float yRot;
+    @Shadow private float eyeHeight;
+    @Shadow private float eyeHeightOld;
     @Final @Shadow private Quaternionf rotation;
     @Final @Shadow private Vector3f forwards;
     @Final @Shadow private Vector3f up;
@@ -159,7 +161,7 @@ public abstract class CameraMixin {
             Vec3 screenCameraPos = MathUtil.lerpEntityPosition(this.entity, partialTicks).add(lastOffset);
             boolean toFirstPerson = renderer.isClosingThirdToFirstPerson()
                     || (renderer.isClosingFirstPerson() && !SpatialGUIClient.getWasThirdPersonCamera());
-            Vec3 normalPos = toFirstPerson ? MathUtil.lerpEntityPosition(this.entity, partialTicks).add(0.0, this.entity.getEyeHeight(), 0.0) : position;
+            Vec3 normalPos = toFirstPerson ? MathUtil.lerpEntityPosition(this.entity, partialTicks).add(0.0, smoothedEyeHeight(partialTicks), 0.0) : position;
             float normalYRot = toFirstPerson ? this.entity.getYRot() : yRot;
             float normalXRot = toFirstPerson ? this.entity.getXRot() : xRot;
 
@@ -180,7 +182,7 @@ public abstract class CameraMixin {
     private CameraTransform calculateCameraTransform(boolean isFirstPerson, float partialTicks) {
         float distance = CameraUtil.calculateAutoFovDistance((float) ConfigManager.config().cameraDistance, isFirstPerson);
         float sideOffset = CameraUtil.calculateAutoFovSideOffset((float) ConfigManager.config().cameraSideOffset, isFirstPerson);
-        float heightOffset = isFirstPerson ? entity.getEyeHeight() : Mth.clamp((float) ConfigManager.config().cameraHeightOffset, -4f, 4f);
+        float heightOffset = isFirstPerson ? smoothedEyeHeight(partialTicks) : Mth.clamp((float) ConfigManager.config().cameraHeightOffset, -4f, 4f);
         if (!isFirstPerson && entity instanceof LocalPlayer player && player.isFallFlying()) {
             sideOffset += (float) ConfigManager.config().elytraFlyingSideOffset;
             heightOffset += (float) ConfigManager.config().elytraFlyingHeightOffset;
@@ -296,6 +298,11 @@ public abstract class CameraMixin {
         float alpha = 1f - (float) Math.exp(-dt / (PARALLAX_TAU_MS / 1000f));
         parallaxYawOffset += (targetYaw - parallaxYawOffset) * alpha;
         parallaxPitchOffset += (targetPitch - parallaxPitchOffset) * alpha;
+    }
+
+    @Unique
+    private float smoothedEyeHeight(float partialTicks) {
+        return Mth.lerp(partialTicks, eyeHeightOld, eyeHeight);
     }
 
     @Unique

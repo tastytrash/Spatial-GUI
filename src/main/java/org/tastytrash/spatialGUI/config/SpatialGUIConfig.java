@@ -344,7 +344,7 @@ public class SpatialGUIConfig {
     public double screenScale = 3.5;
 
     @SerialEntry
-    public double recipeViewerScaleMultiplier = 0.65;
+    public double recipeViewerScaleMultiplier = 0.75;
 
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "screen")
@@ -458,7 +458,7 @@ public class SpatialGUIConfig {
     @SerialEntry
     @AutoGen(category = "thirdPerson", group = "transition")
     @IntSlider(min = 0, max = 100, step = 1)
-    public int transitionSkipPercentage = 0;
+    public int transitionSkipPercentage = 15;
 
     // ===========
     // firstPerson

@@ -46,6 +46,8 @@ public class ScreenManagerScreen extends Screen {
     private final Button moveLeftButton = DrawUtil.button(MOVE_WIDTH);
     private final Button moveRightButton = DrawUtil.button(MOVE_WIDTH);
     private final Button sortButton = DrawUtil.button(SORT_WIDTH);
+    private int hoverX;
+    private int hoverY;
 
     public ScreenManagerScreen(Screen parent) {
         super(Component.translatable("spatial-gui.screen_manager.title"));
@@ -71,9 +73,11 @@ public class ScreenManagerScreen extends Screen {
         int mouseY = (int) DrawUtil.cursorY();
      *///?} else if >1.21.11 {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
-        //?} else {
-        /*public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
-         *///?}
+    //?} else {
+    /*public void render(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+     *///?}
+        hoverX = mouseX;
+        hoverY = mouseY;
         DrawUtil.fillRect(g, 0, 0, width, height, UiColors.NEAR_BLACK_80);
 
         drawTitle(g);
@@ -82,12 +86,12 @@ public class ScreenManagerScreen extends Screen {
         drawSearchBox(g);
 
         int footerY = height - MARGIN - DrawUtil.BUTTON_HEIGHT;
-        DrawUtil.drawButton(moveLeftButton, Component.literal("<"), width / 2 - MOVE_WIDTH - 4, footerY, data.canMove(-1), g);
-        DrawUtil.drawButton(moveRightButton, Component.literal(">"), width / 2 + 4, footerY, data.canMove(1), g);
+        DrawUtil.drawButton(moveLeftButton, Component.literal("<"), width / 2 - MOVE_WIDTH - 4, footerY, data.canMove(-1), g, hoverX, hoverY);
+        DrawUtil.drawButton(moveRightButton, Component.literal(">"), width / 2 + 4, footerY, data.canMove(1), g, hoverX, hoverY);
 
         drawIdTooltip(g, mouseX, mouseY);
-        ScreenManagerHelp.draw(g, width, height);
-        ScreenManagerDropdown.draw(g, width, height, data);
+        ScreenManagerHelp.draw(g, width, height, mouseX, mouseY);
+        ScreenManagerDropdown.draw(g, width, height, data, mouseX, mouseY);
     }
 
     private void drawTitle(Object g) {
@@ -114,7 +118,7 @@ public class ScreenManagerScreen extends Screen {
 
     private int drawTopButton(Object g, Button button, int right, Component label) {
         int x = right - button.getWidth();
-        DrawUtil.drawButton(button, label, x, MARGIN, true, g);
+        DrawUtil.drawButton(button, label, x, MARGIN, true, g, hoverX, hoverY);
         return x - 4;
     }
 
@@ -143,7 +147,7 @@ public class ScreenManagerScreen extends Screen {
     }
 
     private void drawScrollbar(GuiGraphicsExtractor g, int columnX, int column) {
-        int totalRows = data.ids(column).size();
+        int totalRows = filterIds(data.ids(column)).size();
         int visible = visibleRows();
         int scrollableArea = columnHeight() - HEADER;
         
@@ -156,7 +160,7 @@ public class ScreenManagerScreen extends Screen {
     }
 
     private void drawIdTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        if (!data.isAdvancedMode()) return;
+        if (!data.isAdvancedMode() || ScreenManagerHelp.isOpen()) return;
         String id = idAt(mouseX, mouseY);
         if (id == null) return;
 
