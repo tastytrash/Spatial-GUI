@@ -1,1 +1,0 @@
- * Fixed issue with enchanted items rendering transparent in 1.21.1 and 1.20.1

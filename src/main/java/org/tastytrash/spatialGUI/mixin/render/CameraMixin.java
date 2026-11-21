@@ -66,10 +66,26 @@ public abstract class CameraMixin {
     private record CameraTransform(Vec3 pos, float yaw, float pitch) {}
 
     @Unique
+    private void spatialGUI$updateRotation() {
+        //? if >1.20.1 {
+        this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
+        //?} else {
+        /*this.rotation.rotationYXZ(-this.yRot * ((float) Math.PI / 180F), this.xRot * ((float) Math.PI / 180F), 0.0F);
+        *///?}
+        spatialGUI$updateLookVectors();
+    }
+
+    @Unique
     private void spatialGUI$updateLookVectors() {
+        //? if >1.20.1 {
         this.forwards.set(0f, 0f, -1f).rotate(this.rotation);
         this.up.set(0f, 1f, 0f).rotate(this.rotation);
         this.left.set(-1f, 0f, 0f).rotate(this.rotation);
+        //?} else {
+        /*this.forwards.set(0f, 0f, 1f).rotate(this.rotation);
+        this.up.set(0f, 1f, 0f).rotate(this.rotation);
+        this.left.set(1f, 0f, 0f).rotate(this.rotation);
+        *///?}
     }
 
     //? if >=26.1.2 {
@@ -133,8 +149,7 @@ public abstract class CameraMixin {
             lastOffset = position.subtract(MathUtil.lerpEntityPosition(this.entity, partialTicks));
             lastYRot = yRot;
             lastXRot = xRot;
-            this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
-            spatialGUI$updateLookVectors();
+            spatialGUI$updateRotation();
             wasCapturing = true;
         } else if (renderer.isClosingWithCameraTransition() && lastOffset != null && this.entity != null && SpatialGUIClient.isEnabled()) {
             closingCameraActive = true;
@@ -153,8 +168,7 @@ public abstract class CameraMixin {
             yRot = MathUtil.rotLerp(lastYRot, normalYRot, easedProgress);
             boolean lerpPitch = renderer.isClosingFirstPerson() || ConfigManager.config().lerpCameraPitch;
             xRot = lerpPitch ? MathUtil.lerp(lastXRot, normalXRot, easedProgress) : normalXRot;
-            this.rotation.rotationYXZ((float) Math.PI - this.yRot * ((float) Math.PI / 180F), -this.xRot * ((float) Math.PI / 180F), 0.0F);
-            spatialGUI$updateLookVectors();
+            spatialGUI$updateRotation();
             SpatialGUIClient.setCameraPosition(position);
         } else {
             this.resetCameraState();

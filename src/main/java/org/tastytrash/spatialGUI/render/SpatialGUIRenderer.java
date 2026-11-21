@@ -30,7 +30,9 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.neoforged.neoforge.common.NeoForge;
 *///? } else if forge {
 /*import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import org.tastytrash.spatialGUI.editor.EditorScreen;
 import org.tastytrash.spatialGUI.editor.ProfilePicker;
 *///?}
@@ -365,6 +367,9 @@ public class SpatialGUIRenderer {
     /** @return true when the player should draw after the screen. */
     public boolean shouldDeferPlayer() {
         return SpatialGUIClient.isEnabled() && ConfigManager.config().renderPlayerInFront && !ShaderCompat.shaderPackActive()
+                //? if <=1.21.1 {
+                /*&& !Minecraft.useShaderTransparency()
+                *///?}
                 && (shouldCapture() ? !SpatialGUIClient.getEffectiveFirstPersonMode() : isClosing() && !isClosingFirstPerson() && !isCameraClosingFinished());
     }
 

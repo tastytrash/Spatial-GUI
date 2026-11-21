@@ -433,6 +433,7 @@ public abstract class GameRendererMixin {
         } else {
             spatialGUI$renderPlayerInFront();
         }
+        RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
     }
 
     //? if >=26.2 {

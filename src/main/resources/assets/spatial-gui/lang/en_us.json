@@ -113,7 +113,7 @@
   "yacl3.config.spatial-gui:config.screenAlpha": "Screen Alpha",
   "yacl3.config.spatial-gui:config.screenAlpha.desc": "Transparency of the inventory screen (0-255)",
   "yacl3.config.spatial-gui:config.renderPlayerInFront": "Player in Front of Screen",
-  "yacl3.config.spatial-gui:config.renderPlayerInFront.desc": "Renders the player model in front of the spatial screen in third person.",
+  "yacl3.config.spatial-gui:config.renderPlayerInFront.desc": "Renders the player model in front of the spatial screen in third person.\nDoes not work with shaders or in 1.20.1 & 1.21.1 with 'Fabulous!' graphics.",
   "yacl3.config.spatial-gui:config.screenOverPlayerAlpha": "Screen Over Player Alpha",
   "yacl3.config.spatial-gui:config.screenOverPlayerAlpha.desc": "How visible the screen is over the player in front of it. 0 turns it off. (0-255)",
   "yacl3.config.spatial-gui:config.blurWorldBackground": "Blur World Background",
