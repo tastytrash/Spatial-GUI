@@ -20,7 +20,7 @@ public class SpatialGUI {
     public static final String MOD_ID = "spatial_gui";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static SpatialGUIConfig config;
+    public static SpatialGUIConfig config = new SpatialGUIConfig();
 
     //? if neoforge {
     /*public SpatialGUI(ModContainer container, IEventBus modBus) {

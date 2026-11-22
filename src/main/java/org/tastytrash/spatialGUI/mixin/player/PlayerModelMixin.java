@@ -2,6 +2,7 @@ package org.tastytrash.spatialGUI.mixin.player;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -56,7 +57,11 @@ public class PlayerModelMixin {
     //? if >1.21.1 {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At("TAIL"))
     private void spatialGUI$hideHeadWhenCameraIsClose(AvatarRenderState state, CallbackInfo ci) {
-        if (state.id != Minecraft.getInstance().player.getId()) return;
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client.player;
+        if (player == null || client.level == null) return;
+        if (state.id != player.getId()) return;
+
         PlayerModel model = (PlayerModel) (Object) this;
         spatialGUI$hideHead(model.head, model.hat, state.x, state.y, state.z, state.eyeHeight);
     }

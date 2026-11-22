@@ -31,6 +31,6 @@ public final class InvMoveCompat {
     }
 
     public static boolean playerRotates() {
-        return isInvMoveLoaded() && SpatialGUIRenderer.isCrosshairModeActive();
+        return (isInvMoveLoaded() || SpatialGUIMultiplayerCompat.isSGMLoaded()) && SpatialGUIRenderer.isCrosshairModeActive();
     }
 }

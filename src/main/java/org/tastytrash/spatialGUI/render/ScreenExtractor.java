@@ -1,7 +1,6 @@
 package org.tastytrash.spatialGUI.render;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,6 +19,7 @@ import net.minecraft.client.renderer.state.gui.GuiRenderState;
 /*import net.minecraft.client.gui.render.state.GuiRenderState;
  *///?} else {
 /*import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import org.joml.Matrix4f;
@@ -46,7 +46,9 @@ import net.minecraft.client.gui.render.state.pip.*;
 import java.util.List;
 
 public class ScreenExtractor {
-    public static RenderTarget captureTarget;
+    //? if <=1.21.1 {
+    /*public static RenderTarget captureTarget;
+    *///?}
 
     //? if >1.21.1 {
     private GuiRenderState screenRenderState;

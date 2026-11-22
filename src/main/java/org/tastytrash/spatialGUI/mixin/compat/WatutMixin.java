@@ -24,7 +24,9 @@ public class WatutMixin {
     @ModifyReturnValue(method = "shouldAnimate", at = @At("RETURN"), remap = false, require = 0)
     private boolean spatialGUI$hideWatutScreen(boolean original, Player player) {
         if (!original) return false;
-        return !((SpatialGUIAPI.isActive() || SpatialGUIClient.renderer().isClosing()) && player == Minecraft.getInstance().player);
+        var renderer = SpatialGUIClient.renderer();
+        if (renderer == null) return original;
+        return !((SpatialGUIAPI.isActive() || renderer.isClosing()) && player == Minecraft.getInstance().player);
     }
 
     @Inject(method = "renderWithTooltipEnd", at = @At("HEAD"), cancellable = true, remap = false, require = 0)

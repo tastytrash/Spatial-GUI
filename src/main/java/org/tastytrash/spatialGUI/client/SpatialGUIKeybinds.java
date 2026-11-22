@@ -5,12 +5,12 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.tastytrash.spatialGUI.compat.JeiCompat;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.config.SpatialGUIConfig;
 import org.tastytrash.spatialGUI.editor.EditorMode;
 import org.tastytrash.spatialGUI.render.SpatialGUIRenderer;
-import java.util.function.UnaryOperator;
 //? if >1.21.1 {
 import net.minecraft.client.input.KeyEvent;
 //?}
@@ -42,7 +42,9 @@ public class SpatialGUIKeybinds {
     private static KeyMapping toggleMouseFree;
     private static KeyMapping openProfilePicker;
     private static boolean toggleMouseFreeHeld = false;
-    private static boolean registered = false;
+    //? if !fabric {
+    /*private static boolean registered = false;
+    *///?}
 
     private static final String OPEN_CONFIG_KEY = "key.spatial-gui.open_config";
     private static final String OPEN_EDITOR_KEY = "key.spatial-gui.open_editor";
@@ -52,10 +54,10 @@ public class SpatialGUIKeybinds {
 
     //? if fabric && >1.21.1 {
     public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =
-            KeyMapping.Category.register(net.minecraft.resources.Identifier.fromNamespaceAndPath("spatial-gui", "main_category"));
+            KeyMapping.Category.register(Identifier.fromNamespaceAndPath("spatial-gui", "main_category"));
     //?} else if neoforge && >1.21.1 {
     /*public static final KeyMapping.Category SPATIAL_GUI_CATEGORY =
-            new KeyMapping.Category(net.minecraft.resources.Identifier.fromNamespaceAndPath("spatial-gui", "main_category"));
+            new KeyMapping.Category(Identifier.fromNamespaceAndPath("spatial-gui", "main_category"));
     *///?}
 
     private static KeyMapping createKey(String key) {

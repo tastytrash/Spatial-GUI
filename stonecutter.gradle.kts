@@ -29,6 +29,8 @@ stonecutter parameters {
         }
 
         string(current.parsed < "1.21.11") {
+            replace("net.minecraft.resources.Identifier", "net.minecraft.resources.ResourceLocation")
+            replace("Identifier", "ResourceLocation")
             replace(".grabOrReleaseMouse(mc.getWindow(), ", ".grabOrReleaseMouse(mc.getWindow().getWindow(), ")
             replace("invertMouseY()", "invertYMouse()")
         }

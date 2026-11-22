@@ -1,15 +1,14 @@
 package org.tastytrash.spatialGUI.mixin.player;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.player.AbstractClientPlayer;
 //? if >26.2 {
 /*import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
-*///? } else {
+*///?} else {
 import net.minecraft.client.renderer.ItemInHandRenderer;
-//? }
+import net.minecraft.client.player.AbstractClientPlayer;
+//?}
 
 //? if >1.21.1 {
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -23,16 +22,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.tastytrash.spatialGUI.SpatialGUI;
 import org.tastytrash.spatialGUI.config.ConfigManager;
 import org.tastytrash.spatialGUI.client.SpatialGUIClient;
 
 //? if >26.2 {
 /*@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class HandRendererMixin {
-    @ModifyVariable(method = "submitArmWithItem", at = @At("HEAD"), argsOnly = true, ordinal = 3)
+    @ModifyVariable(method = "submitArmWithItem", at = @At("HEAD"), argsOnly = true, name = "inverseArmHeight")
     private float spatialGUI$pokeHand(float inverseArmHeight) {
         return inverseArmHeight + SpatialGUIClient.handPokeOffset();
     }
@@ -51,7 +48,13 @@ public class HandRendererMixin {
 @Mixin(ItemInHandRenderer.class)
 public class HandRendererMixin {
 
-    @ModifyVariable(method = {"renderArmWithItem", "submitArmWithItem"}, at = @At("HEAD"), argsOnly = true, ordinal = 3)
+    @ModifyVariable(method = {
+            //? if <26.2 {
+            "renderArmWithItem",
+            //?} else {
+            /*"submitArmWithItem"
+            *///?}
+    }, at = @At("HEAD"), argsOnly = true, ordinal = 3)
     private float spatialGUI$pokeHand(float inverseArmHeight) {
         return inverseArmHeight + SpatialGUIClient.handPokeOffset();
     }
@@ -88,4 +91,4 @@ public class HandRendererMixin {
     }
     *///?}
 }
-//? }
+//?}

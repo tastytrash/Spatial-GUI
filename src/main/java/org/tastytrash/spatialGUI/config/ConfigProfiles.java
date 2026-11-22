@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -188,9 +189,18 @@ public final class ConfigProfiles {
     public static ConfigProfiles load(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectories(path.getParent());
-            Files.writeString(path, TEMPLATE);
+            Path tmpPath = path.resolveSibling(path.getFileName() + ".tmp");
+            Files.writeString(tmpPath, TEMPLATE);
+            Files.move(tmpPath, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         }
-        return parse(Files.readString(path));
+        try {
+            return parse(Files.readString(path));
+        } catch (Exception e) {
+            SpatialGUI.LOGGER.error("Failed to parse profiles file, creating backup: {}", e.getMessage());
+            Path bakPath = path.resolveSibling(path.getFileName() + ".bak");
+            Files.copy(path, bakPath, StandardCopyOption.REPLACE_EXISTING);
+            return empty();
+        }
     }
 
     public void save(Path path) throws IOException {
@@ -212,7 +222,9 @@ public final class ConfigProfiles {
         if (linked != null) file.addProperty("default", linked);
 
         Files.createDirectories(path.getParent());
-        Files.writeString(path, HEADER + PRETTY_GSON.toJson(file) + "\n");
+        Path tmpPath = path.resolveSibling(path.getFileName() + ".tmp");
+        Files.writeString(tmpPath, HEADER + PRETTY_GSON.toJson(file) + "\n");
+        Files.move(tmpPath, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static ConfigProfiles parse(String text) {

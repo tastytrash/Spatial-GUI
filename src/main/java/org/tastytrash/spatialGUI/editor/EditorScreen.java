@@ -18,7 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 //? if <1.21.11 {
-/*import net.minecraft.resources.ResourceLocation;
+/*import net.minecraft.resources.Identifier;
 *///?}
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -35,9 +35,9 @@ public class EditorScreen extends Screen {
     //? if >=1.21.11 {
     private static final Identifier INVENTORY_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/inventory.png");
     //?} else if >1.20.1 {
-    /*private static final ResourceLocation INVENTORY_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/inventory.png");
+    /*private static final Identifier INVENTORY_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/inventory.png");
      *///?} else {
-    /*private static final ResourceLocation INVENTORY_TEXTURE = new ResourceLocation("textures/gui/container/inventory.png");
+    /*private static final Identifier INVENTORY_TEXTURE = new Identifier("textures/gui/container/inventory.png");
      *///?}
 
     private static final int BUTTON_WIDTH = 90;

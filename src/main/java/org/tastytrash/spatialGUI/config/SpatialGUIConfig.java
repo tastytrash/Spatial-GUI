@@ -24,7 +24,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import org.tastytrash.spatialGUI.editor.EditorMode;
 //?} else {
-/*import net.minecraft.resources.ResourceLocation;
+/*import net.minecraft.resources.Identifier;
 import org.tastytrash.spatialGUI.editor.EditorMode;
         *///?}
 import java.util.ArrayList;
@@ -37,9 +37,9 @@ public class SpatialGUIConfig {
                     //? if >=1.21.11 {
                     .id(Identifier.fromNamespaceAndPath("spatial-gui", "config"))
                     //?} else if >1.20.1 {
-                    /*.id(ResourceLocation.fromNamespaceAndPath("spatial-gui", "config"))
+                    /*.id(Identifier.fromNamespaceAndPath("spatial-gui", "config"))
                      *///?} else {
-                    /*.id(new ResourceLocation("spatial-gui", "config"))
+                    /*.id(new Identifier("spatial-gui", "config"))
                      *///?}
                     .serializer(config -> GsonConfigSerializerBuilder.create(config)
                             .setPath(configDir().resolve("spatial-gui.json5"))

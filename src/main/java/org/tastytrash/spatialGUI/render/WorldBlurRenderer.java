@@ -28,7 +28,9 @@ public class WorldBlurRenderer {
             //?}
             mc.gameRenderer.processBlurEffect();
         } finally {
-            RenderSystem.setGlobalSettingsUniform(originalGlobals);
+            if (originalGlobals != null) {
+                RenderSystem.setGlobalSettingsUniform(originalGlobals);
+            }
             applyingBlur = false;
         }
     }

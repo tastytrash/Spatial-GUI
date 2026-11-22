@@ -22,6 +22,7 @@ public abstract class OptionsMixin {
     @Inject(method = "getCameraType", at = @At("HEAD"), cancellable = true)
     private void spatialGUI$forceCameraMode(CallbackInfoReturnable<CameraType> cir) {
         var renderer = SpatialGUIClient.renderer();
+        if (renderer == null) return;
         if (renderer.shouldCapture() && SpatialGUIClient.isEnabled()) {
             SpatialGUIClient.setWasThirdPersonCamera(this.cameraType != CameraType.FIRST_PERSON);
             SpatialGUIClient.setOriginalCameraType(this.cameraType);

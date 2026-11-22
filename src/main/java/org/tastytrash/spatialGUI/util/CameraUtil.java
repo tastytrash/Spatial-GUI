@@ -22,7 +22,8 @@ public class CameraUtil {
     }
 
     public static void checkBlockCollision(Entity entity) {
-        if (Minecraft.getInstance().level == null || !ConfigManager.config().fallbackToFirstPersonOnBlockCollision) {
+        var level = Minecraft.getInstance().level;
+        if (level == null || !ConfigManager.config().fallbackToFirstPersonOnBlockCollision) {
             SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(false);
             return;
         }
@@ -41,12 +42,12 @@ public class CameraUtil {
         Vec3 targetCamPos = new Vec3(camX, camY, camZ);
         BlockPos blockPos = BlockPos.containing(camX, camY, camZ);
 
-        var blockState = Minecraft.getInstance().level.getBlockState(blockPos);
-        var collisionShape = blockState.getCollisionShape(Minecraft.getInstance().level, blockPos);
+        var blockState = level.getBlockState(blockPos);
+        var collisionShape = blockState.getCollisionShape(level, blockPos);
         boolean isInsideBlock = !blockState.isAir() && !collisionShape.isEmpty() && collisionShape.bounds().move(blockPos).inflate(0.001).contains(targetCamPos);
 
         var clipContext = new ClipContext(playerEyePos, targetCamPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
-        boolean pathBlocked = Minecraft.getInstance().level.clip(clipContext).getType() != HitResult.Type.MISS;
+        boolean pathBlocked = level.clip(clipContext).getType() != HitResult.Type.MISS;
 
         SpatialGUIClient.setSwitchedToFirstPersonDueToBlock(isInsideBlock || pathBlocked);
     }

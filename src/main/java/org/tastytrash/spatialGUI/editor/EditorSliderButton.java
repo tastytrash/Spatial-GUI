@@ -7,7 +7,7 @@ import net.minecraft.util.Mth;
 /*import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 *///?}
 
 import java.util.function.DoubleConsumer;
@@ -21,7 +21,7 @@ public final class EditorSliderButton extends AbstractSliderButton {
     private boolean dragging;
 
     //? if 1.20.1 {
-    /*private static final ResourceLocation SLIDER_TEXTURE = new ResourceLocation("textures/gui/slider.png");
+    /*private static final Identifier SLIDER_TEXTURE = new Identifier("textures/gui/slider.png");
     *///?}
 
     public EditorSliderButton(int width, int height, Supplier<Component> label, double min, double max, DoubleConsumer onChange) {

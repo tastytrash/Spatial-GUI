@@ -342,6 +342,6 @@ if (project.hasProperty('stonecutter')) {
             }
         }
 
-        dryRun = true
+        dryRun = false
     }
 }

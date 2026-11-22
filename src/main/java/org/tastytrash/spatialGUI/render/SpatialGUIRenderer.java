@@ -68,7 +68,6 @@ public class SpatialGUIRenderer {
     private final WorldScreenRenderer worldScreen;
 
     private Screen hookedScreen;
-    private static boolean isInventoryScreen;
     /** Frame the last screen was removed on, to detect a screen swap within a frame. */
     private long removedFrame = -1;
     public boolean poseStarted = false;
@@ -81,6 +80,7 @@ public class SpatialGUIRenderer {
     private float cameraStartXRot;
 
     private boolean rotationAnchored;
+    private long anchorReleasedFrame = -1;
     private float anchoredYaw;
     private float anchoredPitch;
     /** Player rotation saved before snapping to the camera angle on close (first-person only), restored if swapping. */
@@ -119,7 +119,7 @@ public class SpatialGUIRenderer {
         ConfigManager.clearCache();
 
         boolean swapping = hookedScreen != null || removedFrame == frameCounter;
-        boolean keepAnchor = swapping && rotationAnchored;
+        boolean keepAnchor = swapping && (rotationAnchored || anchorReleasedFrame == frameCounter);
 
         if (hookedScreen != null) onScreenRemoved(false);
 
@@ -144,7 +144,6 @@ public class SpatialGUIRenderer {
 
         skipWindowOverride = false;
         hookedScreen = screen;
-        isInventoryScreen = screen instanceof InventoryScreen || screen.getClass().getName().contains("InventoryScreen");
         if (swapping) {
             poseStarted = prevPoseStarted;
         } else {
@@ -182,7 +181,7 @@ public class SpatialGUIRenderer {
 
         //? if fabric && 1.20.1 {
         /*var afterRenderEvent = ScreenEvents.afterRender(screen);
-        var lateFlushPhase = new net.minecraft.resources.ResourceLocation("spatial_gui", "late_flush");
+        var lateFlushPhase = new net.minecraft.resources.Identifier("spatial_gui", "late_flush");
         afterRenderEvent.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, lateFlushPhase);
         afterRenderEvent.register(lateFlushPhase, (screenArg, graphics, mouseX, mouseY, tickDelta) -> {
             graphics.flush();
@@ -246,7 +245,6 @@ public class SpatialGUIRenderer {
             releaseRotationAnchor();
         }
         hookedScreen = null;
-        isInventoryScreen = false;
         removedFrame = frameCounter;
         prevPoseStarted = poseStarted;
         poseStarted = false;
@@ -311,6 +309,7 @@ public class SpatialGUIRenderer {
 
     private void releaseRotationAnchor() {
         rotationAnchored = false;
+        anchorReleasedFrame = frameCounter;
     }
 
     /** @return the anchored rotation, or the player's current rotation if not anchored */
@@ -353,14 +352,14 @@ public class SpatialGUIRenderer {
     public boolean isCameraClosingFinished() {
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
         float cameraMs = Math.max(1, ConfigManager.config().transitionDurationMs) * (1.0f - skipFraction);
-        return worldScreen.getCloseElapsedMs() >= cameraMs;
+        return getCloseElapsedMs() >= cameraMs;
     }
 
     public float getCloseBlend() {
         if (isCameraClosingFinished()) return 1.0f;
         float duration = Math.max(1, ConfigManager.config().transitionDurationMs);
         float skipFraction = ConfigManager.config().transitionSkipPercentage / 100.0f;
-        float openProgress = Math.max(skipFraction, 1.0f - worldScreen.getCloseElapsedMs() / duration);
+        float openProgress = Math.max(skipFraction, 1.0f - getCloseElapsedMs() / duration);
         return 1.0f - AnimationUtil.easeInOutSine(openProgress);
     }
 
@@ -631,10 +630,6 @@ public class SpatialGUIRenderer {
 
     public Screen getHookedScreen() {
         return hookedScreen;
-    }
-
-    public static boolean isInventoryScreen() {
-        return isInventoryScreen;
     }
 
     public ScreenTexture getScreenTexture() {
