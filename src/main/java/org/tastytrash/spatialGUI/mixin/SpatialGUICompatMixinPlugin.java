@@ -39,6 +39,7 @@ public class SpatialGUICompatMixinPlugin implements IMixinConfigPlugin {
             Map.entry("compat.LeawindsTPCrosshairMixin", "leawind_third_person"),
             Map.entry("compat.DynamicCrosshairMixin", "dynamiccrosshair"),
             Map.entry("compat.JourneyMapMixin", "journeymap"),
+            Map.entry("compat.ShatterLibParticleMixin", "shatterlib"),
             Map.entry("compat.BetterThirdPersonMixin", "betterthirdperson")
     );
 
