@@ -1,10 +1,16 @@
 //? if >=26.3 {
 //#version 450
-//?} else {
+//?} else if >1.21.1 {
 #version 330
+//?} else {
+//#version 150
 //?}
 
+//? if >1.21.1 {
 uniform sampler2D InSampler;
+//?} else {
+//uniform sampler2D DiffuseSampler;
+//?}
 
 //? if >=26.3 {
 //layout(location = 0) in vec2 texCoord;
@@ -15,10 +21,11 @@ out vec4 fragColor;
 //?}
 
 void main() {
+    //? if >1.21.1 {
     vec4 color = texture(InSampler, texCoord);
-
+    //?} else {
+    //vec4 color = texture(DiffuseSampler, texCoord);
+    //?}
     float gray = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
-    vec3 desaturated = mix(color.rgb, vec3(gray), 0.6);
-
-    fragColor = vec4(desaturated, color.a);
+    fragColor = vec4(mix(color.rgb, vec3(gray), 0.6), color.a);
 }

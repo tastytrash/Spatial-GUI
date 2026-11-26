@@ -4,7 +4,7 @@
   "provides": ["spatial-gui"],
   "version": "${version}",
   "name": "Spatial GUI",
-  "description": "A client-side mod that renders inventory & container screens as a 3D plane.\n\n§e[!] §cSpatial GUI is still in early development and may not be fully compatible with some of your mods. If something doesn't work correctly please report the issue to help make the mod better for everyone!",
+  "description": "A client-side mod that renders inventory & container screens as a 3D plane.",
   "authors": [],
   "contact": {
     "homepage": "https://github.com/tastytrash/Spatial-GUI",

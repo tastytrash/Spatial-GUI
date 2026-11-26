@@ -3,7 +3,7 @@
   "passes": [
     {
       "vertex_shader": "minecraft:core/screenquad",
-      "fragment_shader": "spatial-gui:post/pixelate",
+      "fragment_shader": "minecraft:program/spatial_gui_dark",
       "inputs": [
         {
           "sampler_name": "In",

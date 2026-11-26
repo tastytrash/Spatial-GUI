@@ -3,6 +3,13 @@
 Have a question, idea, or general feedback? Go to [GitHub Discussions](https://github.com/tastytrash/Spatial-GUI/discussions)!
 
 For reproducible bugs and crashes, please open a [GitHub Issue](https://github.com/tastytrash/Spatial-GUI/issues).
+
+## AI Policy
+
+AI-generated pull requests are not accepted, partly because of Modrinth's AI policy.
+
+More importantly, you need to fully understand your code, how it affects every supported Minecraft version, and how [Stonecutter](https://stonecutter.kikugie.dev) works. Test your changes in-game before opening a PR.
+
 ___
 <br><br>
 
@@ -26,7 +33,7 @@ ___
 * Screen opening animation
 * FOV override
 * Auto-detect camera mode, switches the camera mode based on perspective
-* World shader effects (26.1.2+ only)
+* World shader effects
 
 ### First-person Mode
 ![First-person menu crafting GIF](https://cdn.modrinth.com/data/cached_images/961b53d75867806bf45fb6f7df0e5e34b242b322.gif)
@@ -80,7 +87,7 @@ Spatial GUI has special compatibility with [Punchy!](https://modrinth.com/mod/pu
 
 **Warning: Lunar Client is not supported.** Lunar Client modifies Minecraft's rendering in ways that are incompatible with Spatial GUI. While it's not completely incompatible and still functions in most cases, issues caused by using Lunar Client will not be addressed.
 
-# FAQ
+## FAQ
 | Question                                        | Answer                                                                                                                                                                                                          |
 |-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Does Spatial GUI work in multiplayer?**       | Yes. Other players and the server do not need to have Spatial GUI installed.                                                                                                                                    |
@@ -94,13 +101,12 @@ Spatial GUI has special compatibility with [Punchy!](https://modrinth.com/mod/pu
 ## Notes
 *   Feel free to suggest features or report bugs on the GitHub.
 *   Spatial GUI is welcome in modpacks, no additional permission required. Be aware that compatibility with some mods may vary.
-*   I have plans for a multiplayer addon... no promises yet though, don't expect it soon
+*   I have plans for a multiplayer addon... don't expect it soon
+    *   Update: development is going well! I'm not sharing details yet, but I'm curious what features you'd want/expect from it. Share them on [GitHub Discussions](https://github.com/tastytrash/Spatial-GUI/discussions) or message me on Discord: `@tastytrash`
 
 ### Special thanks to:
-vibing for all of their GitHub contributions  
-DevPunchyMan & Godku (Punchy Guys Studios) for adding Spatial GUI compatibility in their mods!  
-Dizabanik for tons of code fixes and improvements  
-BUILDLCS for the Brazilian Portuguese translation  
-suheckii for the Russian translation  
-22SSendo, jankeverse, and Talbone for particularly awesome feature suggestions  
+nullsoepic, Dizabanik: code contributions and fixes  
+DevPunchyMan & Godku (Punchy Guys Studios): adding Spatial GUI compatibility to their mods
+BUILDLCS (Brazilian Portuguese) and suheckii (Russian): translations  
+22SSendo, jankeverse, Talbone: great feature suggestions  
 Anyone else who reported bugs or suggested features :)

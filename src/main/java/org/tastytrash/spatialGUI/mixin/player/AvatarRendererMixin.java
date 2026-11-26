@@ -63,7 +63,7 @@ public class AvatarRendererMixin {
         float normY = Mth.clamp((float) (MouseHandlerUtil.getPhysicalY(mouse.getRawYpos()) / client.getWindow().getScreenHeight()) * 2f - 1f, -1f, 1f);
         if (ConfigManager.config().mirrorHeadMovement) normX = -normX;
 
-        boolean isElytraFlying = client.player != null && client.player.isFallFlying();
+        boolean isFlyingOrSwimming = client.player != null && (client.player.isFallFlying() || client.player.isSwimming());
 
         boolean front = SpatialGUIClient.getOriginalCameraType() == net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
         boolean adjustPlayer = ConfigManager.config().thirdPersonFrontSpecialCase && ConfigManager.config().adjustAvatarForFrontView;
@@ -72,7 +72,7 @@ public class AvatarRendererMixin {
         if (front && adjustPlayer) normX = -normX;
         float targetBody = renderer.anchoredYaw() + frontTurn + side * (float) ConfigManager.config().avatarBodyRotationOffset;
         float targetYaw = normX * (float) ConfigManager.config().avatarMaxYawOffset + side * (float) ConfigManager.config().avatarBaseYawOffset;
-        float targetPitch = isElytraFlying ? vanillaPitch : Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
+        float targetPitch = isFlyingOrSwimming ? vanillaPitch : Mth.clamp(normY * (float) ConfigManager.config().avatarMaxPitchOffset, -60f, 60f);
 
         long now = System.nanoTime();
         boolean justOpened = !renderer.poseStarted;

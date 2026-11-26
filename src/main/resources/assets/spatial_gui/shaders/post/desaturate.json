@@ -1,0 +1,7 @@
+{
+    "targets": [ "swap" ],
+    "passes": [
+        { "name": "spatial_gui_desaturate", "intarget": "minecraft:main", "outtarget": "swap" },
+        { "name": "spatial_gui_blit", "intarget": "swap", "outtarget": "minecraft:main" }
+    ]
+}

@@ -164,11 +164,6 @@ public class SpatialGUIConfig {
     public double recipeBookShrinkFactor = 1.5;
 
     // texture
-    @SerialEntry
-    @AutoGen(category = "appearance", group = "texture")
-    @IntSlider(min = 0, max = 255, step = 1)
-    public int screenAlpha = 255;
-
     @MasterTickBox(value = {"screenOverPlayerAlpha"})
     @SerialEntry
     @AutoGen(category = "appearance", group = "texture")
@@ -189,6 +184,7 @@ public class SpatialGUIConfig {
     @AutoGen(category = "appearance", group = "texture")
     @IntSlider(min = 1, max = 10, step = 1)
     public int worldBlurStrength = 5;
+    //?}
 
     @SerialEntry
     @AutoGen(category = "appearance", group = "texture")
@@ -197,11 +193,11 @@ public class SpatialGUIConfig {
 
     public enum WorldEffect {
         NONE(null),
-        DIM("spatial-gui:dim"),
-        DARK("spatial-gui:dark"),
-        PIXELATE("spatial-gui:pixelate"),
-        GRAYSCALE("spatial-gui:grayscale"),
-        DESATURATE("spatial-gui:desaturate");
+        DIM("spatial_gui:dim"),
+        DARK("spatial_gui:dark"),
+        PIXELATE("spatial_gui:pixelate"),
+        GRAYSCALE("spatial_gui:grayscale"),
+        DESATURATE("spatial_gui:desaturate");
 
         public final String chain;
 
@@ -209,7 +205,11 @@ public class SpatialGUIConfig {
             this.chain = chain;
         }
     }
-    //?}
+
+    @SerialEntry
+    @AutoGen(category = "appearance", group = "texture")
+    @IntSlider(min = 0, max = 255, step = 1)
+    public int screenAlpha = 255;
 
     @SerialEntry
     @AutoGen(category = "appearance", group = "texture")

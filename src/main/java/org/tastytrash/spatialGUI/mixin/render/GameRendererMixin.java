@@ -57,25 +57,6 @@ public abstract class GameRendererMixin {
 
     @Final @Shadow private com.mojang.blaze3d.resource.CrossFrameResourcePool resourcePool;
 
-    @Unique
-    private String spatialGUI$warnedEffect;
-
-    @Unique
-    private void spatialGUI$applyWorldEffect(String id) {
-        Minecraft mc = Minecraft.getInstance();
-        var chain = mc.getShaderManager().getPostChain(net.minecraft.resources.Identifier.parse(id), net.minecraft.client.renderer.LevelTargetBundle.MAIN_TARGETS);
-        if (chain != null) {
-            //? if >=26.2 {
-            /*chain.process(mc.gameRenderer.mainRenderTarget(), this.resourcePool);
-            *///?} else {
-            chain.process(mc.getMainRenderTarget(), this.resourcePool);
-            //?}
-        } else if (!id.equals(spatialGUI$warnedEffect)) {
-            spatialGUI$warnedEffect = id;
-            org.tastytrash.spatialGUI.SpatialGUI.LOGGER.warn("[SpatialGUI/WorldEffect] post chain {} failed to load", id);
-        }
-    }
-
     //? if >=26.2 {
     /*@Shadow @Final private net.minecraft.client.renderer.SubmitNodeStorage handAndScreenSubmitNodeStorage;
      *///?} else {
@@ -395,9 +376,7 @@ public abstract class GameRendererMixin {
                 WorldBlurRenderer.applyBlur(ConfigManager.config().worldBlurStrength);
             }
 
-            if (ConfigManager.config().worldEffect.chain != null) {
-                spatialGUI$applyWorldEffect(ConfigManager.config().worldEffect.chain);
-            }
+            org.tastytrash.spatialGUI.render.WorldEffectRenderer.apply(this.resourcePool);
 
             if (!playerInFront) spatialGUI$renderPlayerInFront();
 
@@ -410,7 +389,12 @@ public abstract class GameRendererMixin {
                 spatialGUI$renderHandsInFront();
             }
 
-            if (playerInFront && !SpatialGUIClient.getEffectiveFirstPersonMode() && Minecraft.getInstance().player != null && Minecraft.getInstance().player.isUnderWater()) {
+            if (playerInFront
+                    && !SpatialGUIClient.getEffectiveFirstPersonMode()
+                    && !ConfigManager.config().hideHandsInFirstPerson
+                    && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
+                    && Minecraft.getInstance().player != null
+                    && Minecraft.getInstance().player.isUnderWater()) {
                 spatialGUI$renderHandsInFront();
             }
 
@@ -524,6 +508,7 @@ public abstract class GameRendererMixin {
     @Final @Shadow private Camera mainCamera;
     @Final @Shadow private net.minecraft.client.renderer.CachedPerspectiveProjectionMatrixBuffer hud3dProjectionMatrixBuffer;
     @Shadow @Final private Lighting lighting;
+    @Final @Shadow private com.mojang.blaze3d.resource.CrossFrameResourcePool resourcePool;
 
     @Shadow protected abstract float getFov(net.minecraft.client.Camera camera, float partialTick, boolean useFovSetting);
     @Shadow protected abstract void renderItemInHand(float partialTick, boolean flag, org.joml.Matrix4f matrix4f);
@@ -663,6 +648,8 @@ public abstract class GameRendererMixin {
             renderer.clearTarget();
             renderer.getScreenGuiRenderer().render(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
             renderer.getScreenGuiRenderer().incrementFrameNumber();
+
+            org.tastytrash.spatialGUI.render.WorldEffectRenderer.apply(this.resourcePool);
 
             renderer.renderInWorldPost();
 
@@ -809,6 +796,7 @@ public class GameRendererMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void spatialGUI$prepareTargetEarly(CallbackInfo ci) {
+        org.tastytrash.spatialGUI.render.WorldEffectRenderer.newFrame();
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null) {
             renderer.updateFrame();
@@ -850,6 +838,7 @@ public class GameRendererMixin {
     private void spatialGUI$drawBeforeHud(CallbackInfo ci) {
         var renderer = SpatialGUIClient.renderer();
         if (renderer != null && SpatialGUIClient.isEnabled() && (renderer.shouldCapture() || renderer.isClosing())) {
+            if (renderer.shouldCapture()) org.tastytrash.spatialGUI.render.WorldEffectRenderer.apply();
             renderer.renderInWorldPost();
             renderer.getWorldScreenRenderer().renderDeferredPlayer();
             renderer.getWorldScreenRenderer().renderScreenOverPlayer();
@@ -933,6 +922,7 @@ public class GameRendererMixin {
         boolean closing = renderer.isClosing();
         if (!renderer.shouldCapture() && !closing) return;
 
+        if (renderer.shouldCapture()) org.tastytrash.spatialGUI.render.WorldEffectRenderer.apply();
         renderer.renderInWorldPost();
         renderer.getWorldScreenRenderer().renderDeferredPlayer();
         renderer.getWorldScreenRenderer().renderScreenOverPlayer();

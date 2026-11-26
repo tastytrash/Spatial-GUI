@@ -2,6 +2,9 @@ __________ FIXES _________________
 ================================
 -------- HIGH PRIORITY ---------------
 
+Controlify compat, new version will break compat
+ - Cursor unable to reach editor buttons
+
 Compat:
  - Real Camera (#25) (May not be possible)
  - Item Zoomer (Forge 1.20.1 w/ JEI)

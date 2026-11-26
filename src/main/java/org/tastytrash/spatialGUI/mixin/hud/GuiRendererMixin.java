@@ -57,7 +57,13 @@ public class GuiRendererMixin {
                 : original;
     }
 
-    @ModifyArgs(method = "enableScissor", at = @At(value = "INVOKE",
+    @ModifyArgs(method = {
+            //? if >26.3 {
+            /*"tryEnableScissor"
+             *///?} else {
+            "enableScissor"
+            //?}
+    }, at = @At(value = "INVOKE",
             //? if >26.2 {
             /*target = "Lcom/mojang/renderpearl/api/commands/RenderPass;enableScissor(IIII)V"
             *///?} else {

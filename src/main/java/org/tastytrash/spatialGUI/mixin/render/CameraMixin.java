@@ -35,6 +35,7 @@ public abstract class CameraMixin {
 
     @Shadow private Entity entity;
     @Shadow private Vec3 position;
+    @Shadow protected abstract void setPosition(Vec3 position);
     @Shadow private float xRot;
     @Shadow private float yRot;
     @Shadow private float eyeHeight;
@@ -175,6 +176,7 @@ public abstract class CameraMixin {
         } else {
             this.resetCameraState();
         }
+        this.setPosition(this.position);
     }
 
 

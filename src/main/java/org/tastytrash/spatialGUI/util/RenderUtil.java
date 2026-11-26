@@ -195,9 +195,9 @@ public final class RenderUtil {
         fy *= fInv;
         fz *= fInv;
 
-        float rx = -fz;
+        float rx = -(float) Math.cos(yawRadians);
         float ry = 0f;
-        float rz = fx;
+        float rz = -(float) Math.sin(yawRadians);
         float rInv = 1.0f / (float) Math.sqrt(rx * rx + rz * rz);
         rx *= rInv;
         rz *= rInv;
